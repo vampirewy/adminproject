@@ -11,7 +11,7 @@ export default {
   // components: {
   //   HelloWorld
   // }
-};
+}; 
 </script>
 
 <style lang="less">
