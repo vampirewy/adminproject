@@ -39,6 +39,13 @@
         </el-table-column>
       </el-table>
     </div>
+    <!-- <PageBar
+      @pageBar="shoppingGuideRequest"
+      :pageNum="pageNum"
+      :pageSize="pageSize"
+      :totalPage="totalPage"
+      :totalCount="totalCount"
+    ></PageBar>-->
     <div class="pagination">
       <el-button size="mini" @click.native="firstPage">首页</el-button>
       <el-pagination
@@ -58,12 +65,14 @@
 
 <script>
 import HeaderBar from "@/components/headerBar.vue";
+import PageBar from "@/components/pageBar.vue";
 import { shoppingGuide, del, stop, sort } from "@/api/shoppingGuide";
 import { allArea } from "@/api/headerBar";
 export default {
   name: "shoopingGuide",
   components: {
-    HeaderBar
+    HeaderBar,
+    PageBar
   },
   data() {
     return {
@@ -82,14 +91,15 @@ export default {
   methods: {
     shoppingGuideRequest(traId, statusLists, guideName, page) {
       console.log(`==============================`);
-      console.log(traId, statusLists, guideName, page);
+      console.log(page, traId, statusLists, guideName);
       console.log(`==============================`);
       this.traId = traId;
       this.statusLists = statusLists;
       this.guideName = guideName;
+      this.pageNum = page ? page : this.pageNum;
       let params = {
         statusArray: statusLists,
-        pageNum: page || this.pageNum,
+        pageNum: this.pageNum,
         pageSize: this.pageSize,
         traId: traId,
         guideName: guideName
