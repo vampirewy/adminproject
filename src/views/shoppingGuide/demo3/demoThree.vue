@@ -657,7 +657,7 @@ import { guideAllArea } from "@/api/headerBar";
 export default {
   name: "demoThree",
   // props: {
-  //   areaLists: Array
+  //   areaNameLists: Array
   // },
   data() {
     return {

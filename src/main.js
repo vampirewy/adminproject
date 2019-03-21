@@ -5,6 +5,7 @@ import store from "./store";
 import './plugins/element.js';
 import 'normalize.css';
 import './less/global.css';
+import img from "./img/demo1.png";
 
 Vue.config.productionTip = false;
 
@@ -33,14 +34,17 @@ router.afterEach(() => {
 });
 let startTime = new Date();
 let arr = [`1`, `2`, `3`, `4`, `5`];
+let testImg = new Image();
+testImg.src = img;
 
 function showspeed() {
-  let filesize = 35.4;
+  let filesize = 37;
   let endTime = new Date();
   let speed = Math.round(filesize * 1000) / (endTime - startTime);
   let scope = (speed > 0 && speed <= 50) ? 0 : (speed > 50 && speed <= 100) ? 1 : (speed >= 100 && speed < 200) ? 2 : (speed >= 200 && speed < 300) ? 3 : 4;
   localStorage.setItem(`speed`, arr[scope]);
+  console.log(`调了`);
 };
-window.onload = function () {
+testImg.onload = function () {
   showspeed();
 }

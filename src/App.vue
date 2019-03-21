@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <router-view/>
-    <img class="test" src="./img/demo1.png" alt="">
   </div>
 </template>
 

@@ -134,7 +134,7 @@ import { setTimeout } from "timers";
 export default {
   name: "demoOne",
   // props: {
-  //   areaLists: Array
+  //   areaNameLists: Array
   // },
   data() {
     return {
@@ -142,7 +142,7 @@ export default {
       modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
-      areaLists: [], //商圈
+      areaLists: this.areaNameLists, //商圈
       reg: /^[+]?\d*$/,
       timer: null,
       headers: { sessionId: localStorage.getItem(`sessionId`) }, //图片上传的参数
@@ -569,8 +569,9 @@ export default {
       }
       this.fromShoppingGuide();
     } else {
+      // console.log(this.areaNameLists);
       this.allArea();
-    }
+    };
   }
 };
 </script>

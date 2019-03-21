@@ -42,7 +42,7 @@ export default {
     return {
       statusList: [],
       checkBoxLists: [
-        { name: "全部状态", status: `` },
+        { name: "全部状态", status: -1 },
         { name: "未生效", status: 0 },
         { name: "生效中", status: 1 },
         { name: "已结束", status: 2 },
@@ -50,9 +50,9 @@ export default {
         { name: "已删除", status: 4 }
       ],
       allAreaName: [],
-      inputText: ``,
-      value: "",
-      num:1
+      inputText: ``, //输入框(名称)
+      value: "", //商圈选中的值
+      num: 1 //页码
     };
   },
   methods: {
@@ -69,9 +69,15 @@ export default {
     },
     search() {
       console.log(`搜索`);
-      this.statusList = this.statusList.join(",");
-      this.$emit("statusAreaName", this.value, this.statusList, this.inputText,this.num);
-      this.statusList = [];
+      let statusList = null;
+      this.statusList.includes(-1)?statusList="":(statusList=this.statusList.join(","));
+      this.$emit(
+        "statusAreaName",
+        this.value,
+        statusList,
+        this.inputText,
+        this.num
+      );
     },
     add() {
       console.log(this.$route);
@@ -85,7 +91,7 @@ export default {
        *  全部状态不传值
        */
       console.log(`值${index}`);
-      // console.warn(this.statusList);
+      console.warn(this.statusList);
     },
     changeArea() {
       // console.log(this.value);

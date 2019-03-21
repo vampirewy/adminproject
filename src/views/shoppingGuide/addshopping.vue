@@ -62,7 +62,7 @@ export default {
       showResourceFour: false, //模版4
       showResourceFive: false, //模版5
       showResourceSix: false, //模版6
-      areaLists: [],
+      areaNameLists: [],
       ruleForm: {
         resource: "模版1" //默认模版
       },
@@ -87,9 +87,9 @@ export default {
         res => {
           console.log(res.data);
           if (res.data.statusCode === 2000) {
-            this.areaLists = res.data.body;
+            this.areaNameLists = res.data.body;
           }
-          console.log(this.areaLists);
+          console.log(this.areaNameLists);
         },
         error => {
           console.log(error);
@@ -143,21 +143,21 @@ export default {
         this.ruleForm.submitImg = "";
       }
     },
-    modifyAllAreaName() {
-      let params = {
-        guideId: this.guideId
-      };
-      guideDetails(params).then(
-        res => {
-          console.log(res.data);
-          if(res.data.statusCode===2000){
-            this.areaLists=res.data.body.traSelectionList;
-            console.log(this.areaLists);
-          }else{};
-        },
-        error => {}
-      );
-    }
+    // modifyAllAreaName() {
+    //   let params = {
+    //     guideId: this.guideId
+    //   };
+    //   guideDetails(params).then(
+    //     res => {
+    //       console.log(res.data);
+    //       if(res.data.statusCode===2000){
+    //         this.areaLists=res.data.body.traSelectionList;
+    //         console.log(this.areaLists);
+    //       }else{};
+    //     },
+    //     error => {}
+    //   );
+    // }
   },
   created() {
     /**
@@ -216,10 +216,9 @@ export default {
         this.showResourceThree=false;
         this.showResourceFour=false;
       };
+    }else {
+      // this.allAreaName();
     };
-    // else {
-    //   this.allAreaName();
-    // };
   }
 };
 </script>

@@ -494,7 +494,7 @@ import { guideAllArea } from "@/api/headerBar";
 export default {
   name: "demoTwo",
   // props: {
-  //   areaLists: Array
+  //   areaNameLists: Array
   // },
   data() {
     return {
