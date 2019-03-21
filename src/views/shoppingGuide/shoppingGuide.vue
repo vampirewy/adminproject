@@ -39,14 +39,17 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- <PageBar
+    <PageBar
       @pageBar="shoppingGuideRequest"
       :pageNum="pageNum"
       :pageSize="pageSize"
       :totalPage="totalPage"
       :totalCount="totalCount"
-    ></PageBar>-->
-    <div class="pagination">
+      :traId="traId"
+      :statusLists="statusLists"
+      :guideName="guideName"
+    ></PageBar>
+    <!-- <div class="pagination">
       <el-button size="mini" @click.native="firstPage">首页</el-button>
       <el-pagination
         background
@@ -59,7 +62,7 @@
         @current-change="handleCurrentChange"
       ></el-pagination>
       <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
