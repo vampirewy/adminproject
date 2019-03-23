@@ -71,6 +71,37 @@
 </template>
 
 <script>
+const baseLists = [
+  {
+    name: "商品属性",
+    value: "manager",
+    index: "1",
+    sonName: [{ name: "品牌管理", path: "/brandmanage" }]
+  }
+];
+const commentLists = [
+  {
+    name: "导购管理",
+    value: "3310",
+    index: "1",
+    sonName: [
+      {
+        name: "列表",
+        path: "/shoppingGuide"
+      }
+    ]
+  },
+  {
+    name: "专题管理",
+    value: "3310",
+    index: "2",
+    sonName: [
+      { name: "列表", path: "/specialguide" },
+      { name: "信息", path: "/specialinfor" }
+      // { name: "商品", path: "/specialgood" }
+    ]
+  }
+];
 export default {
   name: "layOut",
   data() {
@@ -78,7 +109,7 @@ export default {
       value: localStorage.getItem("cityCode"),
       options: [
         {
-          value: "",
+          value: "manager",
           label: "基础信息"
         },
         {
@@ -95,27 +126,7 @@ export default {
         }
       ],
       defaultActive: "",
-      navLists: [
-        {
-          name: "导购管理",
-          index: "1",
-          sonName: [
-            {
-              name: "列表",
-              path: "/shoppingGuide"
-            }
-          ]
-        },
-        {
-          name: "专题管理",
-          index: "2",
-          sonName: [
-            { name: "列表", path: "/specialguide" },
-            { name: "信息", path: "/specialinfor" },
-            // { name: "商品", path: "/specialgood" }
-          ]
-        }
-      ]
+      navLists: []
     };
   },
   methods: {
@@ -129,12 +140,17 @@ export default {
   },
   created() {
     this.defaultActive = window.location.href.split("/#")[1];
+    console.log(`城市code:${this.value}`);
+    localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists) ;
   },
   // mounted() {
   //   this.defaultActive = window.location.href.split("/#")[1];
+  /**  */
   // },
   updated() {
     this.defaultActive = window.location.href.split("/#")[1];
+    console.log(`城市code:${this.value}`);
+    localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists);
   },
   computed: {},
   watch: {
@@ -144,7 +160,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@background: #545C64;
+@background: #545c64;
 @color: #fff;
 @fontSize: 18px;
 // .lay_out{
