@@ -76,7 +76,7 @@ import { Message } from "element-ui";
 import HeaderBar from "@/components/headerBar.vue";
 import { specialGuide, del, stop, topGun } from "@/api/specialGuide";
 export default {
-  name:"specialguide",
+  name: "specialguide",
   components: {
     HeaderBar
   },
@@ -114,11 +114,12 @@ export default {
      */
     specialGuideRequest(traId, statusLists, topicName, page) {
       (this.traId = traId),
+        (this.pageNum = page),
         (this.statusLists = statusLists),
         (this.topicName = topicName);
       let params = {
         status: statusLists,
-        pageNum: page || this.pageNum,
+        pageNum: this.pageNum,
         pageSize: this.pageSize,
         traId: traId,
         topicName: topicName

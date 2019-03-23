@@ -87,9 +87,10 @@ export default {
       this.traId = traId;
       this.statusLists = statusLists;
       this.guideName = guideName;
+      this.pageNum = page;
       let params = {
         statusArray: statusLists,
-        pageNum: page || this.pageNum,
+        pageNum: this.pageNum,
         pageSize: this.pageSize,
         traId: traId,
         guideName: guideName
