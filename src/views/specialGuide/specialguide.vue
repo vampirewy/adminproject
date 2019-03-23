@@ -114,7 +114,7 @@ export default {
      */
     specialGuideRequest(traId, statusLists, topicName, page) {
       (this.traId = traId),
-        (this.pageNum = page),
+        (this.pageNum = page ? page : this.pageNum),
         (this.statusLists = statusLists),
         (this.topicName = topicName);
       let params = {

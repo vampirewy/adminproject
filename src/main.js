@@ -31,16 +31,3 @@ new Vue({
 router.afterEach(() => {
   window.scrollTo(0, 0);
 });
-let startTime = new Date();
-let arr = [`1`, `2`, `3`, `4`, `5`];
-
-function showspeed() {
-  let filesize = 35.4;
-  let endTime = new Date();
-  let speed = Math.round(filesize * 1000) / (endTime - startTime);
-  let scope = (speed > 0 && speed <= 50) ? 0 : (speed > 50 && speed <= 100) ? 1 : (speed >= 100 && speed < 200) ? 2 : (speed >= 200 && speed < 300) ? 3 : 4;
-  localStorage.setItem(`speed`, arr[scope]);
-};
-window.onload = function () {
-  showspeed();
-}
