@@ -92,6 +92,7 @@
             style="margin-left:10px;"
             @click="toSpecialGuide"
           >创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" @change="authorization" v-model="ruleForm.authorization">H5授权</el-checkbox>
         </div>
       </el-form-item>
       <el-form-item label="是否展示商品" class="show" prop="goods">
@@ -160,6 +161,7 @@ export default {
         fileList: [], //显示在页面上图片
         submitImg: "", //初阶上转的图片
         path: "", //页面路径
+        authorization: "", //H5授权
         pathValue: "",
         goods: "" //是否展示商品
       },
@@ -280,9 +282,9 @@ export default {
                 value: res.data.body.actionList[0].picUrl
               });
               this.ruleForm.submitImg = res.data.body.actionList[0].picUrl;
-              this.ruleForm.pathValue =
-                res.data.body.actionList[0].actionParamName;
+              this.ruleForm.pathValue =res.data.body.actionList[0].actionParamName;
               this.ruleForm.path = res.data.body.actionList[0].actionParam;
+              this.ruleForm.authorization = res.data.body.actionList[0].authorized;
             }
           } else {
           }
@@ -353,6 +355,9 @@ export default {
           type: `error`
         });
       }
+    },
+    authorization(){
+      console.log(`是否授权H5${this.ruleForm.authorization}`);
     },
     toSpecialGuide() {
       // this.$router.push("/specialguide");
@@ -524,6 +529,7 @@ export default {
             actionType: `app`,
             actionContent: `16`,
             picUrl: this.ruleForm.submitImg,
+            authorized: this.ruleForm.authorization,
             actionParam: this.ruleForm.path //跳转页面
           }
         ],
@@ -585,7 +591,7 @@ export default {
 .text_align {
   text-align: left;
 }
-.m_l_10{
-  margin-left:10px;
+.m_l_10 {
+  margin-left: 10px;
 }
 </style>
