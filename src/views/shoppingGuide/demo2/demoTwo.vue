@@ -109,6 +109,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="oneChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="oneChoose.param" @change="authorization(1)" v-model="oneChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(1)"
@@ -168,6 +169,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="twoChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="twoChoose.param" @change="authorization(2)" v-model="twoChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(2)"
@@ -227,6 +229,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="threeChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="threeChoose.param" @change="authorization(3)" v-model="threeChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(3)"
@@ -286,6 +289,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="fourChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="fourChoose.param" @change="authorization(4)" v-model="fourChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(4)"
@@ -345,6 +349,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="fiveChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="fiveChoose.param" @change="authorization(5)" v-model="fiveChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(5)"
@@ -404,6 +409,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="sixChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="sixChoose.param" @change="authorization(6)" v-model="sixChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(6)"
@@ -463,6 +469,7 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="sevenChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox style="margin-left:10px;" v-if="sevenChoose.param" @change="authorization(7)" v-model="sevenChoose.authorization">H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(7)"
@@ -575,7 +582,8 @@ export default {
         special: false, //专题搜索框和专题跳转按钮显示
         param: false, //h5输入框显示
         path: "", //h5路径
-        picUrl: ""
+        picUrl: "",
+        authorization:""
       },
       twoChoose: {
         type: "",
@@ -586,7 +594,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+         authorization:""
       },
       threeChoose: {
         type: "",
@@ -597,7 +606,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+         authorization:""
       },
       fourChoose: {
         type: "",
@@ -608,7 +618,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+         authorization:""
       },
       fiveChoose: {
         type: "",
@@ -619,7 +630,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+        authorization:""
       },
       sixChoose: {
         type: "",
@@ -630,7 +642,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+         authorization:""
       },
       sevenChoose: {
         type: "",
@@ -641,7 +654,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+         authorization:""
       },
       headers: { sessionId: localStorage.getItem(`sessionId`) },
       upImgUrl: `${process.env.VUE_APP_BASE_URL}support/uploadPic`,
@@ -756,6 +770,7 @@ export default {
               //为H5时，显示输入路径框
               this.oneChoose.param = true;
               this.oneChoose.path = res.data.body.actionList[0].actionContent;
+              this.oneChoose.authorization = res.data.body.actionList[0].authorized;
             }
             this.oneChoose.picUrl = res.data.body.actionList[0].picUrl;
             this.fileOne.push({
@@ -779,6 +794,7 @@ export default {
             } else {
               this.twoChoose.param = true;
               this.twoChoose.path = res.data.body.actionList[1].actionContent;
+              this.twoChoose.authorization = res.data.body.actionList[1].authorized;
             }
             this.twoChoose.picUrl = res.data.body.actionList[1].picUrl;
             this.fileTwo.push({
@@ -802,6 +818,7 @@ export default {
             } else {
               this.threeChoose.param = true;
               this.threeChoose.path = res.data.body.actionList[2].actionContent;
+              this.threeChoose.authorization = res.data.body.actionList[2].authorized;
             }
             this.threeChoose.picUrl = res.data.body.actionList[2].picUrl;
             this.fileThree.push({
@@ -825,6 +842,7 @@ export default {
             } else {
               this.fourChoose.param = true;
               this.fourChoose.path = res.data.body.actionList[3].actionContent;
+              this.fourChoose.authorization = res.data.body.actionList[3].authorized;
             }
             this.fourChoose.picUrl = res.data.body.actionList[3].picUrl;
             this.fileFour.push({
@@ -848,6 +866,7 @@ export default {
             } else {
               this.fiveChoose.param = true;
               this.fiveChoose.path = res.data.body.actionList[4].actionContent;
+              this.fiveChoose.authorization = res.data.body.actionList[4].authorized;
             }
             this.fiveChoose.picUrl = res.data.body.actionList[4].picUrl;
             this.fileFive.push({
@@ -871,6 +890,7 @@ export default {
             } else {
               this.sixChoose.param = true;
               this.sixChoose.path = res.data.body.actionList[5].actionContent;
+              this.sixChoose.authorization = res.data.body.actionList[5].authorized;
             }
             this.sixChoose.picUrl = res.data.body.actionList[5].picUrl;
             this.fileSix.push({
@@ -894,6 +914,7 @@ export default {
             } else {
               this.sevenChoose.param = true;
               this.sevenChoose.path = res.data.body.actionList[6].actionContent;
+              this.sevenChoose.authorization = res.data.body.actionList[6].authorized;
             }
             this.sevenChoose.picUrl = res.data.body.actionList[6].picUrl;
             this.fileSeven.push({
@@ -944,6 +965,31 @@ export default {
     },
     endTime(date) {
       console.info(`结束时间为${date}`);
+    },
+    authorization(num){
+      switch(num){
+        case 1:
+        console.log(`第一栏H5授权${this.oneChoose.authorization}`);
+        break;
+        case 2:
+        console.log(`第2栏H5授权${this.twoChoose.authorization}`);
+        break;
+        case 3:
+        console.log(`第3栏H5授权${this.threeChoose.authorization}`);
+        break;
+        case 4:
+        console.log(`第4栏H5授权${this.fourChoose.authorization}`);
+        break;
+        case 5:
+        console.log(`第5栏H5授权${this.fiveChoose.authorization}`);
+        break;
+        case 6:
+        console.log(`第6栏H5授权${this.sixChoose.authorization}`);
+        break;
+        case 7:
+        console.log(`第7栏H5授权${this.sevenChoose.authorization}`);
+        break;
+      };
     },
     cancel() {
       this.$router.push("/ShoppingGuide");
@@ -1072,11 +1118,13 @@ export default {
                   actionType: el.type,
                   actionContent: el.type === "APP" ? el.selectText : el.path,
                   picUrl: el.picUrl,
-                  actionParam: el.topicId
+                  actionParam: el.topicId,
+                  authorized:el.authorization
                 });
               });
               console.log(fanllyLists);
               let params = {
+                guideId:this.guideId,
                 templateCode: "T2",
                 guideNameDisplay: this.ruleForm.showName ? 1 : 0, //是否名称展示
                 startTime: this.ruleForm.startTime,
@@ -1188,7 +1236,8 @@ export default {
                 actionType: el.type,
                 actionContent: el.type === "APP" ? el.selectText : el.path,
                 picUrl: el.picUrl,
-                actionParam: el.topicId
+                actionParam: el.topicId,
+                authorized:el.authorization
               });
             });
             console.log(fanllyLists);

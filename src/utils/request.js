@@ -1,10 +1,4 @@
 import axios from "axios";
-import {
-  Loading
-} from "element-ui";
-let loading = null,
-  speed = null,
-  netLevel = 3; //网速等于
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_URL
 });
@@ -22,13 +16,11 @@ service.interceptors.request.use(
     return config;
   },
   error => {
-    speed < netLevel && loading.close();
     return error;
   }
 );
 service.interceptors.response.use(
   response => {
-    speed < netLevel && loading.close();
     return response;
   },
   error => {

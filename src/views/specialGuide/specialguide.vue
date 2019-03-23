@@ -114,12 +114,13 @@ export default {
      */
     specialGuideRequest(traId, statusLists, topicName, page) {
       (this.traId = traId),
+        (this.pageNum = page ? page : this.pageNum),
         (this.statusLists = statusLists),
         (this.topicName = topicName);
       this.pageNum = page ? page : this.pageNum;
       let params = {
         status: statusLists,
-        pageNum: page || this.pageNum,
+        pageNum: this.pageNum,
         pageSize: this.pageSize,
         traId: traId,
         topicName: topicName

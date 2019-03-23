@@ -114,6 +114,12 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="oneChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox
+            style="margin-left:10px;"
+            v-if="oneChoose.param"
+            @change="authorization(1)"
+            v-model="oneChoose.authorization"
+          >H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(1)"
@@ -178,6 +184,12 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="twoChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox
+            style="margin-left:10px;"
+            v-if="twoChoose.param"
+            @change="authorization(2)"
+            v-model="twoChoose.authorization"
+          >H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(2)"
@@ -238,6 +250,12 @@
             :disabled="allDisabled"
           ></el-autocomplete>
           <el-button type="primary" v-if="threeChoose.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox
+            style="margin-left:10px;"
+            v-if="threeChoose.param"
+            @change="authorization(3)"
+            v-model="threeChoose.authorization"
+          >H5授权</el-checkbox>
           <el-input
             placeholder="页面可根据数据变化动态显示"
             @blur="h5Path(3)"
@@ -350,7 +368,8 @@ export default {
         special: false, //专题搜索框和专题跳转按钮显示
         param: false, //h5输入框显示
         path: "", //h5路径
-        picUrl: ""
+        picUrl: "",
+        authorization:""
       },
       twoChoose: {
         type: "",
@@ -361,7 +380,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+        authorization:""
       },
       threeChoose: {
         type: "",
@@ -372,7 +392,8 @@ export default {
         special: false,
         param: false,
         path: "",
-        picUrl: ""
+        picUrl: "",
+        authorization:""
       },
       headers: { sessionId: localStorage.getItem(`sessionId`) },
       upImgUrl: `${process.env.VUE_APP_BASE_URL}support/uploadPic`,
@@ -472,6 +493,7 @@ export default {
               //为H5时，显示输入路径框
               this.oneChoose.param = true;
               this.oneChoose.path = res.data.body.actionList[0].actionContent;
+              this.oneChoose.authorization = res.data.body.actionList[0].authorized;
             }
             this.oneChoose.picUrl = res.data.body.actionList[0].picUrl;
             this.fileOne.push({
@@ -495,6 +517,7 @@ export default {
             } else {
               this.twoChoose.param = true;
               this.twoChoose.path = res.data.body.actionList[1].actionContent;
+              this.twoChoose.authorization = res.data.body.actionList[1].authorized;
             }
             this.twoChoose.picUrl = res.data.body.actionList[1].picUrl;
             this.fileTwo.push({
@@ -518,6 +541,7 @@ export default {
             } else {
               this.threeChoose.param = true;
               this.threeChoose.path = res.data.body.actionList[2].actionContent;
+              this.threeChoose.authorization = res.data.body.actionList[2].authorized;
             }
             this.threeChoose.picUrl = res.data.body.actionList[2].picUrl;
             this.fileThree.push({
@@ -568,6 +592,19 @@ export default {
     },
     endTime(date) {
       console.info(`结束时间为${date}`);
+    },
+    authorization(num){
+      switch(num){
+        case 1:
+        console.log(`第栏H5授权${this.oneChoose.authorization}`);
+        break;
+        case 2:
+        console.log(`第栏H5授权${this.twoChoose.authorization}`);
+        break;
+        case 3:
+        console.log(`第栏H5授权${this.threeChoose.authorization}`);
+        break;
+      };
     },
     cancel() {
       this.$router.push("/ShoppingGuide");
@@ -648,7 +685,8 @@ export default {
                   actionType: el.type,
                   actionContent: el.type === "APP" ? el.selectText : el.path,
                   picUrl: el.picUrl,
-                  actionParam: el.topicId
+                  actionParam: el.topicId,
+                  authorized:el.authorization
                 });
               });
               console.log(fanllyLists);
@@ -730,7 +768,8 @@ export default {
                 actionType: el.type,
                 actionContent: el.type === "APP" ? el.selectText : el.path,
                 picUrl: el.picUrl,
-                actionParam: el.topicId
+                actionParam: el.topicId,
+                authorized:el.authorization
               });
             });
             console.log(fanllyLists);
