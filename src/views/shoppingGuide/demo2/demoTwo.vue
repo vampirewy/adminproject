@@ -658,7 +658,7 @@ export default {
          authorization:""
       },
       headers: { sessionId: localStorage.getItem(`sessionId`) },
-      upImgUrl: `${process.env.VUE_APP_BASE_URL}mall/support/uploadPic`,
+      upImgUrl: `${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       fileOne: [], //装图片
       fileTwo: [],
       fileThree: [],

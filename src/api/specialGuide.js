@@ -3,7 +3,7 @@ import service from "../utils/request";
 //列表信息
 export function specialGuide(params) {
   return service({
-    url: `mall/shopping/topics`,
+    url: `/mall/shopping/topics`,
     method: `get`,
     params
   });
@@ -11,21 +11,21 @@ export function specialGuide(params) {
 //删除
 export function del(params) {
   return service({
-    url: `mall/shopping/topics/${params}/drop`,
+    url: `/mall/shopping/topics/${params}/drop`,
     method: `post`
   });
 }
 //停用
 export function stop(params) {
   return service({
-    url: `mall/shopping/topics/${params}/stop`,
+    url: `/mall/shopping/topics/${params}/stop`,
     method: `post`
   });
 }
 //置顶
 export function topGun(params) {
   return service({
-    url: `mall/shopping/topics/${params.topicId}/recommend`,
+    url: `/mall/shopping/topics/${params.topicId}/recommend`,
     method: `post`,
     data: params
   });
@@ -41,7 +41,7 @@ export function createNoActivity(params) {
 //创建有活动类型
 export function createActivity(params) {
   return service({
-    url: `mall/shopping/topics/moneyOff`,
+    url: `/mall/shopping/topics/moneyOff`,
     method: `post`,
     data: params
   });
@@ -49,7 +49,7 @@ export function createActivity(params) {
 //专题商品一级分类
 export function firstSorts() {
   return service({
-    url: `mall/sell/firstSorts`,
+    url: `/mall/sell/firstSorts`,
     method: `post`
   });
 }

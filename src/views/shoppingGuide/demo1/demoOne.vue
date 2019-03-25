@@ -147,7 +147,7 @@ export default {
       reg: /^[+]?\d*$/,
       timer: null,
       headers: { sessionId: localStorage.getItem(`sessionId`) }, //图片上传的参数
-      upImgUrl: `${process.env.VUE_APP_BASE_URL}mall/support/uploadPic`,
+      upImgUrl: `${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       chooseGoods: false, //是否展示商品是选择自定义时，显示input框
       inputGoodsNum: null, //input框输入的数字
       searchLists: [], //模糊搜索的专题数据
