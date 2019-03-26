@@ -54,7 +54,13 @@
     <el-dialog title="添加品牌名称" :visible.sync="dialogFormVisible">
       <el-form>
         <!-- <el-form-item label="请输入品牌名称"> -->
-        <el-input placeholder="请输入品牌名称" autocomplete="off" v-model="addBrandName" @blur="add()"></el-input>
+        <el-input
+          maxlength="10"
+          placeholder="请输入品牌名称"
+          autocomplete="off"
+          v-model="addBrandName"
+          @blur="add()"
+        ></el-input>
         <!-- </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -77,10 +83,11 @@ export default {
   name: "brandmanage",
   data() {
     return {
+      reg: /^[\u4E00-\u9FA5A-Za-z]+$/, //中英文
       brandName: "", //输入品牌名称
       addBrandName: "", //添加输入名称
       dialogFormVisible: false, //弹窗
-      editShow: false,  //编辑时，品牌名称改成输入框
+      editShow: false, //编辑时，品牌名称改成输入框
       brandLists: [],
       searchLists: [],
       totalCount: null,
@@ -120,23 +127,28 @@ export default {
     },
     //保存
     save() {
-      let params = {
-        brandName: this.addBrandName
+      if (!this.reg.test(this.addBrandName)) {
+        this.$message({ message: `只可输入汉字英文字`,type:`error` });
+        this.addBrandName = "";
+      }else{
+        let params = {
+          brandName: this.addBrandName
+        };
+        addBrand(params).then(
+          res => {
+            if (res.data.statusCode === 2000) {
+              this.$message({ message: `添加成功`, type: `success` });
+              this.dialogFormVisible = false;
+              this.pageNum = 1;
+              this.brandRequest(this.pageNum, this.pageSize);
+            } else {
+              this.$message({ message: res.data.msg, type: `error` });
+            }
+            this.addBrandName = "";
+          },
+          error => {}
+        );
       };
-      addBrand(params).then(
-        res => {
-          if (res.data.statusCode === 2000) {
-            this.$message({ message: `添加成功`, type: `success` });
-            this.dialogFormVisible = false;
-            this.pageNum = 1;
-            this.brandRequest(this.pageNum, this.pageSize);
-          } else {
-            this.$message({ message: res.data.msg, type: `error` });
-          }
-          this.addBrandName = "";
-        },
-        error => {}
-      );
     },
     searchBrand(brandName, fn) {
       let params = {
@@ -228,6 +240,9 @@ export default {
   },
   created() {
     this.brandRequest(this.pageNum, this.pageSize);
+  },
+  updated() {
+    window.scrollTo(0, 0);
   }
 };
 </script>
