@@ -96,6 +96,7 @@ export default {
       console.log(`==============================`);
       console.log(page, traId, statusLists, guideName);
       console.log(`==============================`);
+      console.log(`来没来`);
       this.traId = traId;
       this.statusLists = statusLists;
       this.guideName = guideName;
