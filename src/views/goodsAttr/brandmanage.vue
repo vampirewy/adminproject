@@ -240,6 +240,9 @@ export default {
   },
   created() {
     this.brandRequest(this.pageNum, this.pageSize);
+  },
+  updated() {
+    window.scrollTo(0, 0);
   }
 };
 </script>
