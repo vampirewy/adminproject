@@ -23,31 +23,27 @@ export default {
     pageNum: Number,
     totalPage: Number,
     totalCount: Number,
-    traId:String,
-    statusLists:String
+    traId: Number,
+    statusLists: String,
+    name:String //导购名称或专题名称
   },
   data() {
     return {
-      currentNum: 1
+      // currentNum: 1
     };
   },
   methods: {
     handleCurrentChange(page) {
       console.log(`第${page}页`);
-      this.$emit("pageBar","","","", page);
-      // this.currentNum = page;
-
-    },
-    sizeChange(page){
-      console.log(`啦啦${page}页`);
+      this.$emit("pageBar", this.traId, this.statusLists, this.name, page);
     },
     firstPage() {
       console.log(this.pageNum);
       let pageNum = 1;
-      this.$emit("pageBar", "","","",pageNum);
+      this.$emit("pageBar", this.traId, this.statusLists, this.name, pageNum);
     },
     lastPage() {
-      this.$emit("pageBar", "","","",this.totalPage);
+      this.$emit("pageBar", this.traId, this.statusLists, this.name, this.totalPage);
     }
   }
 };

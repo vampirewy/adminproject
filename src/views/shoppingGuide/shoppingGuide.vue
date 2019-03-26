@@ -47,7 +47,7 @@
       :totalCount="totalCount"
       :traId="traId"
       :statusLists="statusLists"
-      :guideName="guideName"
+      :name="guideName"
     ></PageBar>
     <!-- <div class="pagination">
       <el-button size="mini" @click.native="firstPage">首页</el-button>
@@ -125,7 +125,6 @@ export default {
        */
       shoppingGuide(params).then(
         res => {
-          console.log(`来没来`);
           console.log(res);
           if (res.data.statusCode === 2000) {
             console.info(res.data.body);
@@ -319,22 +318,22 @@ export default {
           console.log(`取消`);
         }
       );
-    },
-    handleCurrentChange(page) {
-      console.log(`当前第${page}页`);
-      this.pageNum = page;
-      this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
-    },
-    firstPage() {
-      console.log(`第${this.pageNum}页`);
-      this.pageNum = 1;
-      this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
-    },
-    lastPage() {
-      console.log(`最后第${this.pageNum}页`);
-      this.pageNum = this.totalPage;
-      this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
     }
+    // handleCurrentChange(page) {
+    //   console.log(`当前第${page}页`);
+    //   this.pageNum = page;
+    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
+    // },
+    // firstPage() {
+    //   console.log(`第${this.pageNum}页`);
+    //   this.pageNum = 1;
+    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
+    // },
+    // lastPage() {
+    //   console.log(`最后第${this.pageNum}页`);
+    //   this.pageNum = this.totalPage;
+    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
+    // }
   },
   created() {
     console.log(`请求呢`);

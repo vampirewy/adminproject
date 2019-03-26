@@ -12,8 +12,8 @@ service.interceptors.request.use(
     };
     speed = localStorage.getItem(`speed`);
     speed < netLevel && (loading = Loading.service(options));
-    // config.headers.sessionId = localStorage.getItem(`sessionId`);
-    config.headers.sessionId = `f2e4902907574d568c9a91464ab24196`;
+    config.headers.sessionId = localStorage.getItem(`sessionId`);
+    // config.headers.sessionId = `f2e4902907574d568c9a91464ab24196`;
     return config;
   },
   error => {

@@ -54,7 +54,15 @@
         </el-table>
       </el-col>
     </el-row>
-    <div class="pagination">
+    <PageBar @pageBar="specialGuideRequest"
+      :pageNum="pageNum"
+      :pageSize="pageSize"
+      :totalPage="totalPage"
+      :totalCount="totalCount"
+      :traId="traId"
+      :statusLists="statusLists"
+      :name="topicName"></PageBar>
+    <!-- <div class="pagination">
       <el-button size="mini" @click.native="firstPage">首页</el-button>
       <el-pagination
         background
@@ -67,18 +75,20 @@
         @current-change="handleCurrentChange"
       ></el-pagination>
       <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { Message } from "element-ui";
 import HeaderBar from "@/components/headerBar.vue";
+import PageBar from "@/components/pageBar.vue";
 import { specialGuide, del, stop, topGun } from "@/api/specialGuide";
 export default {
   name: "specialguide",
   components: {
-    HeaderBar
+    HeaderBar,
+    PageBar
   },
   data() {
     return {
@@ -322,22 +332,22 @@ export default {
         name: "goods",
         params: { topicId: currentRow.topicId }
       });
-    },
-    handleCurrentChange(page) {
-      console.log(`第${page}页`);
-      this.pageNum = page;
-      this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
-    },
-    firstPage() {
-      console.log(`第1页`);
-      this.pageNum = 1;
-      this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
-    },
-    lastPage() {
-      this.pageNum = this.totalPage;
-      console.log(`最后${this.pageNum}页`);
-      this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
     }
+    // handleCurrentChange(page) {
+    //   console.log(`第${page}页`);
+    //   this.pageNum = page;
+    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
+    // },
+    // firstPage() {
+    //   console.log(`第1页`);
+    //   this.pageNum = 1;
+    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
+    // },
+    // lastPage() {
+    //   this.pageNum = this.totalPage;
+    //   console.log(`最后${this.pageNum}页`);
+    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
+    // }
   },
   created() {
     this.specialGuideRequest();
