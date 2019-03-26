@@ -96,7 +96,6 @@ export default {
       console.log(`==============================`);
       console.log(page, traId, statusLists, guideName);
       console.log(`==============================`);
-      console.log(`来没来`);
       this.traId = traId;
       this.statusLists = statusLists;
       this.guideName = guideName;
@@ -126,6 +125,8 @@ export default {
        */
       shoppingGuide(params).then(
         res => {
+          console.log(`来没来`);
+          console.log(res);
           if (res.data.statusCode === 2000) {
             console.info(res.data.body);
             this.totalCount = res.data.body.totalSize;
@@ -336,6 +337,7 @@ export default {
     }
   },
   created() {
+    console.log(`请求呢`);
     this.shoppingGuideRequest();
   },
   updated() {
