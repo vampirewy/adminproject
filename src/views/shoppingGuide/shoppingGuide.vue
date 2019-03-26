@@ -62,7 +62,7 @@
         @current-change="handleCurrentChange"
       ></el-pagination>
       <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div> -->
+    </div>-->
   </div>
 </template>
 
@@ -70,6 +70,8 @@
 import HeaderBar from "@/components/headerBar.vue";
 import PageBar from "@/components/pageBar.vue";
 import { shoppingGuide, del, stop, sort } from "@/api/shoppingGuide";
+import { getRequest } from "@/utils/ajax";
+import { MessageBounced } from "@/utils/message";
 import { allArea } from "@/api/headerBar";
 export default {
   name: "shoopingGuide",
@@ -123,32 +125,25 @@ export default {
        * 9. status 状态 0未生效 1生效中 2已结束 3已停用 4已删除
        *
        */
-      shoppingGuide(params).then(
+      getRequest("/mall/shopping/guides", params).then(
         res => {
-          console.log(res);
-          if (res.data.statusCode === 2000) {
-            console.info(res.data.body);
-            this.totalCount = res.data.body.totalSize;
-            this.totalPage = res.data.body.pageCount;
-            // this.totalCount=res.data.body.pageCount;
-            // this.totalPage = Math.ceil(res.data.body.totalSize / this.pageSize);
-            res.data.body.pageData &&
-              res.data.body.pageData.length &&
-              res.data.body.pageData.forEach(el => {
-                el.guideNameDisplay = el.guideNameDisplay ? "是" : "否";
-                el.status =
-                  el.status === 1
-                    ? "生效中"
-                    : el.status === 2
-                    ? "已结束"
-                    : el.status === 3
-                    ? "已停用"
-                    : el.status === 4
-                    ? "已删除"
-                    : "未生效";
-              });
-            this.shoppingGuideLists = res.data.body.pageData;
-          }
+          this.totalCount = res.body.totalSize;
+          this.totalPage = res.body.pageCount;
+          res.body.pageData.length &&
+            res.body.pageData.forEach(el => {
+              el.guideNameDisplay = el.guideNameDisplay ? "是" : "否";
+              el.status =
+                el.status === 1
+                  ? "生效中"
+                  : el.status === 2
+                  ? "已结束"
+                  : el.status === 3
+                  ? "已停用"
+                  : el.status === 4
+                  ? "已删除"
+                  : "未生效";
+            });
+          this.shoppingGuideLists = res.body.pageData;
         },
         error => {
           console.log(error);
@@ -282,57 +277,47 @@ export default {
         }
       );
     },
-    del(row) {
-      this.$confirm(
-        "如果操作删除,投放该导购的商圈,导购将不再生效!",
-        "您确认删除？",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      ).then(
-        () => {
-          console.log(`确定`);
-          del(row.guideId).then(
-            res => {
-              console.log(res);
-              if (res.data.statusCode === 2000 && res.data.body) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功!"
-                });
-              }
-              this.shoppingGuideRequest(
-                this.traId,
-                this.statusLists,
-                this.guideName
-              );
-            },
-            error => {
-              console.log(error);
-            }
-          );
-        },
-        () => {
-          console.log(`取消`);
-        }
-      );
-    }
-    // handleCurrentChange(page) {
-    //   console.log(`当前第${page}页`);
-    //   this.pageNum = page;
-    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
-    // },
-    // firstPage() {
-    //   console.log(`第${this.pageNum}页`);
-    //   this.pageNum = 1;
-    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
-    // },
-    // lastPage() {
-    //   console.log(`最后第${this.pageNum}页`);
-    //   this.pageNum = this.totalPage;
-    //   this.shoppingGuideRequest(this.traId, this.statusLists, this.guideName);
+    del(currentRow){
+      new MessageBounced(`您确认删除?`,``,`如果操作删除,投放该导购的商圈,导购将不再生效!`,(action)=>{
+        console.log(action);
+      }).confirmWindow();
+    },
+    // del(row) {
+    //   this.$confirm(
+    //     "如果操作删除,投放该导购的商圈,导购将不再生效!",
+    //     "您确认删除？",
+    //     {
+    //       confirmButtonText: "确定",
+    //       cancelButtonText: "取消",
+    //       type: "warning"
+    //     }
+    //   ).then(
+    //     () => {
+    //       console.log(`确定`);
+    //       del(row.guideId).then(
+    //         res => {
+    //           console.log(res);
+    //           if (res.data.statusCode === 2000 && res.data.body) {
+    //             this.$message({
+    //               type: "success",
+    //               message: "删除成功!"
+    //             });
+    //           }
+    //           this.shoppingGuideRequest(
+    //             this.traId,
+    //             this.statusLists,
+    //             this.guideName
+    //           );
+    //         },
+    //         error => {
+    //           console.log(error);
+    //         }
+    //       );
+    //     },
+    //     () => {
+    //       console.log(`取消`);
+    //     }
+    //   );
     // }
   },
   created() {

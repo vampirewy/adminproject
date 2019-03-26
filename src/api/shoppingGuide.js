@@ -1,13 +1,13 @@
 import service from "../utils/request";
 //===================================导购模块================================//
 //导购列表
-export function shoppingGuide(params) {
-  return service({
-    url: `/mall/shopping/guides`,
-    method: `get`,
-    params
-  });
-}
+// export function shoppingGuide(params) {
+//   return service({
+//     url: `/mall/shopping/guides`,
+//     method: `get`,
+//     params
+//   });
+// }
 //删除
 export function del(params) {
   return service({
