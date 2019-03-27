@@ -16,12 +16,12 @@ export function del(params) {
   });
 }
 //停用
-export function stop(params) {
-  return service({
-    url: `/mall/shopping/guides/${params}/stop`,
-    method: `post`
-  });
-}
+// export function stop(params) {
+//   return service({
+//     url: `/mall/shopping/guides/${params}/stop`,
+//     method: `post`
+//   });
+// }
 //排序
 export function sort(params) {
   return service({

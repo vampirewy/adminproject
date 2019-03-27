@@ -70,7 +70,7 @@
 import HeaderBar from "@/components/headerBar.vue";
 import PageBar from "@/components/pageBar.vue";
 import { shoppingGuide, del, stop, sort } from "@/api/shoppingGuide";
-import { getRequest } from "@/utils/ajax";
+import { getRequest, postRequest } from "@/utils/ajax";
 import { MessageBounced } from "@/utils/message";
 import { allArea } from "@/api/headerBar";
 export default {
@@ -252,15 +252,15 @@ export default {
         }
       ).then(
         () => {
-          stop(row.guideId).then(
+          postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(
             res => {
               console.log(res);
-              if (res.data.statusCode === 2000 && res.data.body) {
+              if (res.body) {
                 this.$message({
                   type: "success",
                   message: "停用成功!"
                 });
-              }
+              };
               this.shoppingGuideRequest(
                 this.traId,
                 this.statusLists,
@@ -277,11 +277,16 @@ export default {
         }
       );
     },
-    del(currentRow){
-      new MessageBounced(`您确认删除?`,``,`如果操作删除,投放该导购的商圈,导购将不再生效!`,(action)=>{
-        console.log(action);
-      }).confirmWindow();
-    },
+    del(currentRow) {
+      new MessageBounced(
+        `您确认删除?`,
+        ``,
+        `如果操作删除,投放该导购的商圈,导购将不再生效!`,
+        action => {
+          console.log(action);
+        }
+      ).confirmWindow();
+    }
     // del(row) {
     //   this.$confirm(
     //     "如果操作删除,投放该导购的商圈,导购将不再生效!",
