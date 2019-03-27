@@ -16,12 +16,12 @@
         <el-table-column align="center" prop="brandId" label="ID" width="75"></el-table-column>
         <el-table-column align="center" prop="brandName" label="品牌名称" width="100">
           <template slot-scope="scope">
-            <span v-if="!editShow">{{scope.row.brandName}}</span>
+            <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
             <el-input
               size="mini"
               v-model="scope.row.brandName"
               @blur="editRow(scope.row)"
-              v-if="editShow"
+              v-if="scope.$index===editIndex&&editShow"
             ></el-input>
           </template>
         </el-table-column>
@@ -29,7 +29,7 @@
         <el-table-column align="center" prop="recoverCount" label="回收数量"></el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="edit(scope.row)">编辑</el-button>
+            <el-button type="text" @click="edit(scope.row,scope.$index)">编辑</el-button>
             <el-button type="text" @click="del(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -93,7 +93,8 @@ export default {
       totalCount: null,
       totalPage: null,
       pageSize: 30,
-      pageNum: 1
+      pageNum: 1,
+      editIndex: null //切换是展示或编辑的input框
     };
   },
   methods: {
@@ -128,9 +129,9 @@ export default {
     //保存
     save() {
       if (!this.reg.test(this.addBrandName)) {
-        this.$message({ message: `只可输入汉字英文字`,type:`error` });
+        this.$message({ message: `只可输入汉字英文字`, type: `error` });
         this.addBrandName = "";
-      }else{
+      } else {
         let params = {
           brandName: this.addBrandName
         };
@@ -148,7 +149,7 @@ export default {
           },
           error => {}
         );
-      };
+      }
     },
     searchBrand(brandName, fn) {
       let params = {
@@ -189,17 +190,20 @@ export default {
             this.$message({ message: `修改成功`, type: `success` });
             this.pageNum = 1;
             this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-            this.editShow = false;
           } else {
             this.$message({ message: res.data.msg, type: `error` });
           }
+          this.editShow = false;
+          this.editIndex = null;
         },
         error => {}
       );
     },
-    edit(currentRow) {
+    edit(currentRow, currentIndex) {
       console.log(`编辑当前行为：`);
       console.log(currentRow);
+      console.log(currentIndex);
+      this.editIndex = currentIndex;
       this.editShow = true;
     },
     del(currentRow) {
