@@ -207,6 +207,7 @@ export default {
       // this.editShow = true;
     },
     del(currentRow) {
+      this.editIndex = null;
       console.log(`删除当前行为:`);
       console.log(currentRow);
       let [brandId] = [currentRow.brandId];
