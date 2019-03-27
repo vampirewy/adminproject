@@ -1,5 +1,6 @@
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
+console.log(`当前环境` + process.env.NODE_ENV);
 module.exports = {
   publicPath: './',
   devServer: {
