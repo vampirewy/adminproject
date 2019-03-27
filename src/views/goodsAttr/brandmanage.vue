@@ -79,6 +79,7 @@ import {
   modifyBrand
 } from "@/api/brandManager";
 import { Message } from "element-ui";
+import { clearInterval, clearTimeout, setTimeout } from 'timers';
 export default {
   name: "brandmanage",
   data() {
@@ -92,6 +93,7 @@ export default {
       searchLists: [],
       totalCount: null,
       totalPage: null,
+      timer:null,
       pageSize: 30,
       pageNum: 1,
       editIndex: null //切换是展示或编辑的input框
@@ -135,20 +137,23 @@ export default {
         let params = {
           brandName: this.addBrandName
         };
-        addBrand(params).then(
-          res => {
-            if (res.data.statusCode === 2000) {
-              this.$message({ message: `添加成功`, type: `success` });
-              this.dialogFormVisible = false;
-              this.pageNum = 1;
-              this.brandRequest(this.pageNum, this.pageSize);
-            } else {
-              this.$message({ message: res.data.msg, type: `error` });
-            }
-            this.addBrandName = "";
-          },
-          error => {}
-        );
+        clearTimeout(this.timer);
+        this.timer = setTimeout(()=>{
+          addBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `添加成功`, type: `success` });
+                this.dialogFormVisible = false;
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize);
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              }
+              this.addBrandName = "";
+            },
+            error => {}
+          );
+        },500);
       }
     },
     searchBrand(brandName, fn) {
