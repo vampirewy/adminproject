@@ -21,7 +21,7 @@
               size="mini"
               v-model="scope.row.brandName"
               @blur="editRow(scope.row)"
-              v-if="scope.$index===editIndex&&editShow"
+              v-if="scope.$index===editIndex"
             ></el-input>
           </template>
         </el-table-column>
@@ -87,7 +87,7 @@ export default {
       brandName: "", //输入品牌名称
       addBrandName: "", //添加输入名称
       dialogFormVisible: false, //弹窗
-      editShow: false, //编辑时，品牌名称改成输入框
+      // editShow: false, //编辑时，品牌名称改成输入框
       brandLists: [],
       searchLists: [],
       totalCount: null,
@@ -193,7 +193,7 @@ export default {
           } else {
             this.$message({ message: res.data.msg, type: `error` });
           }
-          this.editShow = false;
+          // this.editShow = false;
           this.editIndex = null;
         },
         error => {}
@@ -204,7 +204,7 @@ export default {
       console.log(currentRow);
       console.log(currentIndex);
       this.editIndex = currentIndex;
-      this.editShow = true;
+      // this.editShow = true;
     },
     del(currentRow) {
       console.log(`删除当前行为:`);
@@ -226,19 +226,22 @@ export default {
     handleCurrentChange(page) {
       console.log(`当前第${page}页`);
       this.pageNum = page;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     },
     firstPage() {
       console.log(`第${this.pageNum}页`);
       this.pageNum = 1;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     },
     lastPage() {
       console.log(`最后第${this.pageNum}页`);
       this.pageNum = this.totalPage;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     }
   },
