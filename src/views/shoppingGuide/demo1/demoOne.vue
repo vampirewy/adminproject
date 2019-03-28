@@ -26,7 +26,7 @@
           ></el-checkbox>
         </el-checkbox-group>
       </el-form-item>-->
-      <el-form-item label="开始时间" required>
+      <!-- <el-form-item label="开始时间" required>
         <el-col :span="11">
           <el-form-item prop="startTime">
             <el-date-picker
@@ -57,8 +57,8 @@
             ></el-date-picker>
           </el-form-item>
         </el-col>
-      </el-form-item>
-      <el-form-item label="活动图片"  class="show" required>
+      </el-form-item>-->
+      <el-form-item label="活动图片" class="show" required>
         <el-upload
           class="upload-demo"
           :action="upImgUrl"
@@ -92,11 +92,11 @@
             style="margin-left:10px;"
             @click="toSpecialGuide"
           >创建新专题</el-button>
-          <el-checkbox
+          <!-- <el-checkbox
             style="margin-left:10px;"
             @change="authorization"
             v-model="ruleForm.authorization"
-          >H5授权</el-checkbox>
+          >H5授权</el-checkbox> -->
         </div>
       </el-form-item>
       <el-form-item label="是否展示商品" class="show" prop="goods">
@@ -128,6 +128,8 @@
 <script>
 import { Message } from "element-ui";
 import { guideAllArea } from "@/api/headerBar";
+import { getRequest, postRequest } from "@/utils/ajax";
+import { MessageBounced } from "@/utils/message";
 // import publicPart from "../component/publicPartTemplate.vue";
 import {
   create,
@@ -136,22 +138,24 @@ import {
   onlyDelayTime,
   checkSpecial
 } from "@/api/shoppingGuide";
-import { setTimeout } from "timers";
 export default {
   name: "demoOne",
-  components: {
-    // publicPart
+  components: {},
+  props: {
+    publicPart:Array
+    // showName:Boolean,
+    // guideName:String,
+    // selectedArea:Array,
+    // startTime:String,
+    // endTime:String,
   },
-  // props: {
-  //   areaNameLists: Array
-  // },
   data() {
     return {
       newCreate: true, //新建保存
       modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
-      areaLists: [], //商圈
+      // areaLists: [], //商圈
       reg: /^[+]?\d*$/,
       timer: null,
       headers: { sessionId: localStorage.getItem(`sessionId`) }, //图片上传的参数
@@ -160,26 +164,26 @@ export default {
       inputGoodsNum: null, //input框输入的数字
       searchLists: [], //模糊搜索的专题数据
       ruleForm: {
-        showName: false, //是否名称展示
-        name: "", //导购名称
-        startTime: "", //开始时间
-        endTime: "", //结束时间
-        type: [], //选择商圈
+        // showName: false, //是否名称展示
+        // name: "", //导购名称
+        // startTime: "", //开始时间
+        // endTime: "", //结束时间
+        // type: [], //选择商圈
         // resource: "模版1", //默认模版
         fileList: [], //显示在页面上图片
         submitImg: "", //初阶上转的图片
         path: "", //页面路径
-        authorization: "", //H5授权
+        // authorization: "", //H5授权
         pathValue: "",
         goods: "" //是否展示商品
       },
-      resourceLists: [
-        { name: "模版1" },
-        { name: "模版2" },
-        { name: "模版3" },
-        { name: "模版4" },
-        { name: "模版5" }
-      ],
+      // resourceLists: [
+      //   { name: "模版1" },
+      //   { name: "模版2" },
+      //   { name: "模版3" },
+      //   { name: "模版4" },
+      //   { name: "模版5" }
+      // ],
       showLists: [
         { name: "不展示" },
         { name: "前3个" },
@@ -188,42 +192,42 @@ export default {
         { name: "自定义" }
       ],
       rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { max: 10, message: "最多10个字", trigger: "blur" }
-        ],
-        startTime: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择开始日期",
-            trigger: "change"
-          }
-        ],
-        endTime: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择结束时间",
-            trigger: "change"
-          }
-        ],
-        type: [
-          {
-            type: "array",
-            required: true,
-            message: "请至少选择一个投放商圈",
-            trigger: "change"
-          }
-        ],
-        showName: [
-          {
-            type: "boolean",
-            required: true,
-            message: "请选择是否展示名称",
-            trigger: "change"
-          }
-        ],
+        // name: [
+        //   { required: true, message: "请输入活动名称", trigger: "blur" },
+        //   { max: 10, message: "最多10个字", trigger: "blur" }
+        // ],
+        // startTime: [
+        //   {
+        //     type: "string",
+        //     required: true,
+        //     message: "请选择开始日期",
+        //     trigger: "change"
+        //   }
+        // ],
+        // endTime: [
+        //   {
+        //     type: "string",
+        //     required: true,
+        //     message: "请选择结束时间",
+        //     trigger: "change"
+        //   }
+        // ],
+        // type: [
+        //   {
+        //     type: "array",
+        //     required: true,
+        //     message: "请至少选择一个投放商圈",
+        //     trigger: "change"
+        //   }
+        // ],
+        // showName: [
+        //   {
+        //     type: "boolean",
+        //     required: true,
+        //     message: "请选择是否展示名称",
+        //     trigger: "change"
+        //   }
+        // ],
         // resource: [
         //   { required: true, message: "请选择使用模版", trigger: "change" }
         // ],
@@ -293,8 +297,7 @@ export default {
               this.ruleForm.pathValue =
                 res.data.body.actionList[0].actionParamName;
               this.ruleForm.path = res.data.body.actionList[0].actionParam;
-              this.ruleForm.authorization =
-                res.data.body.actionList[0].authorized;
+              // this.ruleForm.authorization = res.data.body.actionList[0].authorized;
             }
           } else {
           }
@@ -313,36 +316,35 @@ export default {
      * 2. areaLists ArrayObj，获取到的所有商圈
      * 3. 在areaLists中加入checked属性，最后提交时进行数组组装
      */
-    chooseArea(areaName) {
-      // console.log(areaName);
-      // areaName.length &&
-      //   areaName.forEach(el => {
-      //     this.areaLists.length &&
-      //       this.areaLists.forEach(el1 => {
-      //         if (el === el1.traName) {
-      //           el1.checked = true;
-      //         }
-      //       });
-      //   });
-      // console.warn(this.areaLists);
-    },
-    chooseArea1(item) {
-      this.areaLists.length &&
-        this.areaLists.forEach(el => {
-          if (el.traName === item.traName) {
-            item.checked = !item.checked;
-          }
-        });
-      console.log(`最新数据`);
-      console.log(this.areaLists);
-    },
-    //开始时间
-    startTime(date) {
-      console.info(`开始时间为${date}`);
-    },
-    endTime(date) {
-      console.info(`结束时间为${date}`);
-    },
+    // chooseArea(areaName) {
+    //   // console.log(areaName);
+    //   // areaName.length &&
+    //   //   areaName.forEach(el => {
+    //   //     this.areaLists.length &&
+    //   //       this.areaLists.forEach(el1 => {
+    //   //         if (el === el1.traName) {
+    //   //           el1.checked = true;
+    //   //         }
+    //   //       });
+    //   //   });
+    //   // console.warn(this.areaLists);
+    // },
+    // chooseArea1(item) {
+    //   this.areaLists.length &&
+    //     this.areaLists.forEach(el => {
+    //       if (el.traName === item.traName) {
+    //         item.checked = !item.checked;
+    //       }
+    //     });
+    //   console.log(`最新数据`);
+    //   console.log(this.areaLists);
+    // },
+    // startTime(date) {
+    //   console.info(`开始时间为${date}`);
+    // },
+    // endTime(date) {
+    //   console.info(`结束时间为${date}`);
+    // },
     handlePreview(file) {
       console.warn(file);
     },
@@ -366,9 +368,9 @@ export default {
         });
       }
     },
-    authorization() {
-      console.log(`是否授权H5${this.ruleForm.authorization}`);
-    },
+    // authorization() {
+    //   console.log(`是否授权H5${this.ruleForm.authorization}`);
+    // },
     toSpecialGuide() {
       // this.$router.push("/specialguide");
       this.$router.push("/specialinfor");
@@ -423,29 +425,30 @@ export default {
     },
     submitForm(formName) {
       console.log(`现在是模版:${this.ruleForm.resource}`);
-      clearTimeout(this.timer);
+      // clearTimeout(this.timer);
       this.$refs[formName].validate(valid => {
         if (valid) {
           // alert("submit!");
-          this.timer = setTimeout(() => {
-            // this.subData();
-            this.subData().then(res => {
-              console.log(res.data);
-              if (res.data.statusCode === 2000) {
-                console.log(res.data.body);
-                this.$message({
-                  message: `创建成功`,
-                  type: `success`
-                });
-                this.$router.push("/shoppingGuide");
-              } else {
-                this.$message({
-                  message: res.data.msg,
-                  type: `error`
-                });
-              }
-            });
-          }, 500);
+          this.subData();
+          // this.timer = setTimeout(() => {
+          //   // this.subData();
+          //   this.subData().then(res => {
+          //     console.log(res.data);
+          //     if (res.data.statusCode === 2000) {
+          //       console.log(res.data.body);
+          //       this.$message({
+          //         message: `创建成功`,
+          //         type: `success`
+          //       });
+          //       this.$router.push("/shoppingGuide");
+          //     } else {
+          //       this.$message({
+          //         message: res.data.msg,
+          //         type: `error`
+          //       });
+          //     }
+          //   });
+          // }, 500);
         } else {
           console.log("error submit!!");
           return false;
@@ -523,23 +526,33 @@ export default {
     },
     //提交信息
     subData() {
+      console.log(`父组件传值`);
+      console.log(this.publicPart);
       let lists = [];
-      this.areaLists.forEach(el => {
-        lists.push({ checked: el.checked, traId: el.traId });
+      // this.areaLists.forEach(el => {
+      //   lists.push({ checked: el.checked, traId: el.traId });
+      // });
+      this.publicPart.length && this.publicPart.forEach(el=>{
+        if(Object.values(el).includes("")||Object.values(el).includes(null)){
+          return 
+        }else{
+          el.templateCode = `T1`;
+          el.businessArea.forEach(el=>{lists.push({checked:el.checked,traId:el.traId});});
+        };
       });
       let params = {
         templateCode: "T1",
         guideNameDisplay: this.ruleForm.showName ? 1 : 0, //是否名称展示
-        startTime: this.ruleForm.startTime,
-        endTime: this.ruleForm.endTime,
-        guideName: this.ruleForm.name, //导购名称
+        startTime: '',
+        endTime: '',
+        guideName: '', //导购名称
         traSelectionList: lists, //选择的商圈
         actionList: [
           {
             actionType: `app`,
             actionContent: `16`,
             picUrl: this.ruleForm.submitImg,
-            authorized: this.ruleForm.authorization,
+            // authorized: this.ruleForm.authorization,
             actionParam: this.ruleForm.path //跳转页面
           }
         ],
@@ -558,7 +571,7 @@ export default {
             : ""
       };
       console.log(params);
-      return create(params);
+      // return create(params);
     }
   },
   created() {
