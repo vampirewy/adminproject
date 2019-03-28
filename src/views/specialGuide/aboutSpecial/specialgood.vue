@@ -411,7 +411,7 @@ export default {
     if (this.$route.params.topicId) {
       console.log(this.$route.params.topicId);
       this.topicId = this.$route.params.topicId;
-      this.uploadExcle = `${process.env.VUE_APP_BASE_URL}shopping/topics/${
+      this.uploadExcle = `${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${
         this.$route.params.topicId
       }/goods/upload`;
       //需要topicId,单跳无效
