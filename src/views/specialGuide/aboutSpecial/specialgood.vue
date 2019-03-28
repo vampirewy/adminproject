@@ -54,7 +54,7 @@
           <el-button type="primary" class="m_r_10" @click="searchData()">查询</el-button>
           <el-upload
             class="upload-demo m_r_10"
-            :action="uploadExcle"
+            :action="upExcleAddr"
             :headers="headers"
             :on-success="uploadExcel"
             :show-file-list="showFileList"
@@ -143,6 +143,7 @@ export default {
     return {
       topicId: null,
       showFileList: false,
+      upExcleAddr:``,
       uploadExcle: "",
       headers: { sessionId: localStorage.getItem(`sessionId`) },
       fileList: [],
@@ -408,10 +409,11 @@ export default {
   },
   created() {
     console.warn(`商品ID`);
+    console.log(this.$route.params.topicId);
     if (this.$route.params.topicId) {
       console.log(this.$route.params.topicId);
       this.topicId = this.$route.params.topicId;
-      this.uploadExcle = `${process.env.VUE_APP_BASE_URL}shopping/topics/${
+      this.upExcleAddr = `${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${
         this.$route.params.topicId
       }/goods/upload`;
       //需要topicId,单跳无效
