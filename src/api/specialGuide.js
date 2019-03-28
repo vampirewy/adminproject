@@ -1,35 +1,35 @@
 import service from "../utils/request";
 //==============专题====================//
 //列表信息
-export function specialGuide(params) {
-  return service({
-    url: `/mall/shopping/topics`,
-    method: `get`,
-    params
-  });
-}
+// export function specialGuide(params) {
+//   return service({
+//     url: `/mall/shopping/topics`,
+//     method: `get`,
+//     params
+//   });
+// }
 //删除
-export function del(params) {
-  return service({
-    url: `/mall/shopping/topics/${params}/drop`,
-    method: `post`
-  });
-}
+// export function del(params) {
+//   return service({
+//     url: `/mall/shopping/topics/${params}/drop`,
+//     method: `post`
+//   });
+// }
 //停用
-export function stop(params) {
-  return service({
-    url: `/mall/shopping/topics/${params}/stop`,
-    method: `post`
-  });
-}
+// export function stop(params) {
+//   return service({
+//     url: `/mall/shopping/topics/${params}/stop`,
+//     method: `post`
+//   });
+// }
 //置顶
-export function topGun(params) {
-  return service({
-    url: `/mall/shopping/topics/${params.topicId}/recommend`,
-    method: `post`,
-    data: params
-  });
-}
+// export function topGun(params) {
+//   return service({
+//     url: `/mall/shopping/topics/${params.topicId}/recommend`,
+//     method: `post`,
+//     data: params
+//   });
+// }
 //创建无活动类型
 export function createNoActivity(params) {
   return service({

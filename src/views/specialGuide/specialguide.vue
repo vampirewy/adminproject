@@ -54,36 +54,26 @@
         </el-table>
       </el-col>
     </el-row>
-    <PageBar @pageBar="specialGuideRequest"
+    <PageBar
+      @pageBar="specialGuideRequest"
       :pageNum="pageNum"
       :pageSize="pageSize"
       :totalPage="totalPage"
       :totalCount="totalCount"
       :traId="traId"
       :statusLists="statusLists"
-      :name="topicName"></PageBar>
-    <!-- <div class="pagination">
-      <el-button size="mini" @click.native="firstPage">首页</el-button>
-      <el-pagination
-        background
-        layout="prev, pager, next,total,jumper"
-        prev-text="上一页"
-        next-text="下一页"
-        :total="totalCount"
-        :page-size="pageSize"
-        :current-page.sync="pageNum"
-        @current-change="handleCurrentChange"
-      ></el-pagination>
-      <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div> -->
+      :name="topicName"
+    ></PageBar>
   </div>
 </template>
 
 <script>
 import { Message } from "element-ui";
+import { MessageBounced } from "@/utils/message";
 import HeaderBar from "@/components/headerBar.vue";
 import PageBar from "@/components/pageBar.vue";
-import { specialGuide, del, stop, topGun } from "@/api/specialGuide";
+import { specialGuide, del} from "@/api/specialGuide";
+import { getRequest, postRequest } from "@/utils/ajax";
 export default {
   name: "specialguide",
   components: {
@@ -123,10 +113,10 @@ export default {
      * @page   页数重置1
      */
     specialGuideRequest(traId, statusLists, topicName, page) {
-      (this.traId = traId),
-        (this.pageNum = page ? page : this.pageNum),
-        (this.statusLists = statusLists),
-        (this.topicName = topicName);
+      this.traId = traId;
+      this.pageNum = page ? page : this.pageNum;
+      this.statusLists = statusLists;
+      this.topicName = topicName;
       this.pageNum = page ? page : this.pageNum;
       let params = {
         status: statusLists,
@@ -135,41 +125,30 @@ export default {
         traId: traId,
         topicName: topicName
       };
-      specialGuide(params).then(
+      getRequest(`/mall/shopping/topics`, params).then(
         res => {
-          console.log(res.data.body.pageData);
-          if (res.data.statusCode === 2000) {
-            console.log(1111);
-            this.totalCount = res.data.body.totalSize;
-            this.totalPage = res.data.body.pageCount;
-            // this.totalCount = res.data.body.pageCount;
-            res.data.body.pageData &&
-              res.data.body.pageData.length &&
-              res.data.body.pageData.forEach(el => {
-                el.status =
-                  el.status === 1
-                    ? "生效中"
-                    : el.status === 2
-                    ? "已结束"
-                    : el.status === 3
-                    ? "已停用"
-                    : el.status === 4
-                    ? "已删除"
-                    : "未生效";
-                // el.recommend = el.recommend ? `取消置顶` : `推荐置顶`;
-                el.recommend
-                  ? (el.upText = `取消置顶`)
-                  : (el.upText = `推荐置顶`);
-                el.topicTypeText = el.topicTypeText ? el.topicTypeText : "--";
-              });
-            this.specialGuideLists = res.data.body.pageData;
-            console.log(`数据为`);
-            console.log(this.specialGuideLists);
-          }
+          this.totalCount = res.body.totalSize;
+          this.totalPage = res.body.pageCount;
+          res.body.pageData.length &&
+            res.body.pageData.forEach(el => {
+              el.status =
+                el.status === 1
+                  ? "生效中"
+                  : el.status === 2
+                  ? "已结束"
+                  : el.status === 3
+                  ? "已停用"
+                  : el.status === 4
+                  ? "已删除"
+                  : "未生效";
+              el.recommend = el.recommend
+                ? (el.upText = `取消置顶`)
+                : (el.upText = `推荐置顶`);
+              el.topicTypeText = el.topicTypeText ? el.topicTypeText : `--`;
+            });
+          this.specialGuideLists = res.body.pageData;
         },
-        error => {
-          console.log(error);
-        }
+        error => {}
       );
     },
     /** 先判断单子状态 未生效还是生效中  未生效可以全部修改、生效中只能修改时间
@@ -216,114 +195,41 @@ export default {
         }
       });
     },
-    del(row) {
-      this.$confirm(
-        "如果操作删除,投放该专题的商圈,导购将不再生效!",
-        "您确认删除？",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      ).then(
-        () => {
-          console.log(`确定`);
-          del(row.topicId).then(
-            res => {
-              console.log(res);
-              if (res.data.statusCode === 2000 && res.data.body) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功!"
-                });
-              }
-              this.specialGuideRequest(
-                this.traId,
-                this.statusLists,
-                this.topicName
-              );
-            },
-            error => {
-              console.log(error);
-            }
-          );
-        },
-        () => {
-          console.log(`取消`);
-        }
-      );
+    del(currentRow) {
+      let page = 1;
+      new MessageBounced(`您确认删除?`,``,`如果操作删除,投放该专题的商圈,导购将不再生效!`,action =>{
+        postRequest(`/mall/shopping/topics/${currentRow.topicId}/drop`).then(res=>{
+          new MessageBounced(`删除成功`,`success`).messageWindow();
+          this.specialGuideRequest(this.traId,this.statusLists,this.topicName,page);
+        },error=>{
+          new MessageBounced(error.msg,`error`).messageWindow();
+        });
+      }).confirmWindow();
     },
-    stop(row) {
-      this.$confirm(
-        "如果操作停用，投放该专题的商圈，导购将不会再显示！",
-        "您确认停用？",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      ).then(
-        () => {
-          stop(row.topicId).then(
-            res => {
-              console.log(res);
-              if (res.data.statusCode === 2000) {
-                this.$message({
-                  type: "success",
-                  message: "停用成功!"
-                });
-              }
-              this.specialGuideRequest(
-                this.traId,
-                this.statusLists,
-                this.topicName
-              );
-            },
-            error => {
-              console.log(error);
-            }
-          );
-        },
-        () => {
-          console.log(`取消`);
-        }
-      );
+    stop(currentRow) {
+      let page = 1;
+      new MessageBounced(`您确认停用?`,``,`如果操作停用，投放该专题的商圈，导购将不会再显示！`,action =>{
+        action === `confirm` && postRequest(`/mall/shopping/topics/${currentRow.topicId}/stop`).then(res=>{
+          new MessageBounced(`停用成功!`,`success`).messageWindow();
+          this.specialGuideRequest(this.traId,this.statusLists,this.guideName,page);
+        },error=>{
+          new MessageBounced(error.msg,`error`).messageWindow();
+        });
+      }).confirmWindow();
     },
-    top(row) {
-      console.log(row);
+    top(currentRow) {
+      console.log(currentRow);
       let params = {
-        recommend: (row.recommend = !row.recommend),
-        topicId: row.topicId
+        recommend: (currentRow.recommend = !currentRow.recommend),
+        topicId: currentRow.topicId
       };
-      topGun(params).then(
-        res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            row.recommend
-              ? this.$message({
-                  message: `置顶成功`,
-                  type: `success`
-                })
-              : this.$message({
-                  message: `取消置顶`,
-                  type: `error`
-                });
-            this.specialGuideRequest(
-              this.traId,
-              this.statusLists,
-              this.topicName
-            );
-          } else {
-            this.$message({
-              message: res.data.msg,
-              type: `error`
-            });
-          }
-        },
-        error => {
-          console.log(error);
-        }
-      );
+      postRequest(`/mall/shopping/topics/${params.topicId}/recommend`,params).then(res=>{
+        console.log(res);
+        currentRow.recommend ? new MessageBounced(`置顶成功`,`success`).messageWindow() : new MessageBounced(`取消置顶`,`error`).messageWindow();
+        this.specialGuideRequest(this.traId,this.statusLists,this.topicName);
+      },error=>{
+        new MessageBounced(res.msg,`error`).messageWindow();
+      });
     },
     selectGoods(currentRow) {
       console.log(`专题商品:`);
@@ -333,21 +239,6 @@ export default {
         params: { topicId: currentRow.topicId }
       });
     }
-    // handleCurrentChange(page) {
-    //   console.log(`第${page}页`);
-    //   this.pageNum = page;
-    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
-    // },
-    // firstPage() {
-    //   console.log(`第1页`);
-    //   this.pageNum = 1;
-    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
-    // },
-    // lastPage() {
-    //   this.pageNum = this.totalPage;
-    //   console.log(`最后${this.pageNum}页`);
-    //   this.specialGuideRequest(this.traId, this.statusLists, this.topicName);
-    // }
   },
   created() {
     this.specialGuideRequest();

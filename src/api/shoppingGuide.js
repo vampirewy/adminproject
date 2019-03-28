@@ -9,12 +9,12 @@ import service from "../utils/request";
 //   });
 // }
 //删除
-export function del(params) {
-  return service({
-    url: `/mall/shopping/guides/${params}/drop`,
-    method: `post`
-  });
-}
+// export function del(params) {
+//   return service({
+//     url: `/mall/shopping/guides/${params}/drop`,
+//     method: `post`
+//   });
+// }
 //停用
 // export function stop(params) {
 //   return service({
@@ -23,13 +23,13 @@ export function del(params) {
 //   });
 // }
 //排序
-export function sort(params) {
-  return service({
-    url: `/mall/sort/moveTo`,
-    method: `post`,
-    data: params
-  });
-}
+// export function sort(params) {
+//   return service({
+//     url: `/mall/sort/moveTo`,
+//     method: `post`,
+//     data: params
+//   });
+// }
 //创建导购
 export function create(params) {
   return service({

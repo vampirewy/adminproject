@@ -33,6 +33,7 @@
 
 <script>
 import { allArea } from "@/api/headerBar";
+import { getRequest, postRequest } from "@/utils/ajax";
 export default {
   name: "headerBar",
   // props: {
@@ -56,21 +57,21 @@ export default {
     };
   },
   methods: {
-    async allArea() {
+    allArea() {
       let params = {
         // statisticsAll:true,
         topicType: `guide`
       };
-      const res = await allArea(params);
-      console.warn(res.data);
-      if (res.data.statusCode === 2000) {
-        this.allAreaName = res.data.body;
-      }
+      getRequest(`/mall/tra/topics/statistics`,params).then(res=>{
+        this.allAreaName = res.body;
+      },error=>{});
     },
     search() {
       console.log(`搜索`);
       let statusList = null;
-      this.statusList.includes(-1)?statusList="":(statusList=this.statusList.join(","));
+      this.statusList.includes(-1)
+        ? (statusList = "")
+        : (statusList = this.statusList.join(","));
       this.$emit(
         "statusAreaName",
         this.value,

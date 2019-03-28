@@ -7,14 +7,14 @@
       label-width="120px"
       class="demo-ruleForm"
     >
-      <el-form-item label="名称展示" class="show" prop="showName">
+      <!-- <el-form-item label="名称展示" class="show" prop="showName">
         <el-checkbox :disabled="allDisabled" v-model="ruleForm.showName" @change="isShow()">展示</el-checkbox>
       </el-form-item>
 
       <el-form-item label="导购名称" prop="name" class="show">
         <el-input :disabled="allDisabled" v-model="ruleForm.name" placeholder="请输入导购名称"></el-input>
-      </el-form-item>
-      <el-form-item label="商圈" prop="type" class="show">
+      </el-form-item>-->
+      <!-- <el-form-item label="商圈" prop="type" class="show">
         <el-checkbox-group v-model="ruleForm.type" @change="chooseArea(ruleForm.type)">
           <el-checkbox
             v-for="(item,index) in areaLists"
@@ -25,7 +25,7 @@
             :disabled="allDisabled"
           ></el-checkbox>
         </el-checkbox-group>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item label="开始时间" required>
         <el-col :span="11">
           <el-form-item prop="startTime">
@@ -58,7 +58,7 @@
           </el-form-item>
         </el-col>
       </el-form-item>
-      <el-form-item label="活动图片" prop="fileList" class="show" required>
+      <el-form-item label="活动图片"  class="show" required>
         <el-upload
           class="upload-demo"
           :action="upImgUrl"
@@ -92,7 +92,11 @@
             style="margin-left:10px;"
             @click="toSpecialGuide"
           >创建新专题</el-button>
-          <el-checkbox style="margin-left:10px;" @change="authorization" v-model="ruleForm.authorization">H5授权</el-checkbox>
+          <el-checkbox
+            style="margin-left:10px;"
+            @change="authorization"
+            v-model="ruleForm.authorization"
+          >H5授权</el-checkbox>
         </div>
       </el-form-item>
       <el-form-item label="是否展示商品" class="show" prop="goods">
@@ -124,6 +128,7 @@
 <script>
 import { Message } from "element-ui";
 import { guideAllArea } from "@/api/headerBar";
+// import publicPart from "../component/publicPartTemplate.vue";
 import {
   create,
   guideDetails,
@@ -134,6 +139,9 @@ import {
 import { setTimeout } from "timers";
 export default {
   name: "demoOne",
+  components: {
+    // publicPart
+  },
   // props: {
   //   areaNameLists: Array
   // },
@@ -143,7 +151,7 @@ export default {
       modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
-      areaLists: this.areaNameLists, //商圈
+      areaLists: [], //商圈
       reg: /^[+]?\d*$/,
       timer: null,
       headers: { sessionId: localStorage.getItem(`sessionId`) }, //图片上传的参数
@@ -232,19 +240,19 @@ export default {
     };
   },
   methods: {
-    allArea() {
-      guideAllArea().then(
-        res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            this.areaLists = res.data.body;
-          }
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    },
+    // allArea() {
+    //   guideAllArea().then(
+    //     res => {
+    //       console.log(res.data);
+    //       if (res.data.statusCode === 2000) {
+    //         this.areaLists = res.data.body;
+    //       }
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
     fromShoppingGuide() {
       let params = { guideId: this.guideId };
       guideDetails(params).then(
@@ -282,9 +290,11 @@ export default {
                 value: res.data.body.actionList[0].picUrl
               });
               this.ruleForm.submitImg = res.data.body.actionList[0].picUrl;
-              this.ruleForm.pathValue =res.data.body.actionList[0].actionParamName;
+              this.ruleForm.pathValue =
+                res.data.body.actionList[0].actionParamName;
               this.ruleForm.path = res.data.body.actionList[0].actionParam;
-              this.ruleForm.authorization = res.data.body.actionList[0].authorized;
+              this.ruleForm.authorization =
+                res.data.body.actionList[0].authorized;
             }
           } else {
           }
@@ -356,7 +366,7 @@ export default {
         });
       }
     },
-    authorization(){
+    authorization() {
       console.log(`是否授权H5${this.ruleForm.authorization}`);
     },
     toSpecialGuide() {
@@ -576,8 +586,8 @@ export default {
       this.fromShoppingGuide();
     } else {
       // console.log(this.areaNameLists);
-      this.allArea();
-    };
+      // this.allArea();
+    }
   }
 };
 </script>

@@ -49,30 +49,15 @@
       :statusLists="statusLists"
       :name="guideName"
     ></PageBar>
-    <!-- <div class="pagination">
-      <el-button size="mini" @click.native="firstPage">首页</el-button>
-      <el-pagination
-        background
-        layout="prev, pager, next,total,jumper"
-        prev-text="上一页"
-        next-text="下一页"
-        :total="totalCount"
-        :page-size="pageSize"
-        :current-page.sync="pageNum"
-        @current-change="handleCurrentChange"
-      ></el-pagination>
-      <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div>-->
   </div>
 </template>
 
 <script>
 import HeaderBar from "@/components/headerBar.vue";
 import PageBar from "@/components/pageBar.vue";
-import { shoppingGuide, del, stop, sort } from "@/api/shoppingGuide";
 import { getRequest, postRequest } from "@/utils/ajax";
 import { MessageBounced } from "@/utils/message";
-import { allArea } from "@/api/headerBar";
+// import { allArea } from "@/api/headerBar";
 export default {
   name: "shoopingGuide",
   components: {
@@ -153,27 +138,13 @@ export default {
     sort(currentRow) {
       console.log(`排序`);
       console.log(currentRow);
-      let params = {
-        // bizType:'guide',
-        bizType: "guide-" + localStorage.getItem("cityCode"),
-        sortId: currentRow.guideId,
-        point: currentRow.sortIndex
-      };
-      sort(params).then(
-        res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            this.shoppingGuideRequest(
-              this.traId,
-              this.statusLists,
-              this.guideName
-            );
-          }
-        },
-        error => {
-          console.log(error);
-        }
-      );
+      let [sortId,point,bizType]=[currentRow.guideId,currentRow.sortIndex,'guide-'+localStorage.getItem('cityCode')];
+      postRequest(`/mall/sort/moveTo`,{sortId,point,bizType}).then(res=>{
+        console.log(res);
+        this.shoppingGuideRequest(this.traId,this.statusLists,this.guideName);
+      },error=>{
+        new MessageBounced(error.msg,`error`).messageWindow();
+      });
     },
     edit(currentRow) {
       console.log(`当前编辑行`);
@@ -242,94 +213,34 @@ export default {
       });
     },
     stop(row) {
-      postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(res=>{
-        console.log(res);
-      },error=>{});
-      // this.$confirm(
-      //   "如果操作停用，投放该导购的商圈，导购将不会再显示！",
-      //   "您确认停用？",
-      //   {
-      //     confirmButtonText: "确定",
-      //     cancelButtonText: "取消",
-      //     type: "warning"
-      //   }
-      // ).then(
-      //   () => {
-      //     postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(
-      //       res => {
-      //         console.log(res);
-      //         if (res.body) {
-      //           this.$message({
-      //             type: "success",
-      //             message: "停用成功!"
-      //           });
-      //         };
-      //         this.shoppingGuideRequest(
-      //           this.traId,
-      //           this.statusLists,
-      //           this.guideName
-      //         );
-      //       },
-      //       error => {
-      //         console.log(error);
-      //       }
-      //     );
-      //   },
-      //   () => {
-      //     console.log(`取消`);
-      //   }
-      // );
+      let page = 1;
+      new MessageBounced(`您确认停用?`,``,`如果操作停用，投放该导购的商圈，导购将不会再显示！`,action => {
+        action === `confirm` &&  postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(res=>{
+          console.log(res);
+          new MessageBounced(`停用成功!`,`success`).messageWindow();
+          this.shoppingGuideRequest(this.traId,this.statusLists,this.guideName,page);
+        },error=>{
+          new MessageBounced(error.msg,`error`).messageWindow();
+        });
+      }).confirmWindow();
     },
     del(currentRow) {
-      new MessageBounced(
-        `您确认删除?`,
-        `error`,
-        `如果操作删除,投放该导购的商圈,导购将不再生效!`,
-        action => {
-          console.log(action);
+      let page = 1;
+      new MessageBounced(`您确认删除?`,``,`如果操作删除,投放该导购的商圈,导购将不再生效!`,action => {
+          if(action === `confirm`){
+            console.log(`确认`);
+            postRequest(`/mall/shopping/guides/${currentRow.guideId}/drop`).then(res=>{
+              new MessageBounced(`删除成功!`,`success`).messageWindow();
+              this.shoppingGuideRequest(this.traId,this.statusLists,this.guideName,page);
+            },error=>{
+              new MessageBounced(error.msg,`error`).messageWindow();
+            });
+          };
         }
       ).confirmWindow();
     }
-    // del(row) {
-    //   this.$confirm(
-    //     "如果操作删除,投放该导购的商圈,导购将不再生效!",
-    //     "您确认删除？",
-    //     {
-    //       confirmButtonText: "确定",
-    //       cancelButtonText: "取消",
-    //       type: "warning"
-    //     }
-    //   ).then(
-    //     () => {
-    //       console.log(`确定`);
-    //       del(row.guideId).then(
-    //         res => {
-    //           console.log(res);
-    //           if (res.data.statusCode === 2000 && res.data.body) {
-    //             this.$message({
-    //               type: "success",
-    //               message: "删除成功!"
-    //             });
-    //           }
-    //           this.shoppingGuideRequest(
-    //             this.traId,
-    //             this.statusLists,
-    //             this.guideName
-    //           );
-    //         },
-    //         error => {
-    //           console.log(error);
-    //         }
-    //       );
-    //     },
-    //     () => {
-    //       console.log(`取消`);
-    //     }
-    //   );
-    // }
   },
   created() {
-    console.log(`请求呢`);
     this.shoppingGuideRequest();
   },
   updated() {
