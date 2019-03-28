@@ -56,7 +56,7 @@
                 :label="item.traName"
                 :key="index"
                 name="type"
-                :disabled="allDisabled"
+                :disabled="status===`未生效`?disabledArea:allDisabled"
                 @change="chooseArea1(item,index)"
               ></el-checkbox>
             </el-checkbox-group>
@@ -302,6 +302,8 @@ export default {
       modifySave: false, //修改按键控制
       //控制生效中的只能修改时间，已停用、已删除、已停止全部禁用
       modifyTime: false,
+      //未生效时，锁定商圈，禁用
+      disabledArea:false,
       allDisabled: false,
       reg: /^[+]?\d*$/, //正整数
       // noActivity:true,
@@ -1444,6 +1446,7 @@ export default {
       if (this.status === "未生效") {
         this.modifySave = true;
         this.newCreate = false;
+        this.disabledArea = true;
       } else if (this.status === "生效中") {
         this.modifySave = true;
         this.newCreate = false;
