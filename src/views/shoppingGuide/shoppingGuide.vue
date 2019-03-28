@@ -242,45 +242,48 @@ export default {
       });
     },
     stop(row) {
-      this.$confirm(
-        "如果操作停用，投放该导购的商圈，导购将不会再显示！",
-        "您确认停用？",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      ).then(
-        () => {
-          postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(
-            res => {
-              console.log(res);
-              if (res.body) {
-                this.$message({
-                  type: "success",
-                  message: "停用成功!"
-                });
-              };
-              this.shoppingGuideRequest(
-                this.traId,
-                this.statusLists,
-                this.guideName
-              );
-            },
-            error => {
-              console.log(error);
-            }
-          );
-        },
-        () => {
-          console.log(`取消`);
-        }
-      );
+      postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(res=>{
+        console.log(res);
+      },error=>{});
+      // this.$confirm(
+      //   "如果操作停用，投放该导购的商圈，导购将不会再显示！",
+      //   "您确认停用？",
+      //   {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning"
+      //   }
+      // ).then(
+      //   () => {
+      //     postRequest(`/mall/shopping/guides/${row.guideId}/stop`).then(
+      //       res => {
+      //         console.log(res);
+      //         if (res.body) {
+      //           this.$message({
+      //             type: "success",
+      //             message: "停用成功!"
+      //           });
+      //         };
+      //         this.shoppingGuideRequest(
+      //           this.traId,
+      //           this.statusLists,
+      //           this.guideName
+      //         );
+      //       },
+      //       error => {
+      //         console.log(error);
+      //       }
+      //     );
+      //   },
+      //   () => {
+      //     console.log(`取消`);
+      //   }
+      // );
     },
     del(currentRow) {
       new MessageBounced(
         `您确认删除?`,
-        ``,
+        `error`,
         `如果操作删除,投放该导购的商圈,导购将不再生效!`,
         action => {
           console.log(action);
