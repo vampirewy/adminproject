@@ -195,11 +195,10 @@ export default {
             this.$message({ message: `修改成功`, type: `success` });
             this.pageNum = 1;
             this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+            this.editIndex = null;
           } else {
             this.$message({ message: res.data.msg, type: `error` });
-          }
-          // this.editShow = false;
-          this.editIndex = null;
+          };
         },
         error => {}
       );
