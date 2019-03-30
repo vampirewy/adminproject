@@ -69,17 +69,8 @@
 </template>
 
 <script>
-import { Message } from "element-ui";
-// import { guideAllArea } from "@/api/headerBar";
 import { getRequest, postRequest } from "@/utils/ajax";
 import { MessageBounced } from "@/utils/message";
-import {
-  // create,
-  // guideDetails,
-  // modifyGuide,
-  // onlyDelayTime,
-  checkSpecial
-} from "@/api/shoppingGuide";
 export default {
   name: "demoOne",
   components: {},
@@ -241,9 +232,8 @@ export default {
       this.$emit('dataCorrection');
       this.$refs[formName].validate(valid => {
         if (valid) {
-          !this.status && this.subData();
           if(!this.operationText){
-            this.status === `生效中` ? this.onlyDelayTime(this.guideId) : this.modifyForm(this.guideId);
+            this.status == null ? this.subData() : this.status === `生效中` ? this.onlyDelayTime(this.guideId) : this.modifyForm(this.guideId);
           }else{this.subData()};
         };
       });
@@ -278,11 +268,12 @@ export default {
   created() {
     console.log(`子组件`);
     console.log(this.$route.params);
-    this.$route.params.guideId && (this.guideId = this.$route.params.guideId);
-    this.$route.params.status && (this.status = this.$route.params.status);
-    this.$route.params.text && (this.operationText = this.$route.params.text);
-    if (this.status === `未生效`) {
-        // this.newCreate = true; //新创建的保存按钮
+    if(this.$route.params.guideId){
+      this.$route.params.guideId && (this.guideId = this.$route.params.guideId);
+      this.$route.params.status && (this.status = this.$route.params.status);
+      this.$route.params.text && (this.operationText = this.$route.params.text);
+      if (this.status === `未生效`) {
+          // this.newCreate = true; //新创建的保存按钮
       } else if (this.status === `生效中`) {
         this.allDisabled = true;
         this.modifyTime = false;
@@ -293,9 +284,7 @@ export default {
           this.modifyTime = true;
         };
       };
-    // this.$route.params.status === `生效中` && (this.allDisabled = true);
-    // this.$route.params.status === `未生效` && (this.allDisabled = false);
-    // this.$route.params.text ? (this.allDisabled = false,this.newCreate = true):(this.allDisabled = true,this.newCreate = false);  
+    };
   },
   watch:{
     picUrl:function(picUrl){

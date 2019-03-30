@@ -100,15 +100,13 @@
 </template>
 
 <script>
-import { Message } from "element-ui";
 import demoOne from "@/views/shoppingGuide/demo1/demoOne.vue";
 import demoTwo from "@/views/shoppingGuide/demo2/demoTwo.vue";
 import demoThree from "@/views/shoppingGuide/demo3/demoThree.vue";
 import demoFour from "@/views/shoppingGuide/demo4/demoFour.vue";
 import demoFive from "@/views/shoppingGuide/demo5/demoFive.vue";
-import { guideDetails } from "@/api/shoppingGuide";
+// import { guideDetails } from "@/api/shoppingGuide";
 import { getRequest, postRequest } from "@/utils/ajax";
-// import { create } from "@/api/shoppingGuide";
 const templateChoose={
   T1:()=>{return `模版1`},
   T2:()=>{return `模版2`},
@@ -127,10 +125,10 @@ export default {
   },
   data() {
     return {
-      disTemplate:false,
-      allDisabled: false,
-      modifyTime:false,
-      selectedTemplate: 0,
+      disTemplate:false,  //禁用模版
+      allDisabled: false, //禁用全部
+      modifyTime:false,  //只禁时间
+      selectedTemplate: 0, //模版切换
       topicId:'',
       topicName:'',
       picUrl:'',
@@ -194,6 +192,7 @@ export default {
       this.selectedTemplate = index;
       this.$refs.ruleForm.clearValidate();
     },
+    //商圈列表
     businessAreaRequest() {
       getRequest(`/mall/tra/topics/selections`).then(
         res => {
@@ -203,6 +202,7 @@ export default {
         error => {}
       );
     },
+    //从导购过来的数据组合，并传入子组件
     async fromShoppingRequest(guideId){
       const response = await getRequest(`/mall/shopping/guides/${guideId}`);
       console.log(`响应结果`);
@@ -247,6 +247,8 @@ export default {
      * 3.获取公共组件的参数:showName,guideName,businessAreaLists,startTime,endTime
      * 4.导购ID，图片，是否展示传送子组件
      * 5.试试用async解决异步数据问题
+     * @status 生效中、未生效、已删除、已结束、已停用
+     * @templateCode 模版几
      */
     console.log(`参数`);
     console.log(this.$route.params);
