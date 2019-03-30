@@ -23,14 +23,15 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="名称展示" class="show" prop="showName">
-              <el-checkbox v-model="ruleForm.showName" @change="isShow(ruleForm.showName)">展示</el-checkbox>
+              <el-checkbox :disabled="allDisabled" v-model="ruleForm.showName" @change="isShow(ruleForm.showName)">展示</el-checkbox>
             </el-form-item>
             <el-form-item label="导购名称" class="show" prop="guideName">
-              <el-input placeholder="请输入导购名称" v-model="ruleForm.guideName" clearable></el-input>
+              <el-input  :disabled="allDisabled" placeholder="请输入导购名称" v-model="ruleForm.guideName" clearable></el-input>
             </el-form-item>
             <el-form-item label="商圈" class="show" prop="selectedArea">
               <el-checkbox-group v-model="ruleForm.selectedArea">
                 <el-checkbox
+                  :disabled="allDisabled"
                   v-for="(item,index) in ruleForm.businessAreaLists"
                   :label="item.traName"
                   :key="index"
@@ -43,6 +44,7 @@
               <el-col :span="11">
                 <el-form-item prop="startTime">
                   <el-date-picker
+                    :disabled="allDisabled"
                     type="datetime"
                     placeholder="选择时间日期"
                     v-model="ruleForm.startTime"
@@ -58,6 +60,7 @@
               <el-col :span="11">
                 <el-form-item prop="endTime">
                   <el-date-picker
+                    :disabled="modifyTime"
                     type="datetime"
                     placeholder="选择时间日期"
                     v-model="ruleForm.endTime"
@@ -124,10 +127,9 @@ export default {
   },
   data() {
     return {
-      isRequest:false,
       disTemplate:false,
       allDisabled: false,
-      isRequest:false,
+      modifyTime:false,
       selectedTemplate: 0,
       topicId:'',
       topicName:'',
@@ -217,7 +219,6 @@ export default {
         this.topicName = el.actionParamName; //专题名称
         this.picUrl = el.picUrl;  //上传的图片url
       });
-      // if(this.topicId&&this.picUrl&&this.topicName){this.isRequest = true;};
       console.log(`专题号：${this.topicId}`)
     },
     isShow(isShow) {
@@ -252,12 +253,21 @@ export default {
     if (this.$route.params.guideId) {
       new Promise((resolve,reject)=>{
         this.disTemplate = true;
-        // this.guideId = this.$route.params.guideId;
-        // this.status = this.$route.params.status; //导购单子的状态 未生效、生效中、已停用、已删除、已结束
         this.ruleForm.resource = templateChoose[this.$route.params.templateCode]();
         this.resourceLists.forEach((el,index)=>{ el.name === this.ruleForm.resource && (this.selectedTemplate = index); });
         return this.fromShoppingRequest(this.$route.params.guideId);
       });
+      if(!this.$route.params.text){
+        this.allDisabled = true;
+        this.modifyTime = true;
+        if(this.$route.params.status === `生效中`){
+          this.allDisabled = true;
+          this.modifyTime = false;
+        }else if(this.$route.params.status ===`未生效`){
+          this.allDisabled = false;
+          this.modifyTime = false;
+        };
+      };
     }else{
       this.businessAreaRequest();
     };

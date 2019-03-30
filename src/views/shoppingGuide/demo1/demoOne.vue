@@ -92,8 +92,9 @@ export default {
   },
   data() {
     return {
-      guideId: null,
-      status: null,
+      guideId: null, 
+      status: null,  //状态值 未生效，生效中。。。
+      operationText:null,  //重新添加文本
       newCreate: true, //新建保存
       // modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
@@ -147,16 +148,12 @@ export default {
         this.ruleForm.fileList.push({ name: res.body, url: res.body });
         this.ruleForm.submitImg = res.body;
       } else {
-        this.$message({
-          message: res.msg,
-          type: `error`
-        });
+        new MessageBounced(res.msg,`error`).messageWindow();
       };
       //校验图片上传验证
       this.$refs.ruleForm.validate(valid=>{});
     },
     toSpecialGuide() {
-      // this.$router.push("/specialguide");
       this.$router.push("/specialinfor");
     },
     showGoods(goods) {
@@ -166,11 +163,11 @@ export default {
         this.chooseGoods = true;
       } else {
         this.chooseGoods = false;
-      }
+      };
     },
     showGoodsNum() {
       if (!this.reg.test(this.inputGoodsNum)) {
-        this.$message({ message: `请输入正整数`, type: `error` });
+        new MessageBounced(`请输入正整数`,`error`).messageWindow();
         this.inputGoodsNum = "";
       }
     },
@@ -178,26 +175,14 @@ export default {
       this.searchTopic(queryString, fn);
     },
     searchTopic(topicName, fn) {
-      let params = {
-        topicName: topicName
-      };
-      checkSpecial(params).then(
-        res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            res.data.body.length &&
-              res.data.body.forEach(el => {
-                el.value = el.topicName;
-              });
-            this.searchLists = res.data.body;
-            fn(this.searchLists);
-          } else {
-          }
-        },
-        error => {
-          console.log(error);
-        }
-      );
+      let params = {topicName: topicName};
+      getRequest(`/mall/shopping/topics/dropdown`,params).then(res=>{
+        console.log(res);
+        res.body.length && res.body.forEach(el=>{el.value = el.topicName});
+        fn(this.searchLists = res.body);
+      },error=>{
+        new MessageBounced(error.msg,`error`).messageWindow();
+      });
     },
     selectTopicName(item) {
       console.log(item);
@@ -257,8 +242,9 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           !this.status && this.subData();
-          this.status ===`未生效` && this.modifyForm(this.guideId);
-          this.status === `生效中` && this.onlyDelayTime(this.guideId);
+          if(!this.operationText){
+            this.status === `生效中` ? this.onlyDelayTime(this.guideId) : this.modifyForm(this.guideId);
+          }else{this.subData()};
         };
       });
     },
@@ -266,8 +252,8 @@ export default {
     async onlyDelayTime(guideId){
       const delayTime = await this.assemblyInformation(guideId);
       if(delayTime){await postRequest(`/mall/shopping/guides/${guideId}/extendEndTime`,delayTime).then(res=>{
-        console.log(res);
         new MessageBounced(`修改成功`,`success`).messageWindow();
+        setTimeout(()=>{this.$router.push("/shoppingGuide");},300);
       },error=>{
         new MessageBounced(error.msg,`error`).messageWindow();
       })};
@@ -294,31 +280,22 @@ export default {
     console.log(this.$route.params);
     this.$route.params.guideId && (this.guideId = this.$route.params.guideId);
     this.$route.params.status && (this.status = this.$route.params.status);
-    this.$route.params.status ===`生效中` && (this.allDisabled = true,this.modifyTime = true);  
-    // if (this.$route.params.guideId) {
-    //   this.guideId = this.$route.params.guideId;
-    //   this.status = this.$route.params.status;
-    //   if (this.status === `未生效`) {
-    //     this.newCreate = false; //新创建的保存按钮
-    //     this.modifySave = true; //修改的保存按钮
-    //   } else if (this.status === `生效中`) {
-    //     this.newCreate = false;
-    //     this.modifySave = true;
-    //     this.allDisabled = true;
-    //     this.modifyTime = false;
-    //   } else {
-    //     if (!this.$route.params.text) {
-    //       this.newCreate = false;
-    //       this.modifySave = false;
-    //       this.allDisabled = true;
-    //       this.modifyTime = true;
-    //     }
-    //   }
-    //   this.fromShoppingGuide();
-    // } else {
-    //   // console.log(this.areaNameLists);
-    //   // this.allArea();
-    // }
+    this.$route.params.text && (this.operationText = this.$route.params.text);
+    if (this.status === `未生效`) {
+        // this.newCreate = true; //新创建的保存按钮
+      } else if (this.status === `生效中`) {
+        this.allDisabled = true;
+        this.modifyTime = false;
+      } else {
+        if (!this.$route.params.text) {
+          this.newCreate = false;
+          this.allDisabled = true;
+          this.modifyTime = true;
+        };
+      };
+    // this.$route.params.status === `生效中` && (this.allDisabled = true);
+    // this.$route.params.status === `未生效` && (this.allDisabled = false);
+    // this.$route.params.text ? (this.allDisabled = false,this.newCreate = true):(this.allDisabled = true,this.newCreate = false);  
   },
   watch:{
     picUrl:function(picUrl){

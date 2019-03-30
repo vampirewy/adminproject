@@ -62,10 +62,10 @@ export function onlyDelayTime(params){
   });
 }
 //修改导购信息
-// export function modifyGuide(params){
-//   return service({
-//     url:`/mall/shopping/guides/${params.guideId}/modify`,
-//     method:`post`,
-//     data:params
-//   });
-// }
+export function modifyGuide(params){
+  return service({
+    url:`/mall/shopping/guides/${params.guideId}/modify`,
+    method:`post`,
+    data:params
+  });
+}
