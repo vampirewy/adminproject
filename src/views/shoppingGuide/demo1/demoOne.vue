@@ -61,7 +61,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
-        <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button>
+        <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
         <el-button @click="cancel()" v-if="newCreate">取消</el-button>
       </el-form-item>
     </el-form>
@@ -70,33 +70,32 @@
 
 <script>
 import { Message } from "element-ui";
-import { guideAllArea } from "@/api/headerBar";
+// import { guideAllArea } from "@/api/headerBar";
 import { getRequest, postRequest } from "@/utils/ajax";
 import { MessageBounced } from "@/utils/message";
-// import publicPart from "../component/publicPartTemplate.vue";
 import {
-  create,
-  guideDetails,
-  modifyGuide,
-  onlyDelayTime,
+  // create,
+  // guideDetails,
+  // modifyGuide,
+  // onlyDelayTime,
   checkSpecial
 } from "@/api/shoppingGuide";
-import { setTimeout } from 'timers';
 export default {
   name: "demoOne",
   components: {},
   props: {
     publicPart:Array,
-    guideId:Number,
+    showGoodsCount:Number,
     topicId:String,
     topicName:String,
-    picUrl:String,
-    showGoodsCount:Number
+    picUrl:String
   },
   data() {
     return {
+      guideId: null,
+      status: null,
       newCreate: true, //新建保存
-      modifySave: false, //修改保存
+      // modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
       reg: /^[+]?\d*$/,
@@ -107,7 +106,7 @@ export default {
       searchLists: [], //模糊搜索的专题数据
       ruleForm: {
         fileList:[], //显示在页面上图片
-        submitImg: "", //最终上转的图片
+        submitImg:'', //最终上转的图片
         path: "", //页面路径
         pathValue: "",
         goods: "" //是否展示商品
@@ -133,54 +132,6 @@ export default {
     };
   },
   methods: {
-    // fromShoppingGuide() {
-    //   let params = { guideId: this.guideId };
-    //   guideDetails(params).then(
-    //     res => {
-    //       if (res.data.statusCode === 2000) {
-    //         console.log(res.data.body);
-    //         this.areaLists = res.data.body.traSelectionList;
-    //         this.areaLists.forEach(el => {
-    //           if (el.checked) {
-    //             this.ruleForm.type.push(el.traName);
-    //           }
-    //         });
-    //         this.ruleForm.startTime = res.data.body.startTime;
-    //         this.ruleForm.endTime = res.data.body.endTime;
-    //         this.ruleForm.name = res.data.body.guideName;
-    //         this.ruleForm.showName = res.data.body.guideNameDisplay
-    //           ? true
-    //           : false;
-    //         if (res.data.body.showGoodsCount === 0) {
-    //           this.ruleForm.goods = `不展示`;
-    //         } else if (res.data.body.showGoodsCount === 3) {
-    //           this.ruleForm.goods = `前3个`;
-    //         } else if (res.data.body.showGoodsCount === 6) {
-    //           this.ruleForm.goods = `前6个`;
-    //         } else if (res.data.body.showGoodsCount === 9) {
-    //           this.ruleForm.goods = `前9个`;
-    //         } else {
-    //           this.ruleForm.goods = `自定义`;
-    //           this.inputGoodsNum = res.data.body.showGoodsCount;
-    //           this.chooseGoods = true;
-    //         }
-    //         if (res.data.body.actionList.length) {
-    //           this.ruleForm.fileList.push({
-    //             name: res.data.body.actionList[0].picUrl,
-    //             value: res.data.body.actionList[0].picUrl
-    //           });
-    //           this.ruleForm.submitImg = res.data.body.actionList[0].picUrl;
-    //           this.ruleForm.pathValue =
-    //             res.data.body.actionList[0].actionParamName;
-    //           this.ruleForm.path = res.data.body.actionList[0].actionParam;
-    //           // this.ruleForm.authorization = res.data.body.actionList[0].authorized;
-    //         }
-    //       } else {
-    //       }
-    //     },
-    //     error => {}
-    //   );
-    // },
     handleRemove(files, fileList) {
       //确认删除后，数组清空,因为只有一个文件
       this.ruleForm.fileList = [];
@@ -256,8 +207,30 @@ export default {
     cancel() {
       this.$router.push("/ShoppingGuide");
     },
+    //非添加进入时，数据回显是否展示商品处理
+    quantityGoods(num){
+      switch (num) {
+        case 0:
+          this.ruleForm.goods = `不展示`;
+          break;
+        case 3:
+          this.ruleForm.goods = `前3个`;
+          break;
+        case 6:
+          this.ruleForm.goods = `前6个`;
+          break;
+        case 9:
+          this.ruleForm.goods = `前9个`;
+          break;
+        default:
+          this.ruleForm.goods = `自定义`;
+          this.chooseGoods = true;
+          this.inputGoodsNum = num;
+          break;
+      }
+    },
     //提交前的参数组装
-    assemblyInformation(){
+    assemblyInformation(guideId){
       console.log(`父组件传值`);
       console.log(this.publicPart);
       let lists = [], params = {};
@@ -274,6 +247,7 @@ export default {
         params.actionList = [{actionType:`app`,actionContent:`16`,picUrl:this.ruleForm.submitImg,actionParam:this.ruleForm.path}];
         params.showGoodsCount = this.ruleForm.goods === `不展示`? "0":this.ruleForm.goods ===`前3个`?"3":this.ruleForm.goods===`前6个`?"6":this.ruleForm.goods ===`前9个`?"9":this.inputGoodsNum;
       });
+      params.guideId = guideId;
       //判断对象中是否有属性存在，没有就返回，有就直接返回参数
       if(!Object.keys(params).length) return;
       return params;
@@ -282,94 +256,45 @@ export default {
       this.$emit('dataCorrection');
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.subData().then(res=>{
-            new MessageBounced(`创建成功`,`success`).messageWindow();
-            setTimeout(()=>{this.$router.push("/shoppingGuide");},200);
-          },error=>{
-            new MessageBounced(error.msg,`error`).messageWindow();
-          });
+          !this.status && this.subData();
+          this.status ===`未生效` && this.modifyForm(this.guideId);
+          this.status === `生效中` && this.onlyDelayTime(this.guideId);
         };
       });
     },
-    //修改信息
-    modifyForm() {
-      if (this.status === `生效中`) {
-        let [endTime, guideId] = [this.ruleForm.endTime, this.guideId];
-        onlyDelayTime({ endTime, guideId }).then(
-          res => {
-            if (res.data.statusCode === 2000) {
-              this.$message({ message: `修改成功`, type: `success` });
-              setTimeout(() => {
-                this.$router.push("/shoppingGuide");
-              }, 500);
-            } else {
-              this.$message({ message: res.data.msg, type: `error` });
-            }
-          },
-          error => {
-            console.log(error);
-          }
-        );
-      } else {
-        let lists = [];
-        this.areaLists.forEach(el => {
-          lists.push({ checked: el.checked, traId: el.traId });
-        });
-        let params = {
-          guideId: this.guideId,
-          templateCode: "T1",
-          guideNameDisplay: this.ruleForm.showName ? 1 : 0, //是否名称展示
-          startTime: this.ruleForm.startTime,
-          endTime: this.ruleForm.endTime,
-          guideName: this.ruleForm.name, //导购名称
-          traSelectionList: lists, //选择的商圈
-          actionList: [
-            {
-              actionType: `app`,
-              actionContent: `16`,
-              picUrl: this.ruleForm.submitImg,
-              actionParam: this.ruleForm.path //跳转页面
-            }
-          ],
-          //只针对模版1
-          showGoodsCount:
-            this.ruleForm.goods === `不展示`
-              ? "0"
-              : this.ruleForm.goods === `前3个`
-              ? "3"
-              : this.ruleForm.goods === `前6个`
-              ? "6"
-              : this.ruleForm.goods === `前9个`
-              ? "9"
-              : this.ruleForm.goods === `自定义`
-              ? this.inputGoodsNum
-              : ""
-        };
-        modifyGuide(params).then(
-          res => {
-            if (res.data.statusCode === 2000) {
-              this.$message({ message: `修改成功`, type: `success` });
-              setTimeout(() => {
-                this.$router.push("/shoppingGuide");
-              }, 500);
-            } else {
-              this.$message({ message: res.data.msg, type: `error` });
-            }
-          },
-          error => {}
-        );
-      }
+    //只修改时间的提交
+    async onlyDelayTime(guideId){
+      const delayTime = await this.assemblyInformation(guideId);
+      if(delayTime){await postRequest(`/mall/shopping/guides/${guideId}/extendEndTime`,delayTime).then(res=>{
+        console.log(res);
+        new MessageBounced(`修改成功`,`success`).messageWindow();
+      },error=>{
+        new MessageBounced(error.msg,`error`).messageWindow();
+      })};
     },
-    //提交信息
+    //修改后的提交
+    async modifyForm(guideId){
+      const modifyData = await this.assemblyInformation(guideId);
+      if(modifyData){await postRequest(`/mall/shopping/guides/${guideId}/modify`,modifyData).then(res=>{
+        console.log(res);
+        new MessageBounced(`修改成功`,`success`).messageWindow();
+        setTimeout(()=>{this.$router.push("/shoppingGuide");},300);
+      },error=>{
+        new MessageBounced(error.msg,`error`).messageWindow();
+      })};
+    },
+    //新建的提交
     async subData() {
       const submitData = await this.assemblyInformation();
-      if(submitData){ return await postRequest(`/mall/shopping/guides/create`,submitData);};
+      if(submitData){await postRequest(`/mall/shopping/guides/create`,submitData).then(res=>{new MessageBounced(`创建成功`,`success`).messageWindow();setTimeout(()=>{this.$router.push("/shoppingGuide");},200);},error=>{new MessageBounced(error.msg,`error`).messageWindow();})};
     }
   },
   created() {
-    // console.log(`demo1`);
     console.log(`子组件`);
     console.log(this.$route.params);
+    this.$route.params.guideId && (this.guideId = this.$route.params.guideId);
+    this.$route.params.status && (this.status = this.$route.params.status);
+    this.$route.params.status ===`生效中` && (this.allDisabled = true,this.modifyTime = true);  
     // if (this.$route.params.guideId) {
     //   this.guideId = this.$route.params.guideId;
     //   this.status = this.$route.params.status;
@@ -396,8 +321,18 @@ export default {
     // }
   },
   watch:{
-    guideId:(newValue,old)=>{
-      console.log(newValue);
+    picUrl:function(picUrl){
+      this.ruleForm.submitImg = picUrl;
+      this.ruleForm.fileList.push({ name:picUrl,value:picUrl});
+    },
+    topicId:function(topicId){
+      this.ruleForm.path = topicId;
+    },
+    topicName:function(topicName){
+      this.ruleForm.pathValue = topicName;
+    },
+    showGoodsCount:function(showGoodsCount){
+      this.quantityGoods(showGoodsCount);
     }
   }
 };

@@ -13,6 +13,7 @@
             <el-form-item label="导购模版" prop="resource" class="show">
               <el-radio-group v-model="ruleForm.resource">
                 <el-radio
+                  :ref="rules"
                   :disabled="disTemplate"
                   v-for="(item,index) in resourceLists"
                   :label="item.name"
@@ -72,11 +73,10 @@
           <demoOne
             @dataCorrection="dataCorrection"
             v-if="selectedTemplate===0"
-            :guideId="guideId"
+            :showGoodsCount="showGoodsCount"
             :topicId="topicId"
             :topicName="topicName"
             :picUrl="picUrl"
-            :showGoodsCount="showGoodsCount"
             :publicPart="[{templateCode:ruleForm.resource,showName:ruleForm.showName,guideName:ruleForm.guideName,businessArea:ruleForm.businessAreaLists,startTime:ruleForm.startTime,endTime:ruleForm.endTime}]"
           ></demoOne>
           <demoTwo v-if="selectedTemplate===1"></demoTwo>
@@ -124,13 +124,14 @@ export default {
   },
   data() {
     return {
+      isRequest:false,
       disTemplate:false,
       allDisabled: false,
       isRequest:false,
       selectedTemplate: 0,
-      topicId:``,
-      topicName:``,
-      picUrl:``,
+      topicId:'',
+      topicName:'',
+      picUrl:'',
       showGoodsCount:null,
       ruleForm: {
         resource: "模版1", //默认模版
@@ -189,6 +190,7 @@ export default {
       console.log(resource);
       console.log(index);
       this.selectedTemplate = index;
+      this.$refs.ruleForm.clearValidate();
     },
     businessAreaRequest() {
       getRequest(`/mall/tra/topics/selections`).then(
@@ -199,22 +201,24 @@ export default {
         error => {}
       );
     },
-    fromShoppingRequest(){
-     getRequest(`/mall/shopping/guides/${this.guideId}`).then(res=>{
-        console.log(res);
-        this.ruleForm.showName = res.body.guideNameDisplay ? true : false;
-        this.ruleForm.guideName = res.body.guideName;
-        this.ruleForm.startTime = res.body.startTime;
-        this.ruleForm.endTime = res.body.endTime;
-        this.ruleForm.businessAreaLists = res.body.traSelectionList;
-        this.showGoodsCount = res.body.showGoodsCount;
-        res.body.traSelectionList.forEach(el=>{el.checked && this.ruleForm.selectedArea.push(el.traName);});
-        res.body.actionList.forEach(el=>{
-          this.topicId = el.actionParam; //专题ID号
-          this.topicName = el.actionParamName; //专题名称
-          this.picUrl = el.picUrl;  //上传的图片url
-        });
-      },error=>{});  
+    async fromShoppingRequest(guideId){
+      const response = await getRequest(`/mall/shopping/guides/${guideId}`);
+      console.log(`响应结果`);
+      console.log(response);
+      this.ruleForm.showName = response.body.guideNameDisplay ? true : false;
+      this.ruleForm.guideName = response.body.guideName;
+      this.ruleForm.startTime = response.body.startTime;
+      this.ruleForm.endTime = response.body.endTime;
+      this.ruleForm.businessAreaLists = response.body.traSelectionList;
+      this.showGoodsCount = response.body.showGoodsCount;
+      response.body.traSelectionList.forEach(el=>{el.checked && this.ruleForm.selectedArea.push(el.traName);});
+      response.body.actionList.forEach(el=>{
+        this.topicId = el.actionParam.toString(); //专题ID号
+        this.topicName = el.actionParamName; //专题名称
+        this.picUrl = el.picUrl;  //上传的图片url
+      });
+      // if(this.topicId&&this.picUrl&&this.topicName){this.isRequest = true;};
+      console.log(`专题号：${this.topicId}`)
     },
     isShow(isShow) {
       console.log(`是否展示:${isShow}`);
@@ -241,17 +245,19 @@ export default {
      * 2.模版切换均不可用：查看=》全部禁用； 重新添加、编辑=》全部可编辑； 延长时间=》只可修改结束时间
      * 3.获取公共组件的参数:showName,guideName,businessAreaLists,startTime,endTime
      * 4.导购ID，图片，是否展示传送子组件
-     * 5.试试用promise解决异步数据问题
+     * 5.试试用async解决异步数据问题
      */
     console.log(`参数`);
     console.log(this.$route.params);
     if (this.$route.params.guideId) {
-      this.disTemplate = true;
-      this.guideId = this.$route.params.guideId;
-      this.status = this.$route.params.status; //导购单子的状态 未生效、生效中、已停用、已删除、已结束
-      this.ruleForm.resource = templateChoose[this.$route.params.templateCode]();
-      this.resourceLists.forEach((el,index)=>{ el.name === this.ruleForm.resource && (this.selectedTemplate = index); });
-      this.fromShoppingRequest();
+      new Promise((resolve,reject)=>{
+        this.disTemplate = true;
+        // this.guideId = this.$route.params.guideId;
+        // this.status = this.$route.params.status; //导购单子的状态 未生效、生效中、已停用、已删除、已结束
+        this.ruleForm.resource = templateChoose[this.$route.params.templateCode]();
+        this.resourceLists.forEach((el,index)=>{ el.name === this.ruleForm.resource && (this.selectedTemplate = index); });
+        return this.fromShoppingRequest(this.$route.params.guideId);
+      });
     }else{
       this.businessAreaRequest();
     };
