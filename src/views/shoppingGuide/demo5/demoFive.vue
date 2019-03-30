@@ -7,57 +7,6 @@
       label-width="120px"
       class="demo-ruleForm"
     >
-      <el-form-item label="名称展示" class="show" prop="showName">
-        <el-checkbox :disabled="allDisabled" v-model="ruleForm.showName" @change="isShow()">展示</el-checkbox>
-      </el-form-item>
-
-      <el-form-item label="导购名称" prop="name" class="show">
-        <el-input v-model="ruleForm.name" placeholder="请输入导购名称" :disabled="allDisabled"></el-input>
-      </el-form-item>
-      <el-form-item label="商圈" prop="type" class="show">
-        <el-checkbox-group v-model="ruleForm.type" @change="chooseArea(ruleForm.type)">
-          <el-checkbox
-            v-for="(item,index) in areaLists"
-            :label="item.traName"
-            :key="index"
-            name="type"
-            @change="chooseArea1(item)"
-            :disabled="allDisabled"
-          ></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="开始时间" required>
-        <el-col :span="11">
-          <el-form-item prop="startTime">
-            <el-date-picker
-              type="datetime"
-              placeholder="选择时间日期"
-              v-model="ruleForm.startTime"
-              style="width: 100%;"
-              default-time="16:00:00"
-              @change="startTime(ruleForm.startTime)"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :disabled="allDisabled"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="结束时间" required>
-        <el-col :span="11">
-          <el-form-item prop="endTime">
-            <el-date-picker
-              type="datetime"
-              placeholder="选择时间日期"
-              v-model="ruleForm.endTime"
-              style="width: 100%;"
-              default-time="16:00:00"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              @change="endTime(ruleForm.endTime)"
-              :disabled="modifyTime"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-      </el-form-item>
       <el-form-item label="活动1" required>
         <el-form-item label="活动图片" prop="fileOne" class="show">
           <el-upload
@@ -267,7 +216,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
-        <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button>
+        <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
         <el-button @click="cancel()" v-if="newCreate">取消</el-button>
       </el-form-item>
     </el-form>
@@ -275,6 +224,8 @@
 </template>
 
 <script>
+import { getRequest, postRequest } from "@/utils/ajax";
+import { MessageBounced } from "@/utils/message";
 import { Message } from "element-ui";
 import {
   create,
@@ -286,20 +237,16 @@ import {
 import { guideAllArea } from "@/api/headerBar";
 export default {
   name: "demoFive",
-  // props: {
-  //   areaNameLists: Array
-  // },
+  props: {
+    publicPart: Array
+  },
   data() {
     return {
       newCreate: true, //新建保存
-      modifySave: false, //修改保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
-      timer: null,
-      areaLists: [],
+      // areaLists: [],
       ruleForm: {
-        showName: false, //是否名称展示
-        name: "", //导购名称
         startTime: "", //开始时间
         endTime: "", //结束时间
         type: [], //选择商圈
@@ -310,42 +257,6 @@ export default {
         goods: "" //是否展示商品
       },
       rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { max: 10, message: "最多10个字", trigger: "blur" }
-        ],
-        startTime: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择开始日期",
-            trigger: "change"
-          }
-        ],
-        endTime: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择结束时间",
-            trigger: "change"
-          }
-        ],
-        type: [
-          {
-            type: "array",
-            required: true,
-            message: "请至少选择一个投放商圈",
-            trigger: "change"
-          }
-        ],
-        showName: [
-          {
-            type: "boolean",
-            required: true,
-            message: "请选择是否展示名称",
-            trigger: "change"
-          }
-        ],
         // resource: [
         //   { required: true, message: "请选择使用模版", trigger: "change" }
         // ],
@@ -439,20 +350,20 @@ export default {
     };
   },
   methods: {
-    allArea() {
-      guideAllArea().then(
-        res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            this.areaLists = res.data.body;
-          }
-          console.log(this.areaLists);
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    },
+    // allArea() {
+    //   guideAllArea().then(
+    //     res => {
+    //       console.log(res.data);
+    //       if (res.data.statusCode === 2000) {
+    //         this.areaLists = res.data.body;
+    //       }
+    //       console.log(this.areaLists);
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
     fromShoppingGuide() {
       let params = { guideId: this.guideId };
       guideDetails(params).then(
@@ -559,40 +470,6 @@ export default {
     toSpecialGuide() {
       this.$router.push("/specialinfor");
     },
-    isShow() {
-      console.log(`是否展示`);
-      console.log(this.ruleForm.showName);
-    },
-    chooseArea(areaName) {
-      // console.log(areaName);
-      // areaName.length &&
-      //   areaName.forEach(el => {
-      //     this.areaLists.length &&
-      //       this.areaLists.forEach(el1 => {
-      //         if (el === el1.traName) {
-      //           el1.checked = true;
-      //         }
-      //       });
-      //   });
-      // console.warn(this.areaLists);
-    },
-    chooseArea1(item) {
-      this.areaLists.length &&
-        this.areaLists.forEach(el => {
-          if (el.traName === item.traName) {
-            item.checked = !item.checked;
-          }
-        });
-      console.log(`最新数据`);
-      console.log(this.areaLists);
-    },
-    //开始时间
-    startTime(date) {
-      console.info(`开始时间为${date}`);
-    },
-    endTime(date) {
-      console.info(`结束时间为${date}`);
-    },
     authorization(num){
       switch(num){
         case 1:
@@ -609,15 +486,31 @@ export default {
     cancel() {
       this.$router.push("/ShoppingGuide");
     },
+    assemblyInformation(){
+      console.log(`父组件`);
+      console.log(this.publicPart);
+      let lists = [],params = {};
+      this.publicPart.length && this.publicPart.forEach(el=>{
+        if(Object.values(el).includes("")||Object.values(el).includes(null)) return;
+        el.templateCode = `T5`;
+        el.businessArea.forEach(el=>{lists.push({checked:el.checked,traId:el.traId});});
+        params.guideNameDisplay = el.showName ? 1 : 0 ;
+        params.guideName = el.guideName;
+        params.startTime = el.startTime;
+        params.endTime = el.endTime;
+        params.traSelectionList = lists;
+        params.actionList = [];
+      });
+    },
     submitForm(formName) {
+      this.$emit('dataCorrection');
+      this.assemblyInformation();
       // this.subData();
-      clearTimeout(this.timer);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // alert("submit!");
-          this.timer = setTimeout(() => {
-            this.subData();
-          }, 500);
+          // this.timer = setTimeout(() => {
+          //   this.subData();
+          // }, 500);
         } else {
           console.log("error submit!!");
           return false;
@@ -760,7 +653,7 @@ export default {
             } else {
               this.threeChoose.selectText = "";
               this.threeChoose.topicId = "";
-            }
+            };
             activity = [this.oneChoose, this.twoChoose, this.threeChoose];
             activity.forEach(el => {
               // console.log(el);
@@ -1151,7 +1044,7 @@ export default {
       }
       this.fromShoppingGuide();
     } else {
-      this.allArea();
+      // this.allArea();
     }
     // this.guideId=this.$route.params.guideId;
     // this.dataRequest();

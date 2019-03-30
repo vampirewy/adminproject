@@ -82,10 +82,10 @@
             :picUrl="picUrl"
             :publicPart="[{templateCode:ruleForm.resource,showName:ruleForm.showName,guideName:ruleForm.guideName,businessArea:ruleForm.businessAreaLists,startTime:ruleForm.startTime,endTime:ruleForm.endTime}]"
           ></demoOne>
-          <demoTwo v-if="selectedTemplate===1"></demoTwo>
+          <demoTwo v-if="selectedTemplate===1" ></demoTwo>
           <demoThree v-if="selectedTemplate===2"></demoThree>
           <demoFour v-if="selectedTemplate===3"></demoFour>
-          <demoFive v-if="selectedTemplate===4"></demoFive>
+          <demoFive v-if="selectedTemplate===4" @dataCorrection="dataCorrection" :publicPart="[{templateCode:ruleForm.resource,showName:ruleForm.showName,guideName:ruleForm.guideName,businessArea:ruleForm.businessAreaLists,startTime:ruleForm.startTime,endTime:ruleForm.endTime}]"></demoFive>
         </div>
       </el-col>
       <el-col :span="12">
@@ -105,7 +105,6 @@ import demoTwo from "@/views/shoppingGuide/demo2/demoTwo.vue";
 import demoThree from "@/views/shoppingGuide/demo3/demoThree.vue";
 import demoFour from "@/views/shoppingGuide/demo4/demoFour.vue";
 import demoFive from "@/views/shoppingGuide/demo5/demoFive.vue";
-// import { guideDetails } from "@/api/shoppingGuide";
 import { getRequest, postRequest } from "@/utils/ajax";
 const templateChoose={
   T1:()=>{return `模版1`},
