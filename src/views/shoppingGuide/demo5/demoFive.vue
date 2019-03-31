@@ -256,6 +256,22 @@ export default {
         path: "", //页面路径
         goods: "" //是否展示商品
       },
+      /**  
+       * picUrl:上传的图片地址
+       * filePic:显示在页面上的图片地址
+       * type 跳转类型为APP还是H5
+       * appSelect 选中APP时，显示下拉框
+       * appSelectText 下拉框选中的值
+       * special 下拉框的值为专题页面时，显示专题名称
+       * h5Param 选中H5时显示的内容框
+       * path为输入框里的值
+       * authorization h5授权
+       */
+      activitiesSection:[
+        {name:'活动1',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''},
+        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''},
+        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''}
+      ],
       rules: {
         // resource: [
         //   { required: true, message: "请选择使用模版", trigger: "change" }
@@ -350,20 +366,6 @@ export default {
     };
   },
   methods: {
-    // allArea() {
-    //   guideAllArea().then(
-    //     res => {
-    //       console.log(res.data);
-    //       if (res.data.statusCode === 2000) {
-    //         this.areaLists = res.data.body;
-    //       }
-    //       console.log(this.areaLists);
-    //     },
-    //     error => {
-    //       console.log(error);
-    //     }
-    //   );
-    // },
     fromShoppingGuide() {
       let params = { guideId: this.guideId };
       guideDetails(params).then(
