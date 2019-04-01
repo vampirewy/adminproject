@@ -204,6 +204,7 @@ export default {
                 this.pageNum = 1;
                 this.brandRequest(this.pageNum, this.pageSize, this.brandName);
                 this.editIndex = null;
+                currentRow.brandName = currentRow.newBrandName;
               } else {
                 this.$message({ message: res.data.msg, type: `error` });
               };
@@ -212,6 +213,7 @@ export default {
           );
         })
         .catch(() => {
+          console.log(`执行了`);
           this.editIndex = null;
           currentRow.newBrandName = currentRow.brandName;
         });
