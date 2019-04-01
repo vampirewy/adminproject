@@ -64,7 +64,7 @@
         <!-- </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </el-dialog>
@@ -84,6 +84,7 @@ export default {
   name: "brandmanage",
   data() {
     return {
+      editSaveText:`编辑`,
       reg: /^[\u4E00-\u9FA5A-Za-z]+$/, //中英文
       brandName: "", //输入品牌名称
       addBrandName: "", //添加输入名称
