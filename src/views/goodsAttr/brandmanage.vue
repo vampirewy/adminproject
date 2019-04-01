@@ -19,7 +19,7 @@
             <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
             <el-input
               size="mini"
-              v-model="scope.row.brandName"
+              v-model="scope.row.newBrandName"
               @blur="editRow(scope.row)"
               v-if="scope.$index===editIndex"
             ></el-input>
@@ -111,6 +111,9 @@ export default {
           if (res.data.statusCode === 2000) {
             this.totalCount = res.data.body.totalSize;
             this.totalPage = res.data.body.pageCount;
+            res.data.body.pageData.length && res.data.body.pageData.forEach(el=>{
+              el.newBrandName = el.brandName;
+            });
             this.brandLists = res.data.body.pageData;
           } else {
           }
@@ -186,7 +189,7 @@ export default {
       console.warn(currentRow);
       let params = {
         brandId: currentRow.brandId,
-        brandName: currentRow.brandName
+        brandName: currentRow.newBrandName
       };
       this.$confirm("确认修改吗?", "提示", {
         confirmButtonText: "确定",
@@ -210,6 +213,7 @@ export default {
         })
         .catch(() => {
           this.editIndex = null;
+          currentRow.newBrandName = currentRow.brandName;
         });
     },
     edit(currentRow, currentIndex) {
