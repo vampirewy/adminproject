@@ -19,7 +19,7 @@
             <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
             <el-input
               size="mini"
-              v-model="scope.row.brandName"
+              v-model="scope.row.newBrandName"
               @blur="editRow(scope.row)"
               v-if="scope.$index===editIndex"
             ></el-input>
@@ -79,7 +79,6 @@ import {
   modifyBrand
 } from "@/api/brandManager";
 import { Message } from "element-ui";
-import { clearInterval, clearTimeout, setTimeout } from 'timers';
 export default {
   name: "brandmanage",
   data() {
@@ -93,7 +92,7 @@ export default {
       searchLists: [],
       totalCount: null,
       totalPage: null,
-      timer:null,
+      timer: null,
       pageSize: 30,
       pageNum: 1,
       editIndex: null //切换是展示或编辑的input框
@@ -112,6 +111,9 @@ export default {
           if (res.data.statusCode === 2000) {
             this.totalCount = res.data.body.totalSize;
             this.totalPage = res.data.body.pageCount;
+            res.data.body.pageData.length && res.data.body.pageData.forEach(el=>{
+              el.newBrandName = el.brandName;
+            });
             this.brandLists = res.data.body.pageData;
           } else {
           }
@@ -138,7 +140,7 @@ export default {
           brandName: this.addBrandName
         };
         clearTimeout(this.timer);
-        this.timer = setTimeout(()=>{
+        this.timer = setTimeout(() => {
           addBrand(params).then(
             res => {
               if (res.data.statusCode === 2000) {
@@ -153,7 +155,7 @@ export default {
             },
             error => {}
           );
-        },500);
+        }, 500);
       }
     },
     searchBrand(brandName, fn) {
@@ -187,21 +189,34 @@ export default {
       console.warn(currentRow);
       let params = {
         brandId: currentRow.brandId,
-        brandName: currentRow.brandName
+        brandName: currentRow.newBrandName
       };
-      modifyBrand(params).then(
-        res => {
-          if (res.data.statusCode === 2000) {
-            this.$message({ message: `修改成功`, type: `success` });
-            this.pageNum = 1;
-            this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-            this.editIndex = null;
-          } else {
-            this.$message({ message: res.data.msg, type: `error` });
-          };
-        },
-        error => {}
-      );
+      this.$confirm("确认修改吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          modifyBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `修改成功`, type: `success` });
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+                this.editIndex = null;
+                currentRow.brandName = currentRow.newBrandName;
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              };
+            },
+            error => {}
+          );
+        })
+        .catch(() => {
+          console.log(`执行了`);
+          this.editIndex = null;
+          currentRow.newBrandName = currentRow.brandName;
+        });
     },
     edit(currentRow, currentIndex) {
       console.log(`编辑当前行为：`);
