@@ -84,7 +84,6 @@ export default {
   name: "brandmanage",
   data() {
     return {
-      editSaveText:`编辑`,
       reg: /^[\u4E00-\u9FA5A-Za-z]+$/, //中英文
       brandName: "", //输入品牌名称
       addBrandName: "", //添加输入名称
