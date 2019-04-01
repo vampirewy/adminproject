@@ -29,7 +29,7 @@
         <el-table-column align="center" prop="recoverCount" label="回收数量"></el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="edit(scope.row,scope.$index)">{{scope.row.editText}}</el-button>
+            <el-button type="text" @click="edit(scope.row,scope.$index)">编辑</el-button>
             <el-button type="text" @click="del(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -114,7 +114,6 @@ export default {
             res.data.body.pageData.length &&
               res.data.body.pageData.forEach(el => {
                 el.newBrandName = el.brandName;
-                el.editText = `编辑`;
               });
             this.brandLists = res.data.body.pageData;
           } else {
@@ -193,62 +192,62 @@ export default {
         brandId: currentRow.brandId,
         brandName: currentRow.newBrandName
       };
-      // this.$confirm("确认修改吗?", "提示", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   type: "warning"
-      // }).then(() => {
-      //     modifyBrand(params).then(
-      //       res => {
-      //         if (res.data.statusCode === 2000) {
-      //           this.$message({ message: `修改成功`, type: `success` });
-      //           this.pageNum = 1;
-      //           this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-      //           this.editIndex = null;
-      //           currentRow.brandName = currentRow.newBrandName;
-      //         } else {
-      //           this.$message({ message: res.data.msg, type: `error` });
-      //         };
-      //       },
-      //       error => {}
-      //     );
-      //   }).catch(() => {
-      //     console.log(`执行了`);
-      //     this.editIndex = null;
-      //     currentRow.newBrandName = currentRow.brandName;
-      //   });
+      this.$confirm("确认修改吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+          modifyBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `修改成功`, type: `success` });
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+                this.editIndex = null;
+                currentRow.brandName = currentRow.newBrandName;
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              };
+            },
+            error => {}
+          );
+        }).catch(() => {
+          console.log(`执行了`);
+          this.editIndex = null;
+          currentRow.newBrandName = currentRow.brandName;
+        });
     },
-    modifyRequest(currentRow) {
-      let params = {
-        brandId: currentRow.brandId,
-        brandName: currentRow.newBrandName
-      };
-      modifyBrand(params).then(
-        res => {
-          if (res.data.statusCode === 2000) {
-            this.$message({ message: `修改成功`, type: `success` });
-            this.pageNum = 1;
-            this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-            this.editIndex = null;
-            currentRow.brandName = currentRow.newBrandName;
-            currentRow.editText = `编辑`;
-          } else {
-            this.$message({ message: res.data.msg, type: `error` });
-          };
-        },
-        error => {}
-      );
-    },
+    // modifyRequest(currentRow) {
+    //   let params = {
+    //     brandId: currentRow.brandId,
+    //     brandName: currentRow.newBrandName
+    //   };
+    //   modifyBrand(params).then(
+    //     res => {
+    //       if (res.data.statusCode === 2000) {
+    //         this.$message({ message: `修改成功`, type: `success` });
+    //         this.pageNum = 1;
+    //         this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+    //         this.editIndex = null;
+    //         currentRow.brandName = currentRow.newBrandName;
+    //         currentRow.editText = `编辑`;
+    //       } else {
+    //         this.$message({ message: res.data.msg, type: `error` });
+    //       };
+    //     },
+    //     error => {}
+    //   );
+    // },
     edit(currentRow, currentIndex) {
       console.log(`编辑当前行为：`);
       console.log(currentRow);
       console.log(currentIndex);
       this.editIndex = currentIndex;
-      if (currentRow.editText === `编辑`) {
-        currentRow.editText = `保存`;
-      }else{
-        this.modifyRequest(currentRow);
-      };
+      // if (currentRow.editText === `编辑`) {
+      //   currentRow.editText = `保存`;
+      // }else{
+      //   this.modifyRequest(currentRow);
+      // };
       // this.editShow = true;
     },
     del(currentRow) {
