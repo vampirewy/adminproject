@@ -209,7 +209,7 @@ export default {
           );
         })
         .catch(() => {
-          
+          this.editIndex = null;
         });
     },
     edit(currentRow, currentIndex) {
