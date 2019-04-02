@@ -14,7 +14,8 @@ export default new Router({
   routes: [{
     path: "/",
     name: "layOut",
-    redirect: localStorage.getItem('cityCode') == 'manager' ? '/brandmanage' : '/shoppingGuide',
+    redirect: window.location.href.split("/#")[1],
+    // redirect: localStorage.getItem('cityCode') == 'manager' ? '/brandmanage' : window.location.href.split("/#")[1],
     component: Layout,
     children: [{
         path: "/shoppingGuide",
@@ -59,7 +60,19 @@ export default new Router({
         name: 'brandmanage',
         meta: ['商品属性', '品牌管理'],
         component: GoodsAttr
-      }
+      },
+      {
+        path: 'popmanager',
+        name: 'popmanager',
+        meta: ['弹窗管理', '列表'],
+        component: () => import( /* webpackChunkName: "popmanager" */ "./views/popmanager/popmanager.vue")
+      },
+      {
+        path: 'addpop',
+        name: 'addpop',
+        meta: ['弹窗管理', '添加'],
+        component: () => import( /* webpackChunkName: "addpop" */ "./views/popmanager/add/addpop.vue")
+      },
     ]
   }]
 });

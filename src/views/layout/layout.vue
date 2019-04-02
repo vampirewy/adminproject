@@ -100,6 +100,15 @@ const commentLists = [
       { name: "信息", path: "/specialinfor" }
       // { name: "商品", path: "/specialgood" }
     ]
+  },
+  {
+    name:"弹窗管理",
+    value:"3310",
+    index:"3",
+    sonName:[
+      {name:"列表",path:"/popmanager"},
+      {name:"添加",path:"/addpop"}
+    ]
   }
 ];
 export default {
