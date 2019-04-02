@@ -309,6 +309,7 @@ export default {
       // noActivity:true,
       // reg: /^\d+(\.\d{1,2})?$/, //只能输入正数，小数点两位
       areaLists: [],
+      status:'',
       headers: { sessionId: localStorage.getItem(`sessionId`) }, //图片上传的参数
       upImgUrl: `${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       options: [
