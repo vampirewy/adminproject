@@ -7,7 +7,7 @@
       label-width="120px"
       class="demo-ruleForm"
     >
-      <el-form-item label="活动1" required>
+      <!-- <el-form-item label="活动1" required>
         <el-form-item label="活动图片" prop="fileOne" class="show">
           <el-upload
             class="upload-demo"
@@ -53,7 +53,6 @@
               :value="item.value"
             ></el-option>
           </el-select>
-          <!-- <el-input placeholder="搜索专题名称" v-if="showSpecial"></el-input> -->
           <el-autocomplete
             v-if="oneChoose.special"
             v-model="oneChoose.topicName"
@@ -213,6 +212,69 @@
             :disabled="allDisabled"
           ></el-input>
         </el-form-item>
+      </el-form-item> -->
+      <el-form-item v-for="(item,index) in activitiesSection" :key="index" :label="item.name" required>
+        <el-form-item label="活动图片" class="show">
+          <el-upload 
+            class="upload-demo"
+            :action="upImgUrl"
+            :headers="headers"
+            :show-file-list="showImgLists"
+            :limit="1"
+            :file-list="item.filePic"
+            name="file"
+            :on-remove="removeImg"
+            :before-remove="beforeRemoveImg"
+            :on-success="(res,file)=>{return successImg(res,file,index)}"
+          >
+            <el-button type="primary" size="mini">上传图片</el-button>
+            <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="跳转页面" class="show">
+          <el-radio-group
+            v-model="item.type"
+            @change="chooseTypes(item.type)"
+            style="margin-right:10px;"
+          >
+            <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
+          </el-radio-group>
+          <el-select
+            style="display:block"
+            v-model="item.appSelectText"
+            placeholder="请选择"
+            @change="selectPage(item.appSelectText)"
+            v-if="item.appSelect"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-autocomplete
+            v-if="item.special"
+            v-model="item.topicName"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="请输入专题名称"
+            @select="select3"
+            :disabled="allDisabled"
+          ></el-autocomplete>
+          <el-button type="primary" v-if="item.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox
+            style="margin-left:10px;"
+            v-if="item.h5Param"
+            @change="authorization(3)"
+            v-model="item.authorization"
+          >H5授权</el-checkbox>
+          <el-input
+            placeholder="页面可根据数据变化动态显示"
+            @blur="h5Path(3)"
+            v-model="item.path"
+            v-if="item.h5Param"
+          ></el-input>
+        </el-form-item>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
@@ -245,6 +307,7 @@ export default {
       newCreate: true, //新建保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
+      showImgLists: false,
       // areaLists: [],
       ruleForm: {
         startTime: "", //开始时间
@@ -268,9 +331,9 @@ export default {
        * authorization h5授权
        */
       activitiesSection:[
-        {name:'活动1',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''},
-        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''},
-        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',special:false,h5Param:false,path:'',authorization:''}
+        {name:'活动1',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''},
+        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''},
+        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''}
       ],
       rules: {
         // resource: [
@@ -1015,6 +1078,13 @@ export default {
     },
     beforeRemoveThree(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    removeImg(){},
+    beforeRemoveImg(){},
+    successImg(res,file,index){
+      if(res.statusCode !== 2000){ return new MessageBounced(res.msg,`error`).messageWindow();};
+      res.statusCode === 2000 && this.activitiesSection[index].filePic.push({name:res.body,url:res.body}) && (this.activitiesSection[index].picUrl = res.body,this.showImgLists = true);
+      console.log(this.activitiesSection);
     }
   },
   created() {
