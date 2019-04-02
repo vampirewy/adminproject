@@ -150,10 +150,10 @@ export default {
   created() {
     localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists);
     if(this.value==`manager`){
-      window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/brandmanage'
+      window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/brandmanage';
       this.defaultActive = window.location.href.split("/#")[1];
     }else{
-      window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide'
+      // window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide'
       this.defaultActive = window.location.href.split("/#")[1];
     };
   },
