@@ -55,7 +55,7 @@ export default {
     return {
       statusList: [],  //选择的状态值  ''-全部状态 0-未生效 1-生效中 2-已结束 3-已停用 4-已删除
       checkBoxLists: [
-        { name: "全部状态", status: `` },
+        { name: "全部状态", status: -1 },
         { name: "未生效", status: 0 },
         { name: "生效中", status: 1 },
         { name: "已结束", status: 2 },
@@ -84,15 +84,17 @@ export default {
     },
     search() {
       console.log(`搜索`);
-      this.statusList = this.statusList.join(",");
+      let statusList = null;
+      this.statusList.includes(-1)?statusList="":(statusList=this.statusList.join(","));
+      // this.statusList = this.statusList.join(",");
       this.$emit(
         "statusAreaName",
         this.value,
-        this.statusList,
+        statusList,
         this.inputText,
         this.num
       );
-      this.statusList = [];
+      // this.statusList = [];
     },
     add() {
       console.log(this.$route);
