@@ -19,7 +19,7 @@
           >{{item.name}}</el-checkbox>
         </el-checkbox-group>-->
       </div>
-      <div class="middle" v-if="showArea">
+      <div class="middle">
         <el-select v-model="value" @blur="changeArea()">
           <el-option
             v-for="item in allAreaName"
@@ -107,6 +107,13 @@ export default {
         this.allAreaName = res.data.body;
       }
     },
+    /** 
+     * @statusList Array  选中的状态值
+     * @checkBoxLists Array  状态栏
+     * @value  选中的商圈ID号
+     * @inputText 导购、专题输入框的值
+     * @num 页面回置1
+     */
     search() {
       console.log(`搜索`);
       let statusList = [];
@@ -117,10 +124,16 @@ export default {
           this.checkBoxLists.forEach(el => {
             el.name === this.statusList[i] && statusList.push(el.status);
           });
-        };
+        }
         statusList = statusList.join(",");
-      };
-      this.$emit("statusAreaName",this.value,statusList,this.inputText,this.num);
+      }
+      this.$emit(
+        "statusAreaName",
+        this.value,  //商圈ID号
+        statusList,   //状态值
+        this.inputText,  //导购、专题输入框
+        this.num  //页面1
+      );
     },
     add() {
       console.log(this.$route);
@@ -128,16 +141,14 @@ export default {
         ? this.$router.push(`/addshopping`)
         : this.$router.push(`/specialinfor`);
     },
-    changeStatus(item) {
-      /**
-       *  0-末生效,1-生效中,2-已结束,3-已停用,4-已删除
-       *  全部状态不传值
-       */
-      console.log(`状态值`);
-      console.log(item);
-      // this.statusList.push(item.status);
-      // console.warn(this.statusList);
-    },
+    // changeStatus(item) {
+    //   /**
+    //    *  0-末生效,1-生效中,2-已结束,3-已停用,4-已删除
+    //    *  全部状态不传值
+    //    */
+    //   console.log(`状态值`);
+    //   console.log(item);
+    // },
     changeArea() {
       // console.log(this.value);
     },
@@ -178,15 +189,25 @@ export default {
     },
     searchPop() {
       console.log(`弹窗搜索`);
-      console.log(this.statusList);
-      this.statusList = this.statusList.join(",");
+      // console.log(this.statusList);
+      let statusList = [];
+      if (this.statusList.length === 5) {
+        statusList = "";
+      } else {
+        for (let i = 0; i < this.statusList.length; i++) {
+          this.checkBoxLists.forEach(el => {
+            el.name === this.statusList[i] && statusList.push(el.status);
+          });
+        }
+        statusList = statusList.join(",");
+      }
+      console.log(statusList);
       //状态选择 弹窗名称
-      // this.$emit("searchPopName", this.statusList, this.popName);
-      this.statusList = [];
+      this.$emit("searchPopName", this.value ,statusList, this.popName,this.num);
     }
   },
   created() {
-    if (!this.showArea) return;
+    // if (!this.showArea) return;
     this.allArea();
   }
 };

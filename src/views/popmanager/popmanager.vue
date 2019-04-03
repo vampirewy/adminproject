@@ -5,38 +5,43 @@
       <el-col :span="24">
       <el-table :data="popLists" style="width: 100%" border stripe>
         <!-- <el-table-column align="center" type="index"></el-table-column> -->
-        <el-table-column align="center" prop="id" label="ID" width="50"></el-table-column>
-        <el-table-column align="center" prop="img" label="图片" width="100">
+        <el-table-column align="center" prop="windowId" label="ID" width="50"></el-table-column>
+        <el-table-column align="center" prop="picUrl" label="图片" width="100">
           <template scope="scope">
-              <img :src="scope.row.img?scope.row.img:''" style="width:80px;">
+              <img :src="scope.row.picUrl?scope.row.picUrl:''" style="width:80px;">
             </template>
         </el-table-column>
-        <el-table-column align="center" prop="name" label="名称"></el-table-column>
-        <el-table-column align="center" prop="jump" label="跳转到"></el-table-column>
-        <el-table-column align="center" prop="pushNum popNum" label="推送量/弹窗量" width="90">
+        <el-table-column align="center" prop="windowName" label="名称"></el-table-column>
+        <el-table-column align="center" prop="actionType" label="跳转到"></el-table-column>
+        <el-table-column align="center" prop="pushCount popCount" label="推送量/弹窗量" width="90">
           <template slot-scope="scope">
-            <span>{{scope.row.pushNum}}</span>&nbsp;/&nbsp;<span>{{scope.row.popNum}}</span>
+            <span>{{scope.row.pushCount?scope.row.pushCount:'-'}}</span>&nbsp;/&nbsp;<span>{{scope.row.popCount?scope.row.popCount:'-'}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="clickNum" label="点击量" width="80"></el-table-column>
-        <el-table-column align="center" prop="sortIndex" label="排序">
+        <el-table-column align="center" prop="clickCount" label="点击量" width="80">
+          <template slot-scope="scope">
+            <span>{{scope.row.clickCount?scope.row.clickCount:'--'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="sortIndex" label="优先级">
           <template slot-scope="scope">
             <el-input v-model="scope.row.sortIndex" size="mini" @blur="sort(scope.row)"></el-input>
           </template>
         </el-table-column>
+        <el-table-column align="center" prop="traNames" label="活动商圈"></el-table-column>
         <el-table-column align="center" prop="startTime" label="开始时间">
         </el-table-column>
         <el-table-column align="center" prop="endTime" label="结束时间"></el-table-column>
-        <el-table-column align="center" prop="updateTime" label="更新时间"></el-table-column>
-        <el-table-column align="center" prop="user" label="更新人"></el-table-column>
+        <el-table-column align="center" prop="modifyTime" label="更新时间"></el-table-column>
+        <el-table-column align="center" prop="modifyUserName" label="更新人"></el-table-column>
         <el-table-column align="center" prop="status" label="状态"></el-table-column>
         <el-table-column align="center" prop="operation" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.see" type="text" @click="see(scope.row,scope.$index)">{{scope.row.see}}</el-button>
-            <el-button v-if="scope.row.del" type="text" @click="del(scope.row,scope.$index)">{{scope.row.del}}</el-button>
-            <el-button v-if="scope.row.stop" type="text" @click="stop(scope.row,scope.$index)">{{scope.row.stop}}</el-button>
-            <el-button v-if="scope.row.reEdit" type="text" @click="reEdit(scope.row,scope.$index)">{{scope.row.reEdit}}</el-button>
-            <el-button v-if="scope.row.export" type="text" @click="exportExcel(scope.row,scope.$index)">{{scope.row.export}}</el-button>
+            <el-button type="text" @click="see(scope.row)">查看</el-button>
+            <el-button v-if="scope.row.status === '未生效'" type="text" @click="del(scope.row,scope.$index)">删除</el-button>
+            <el-button v-if="scope.row.status === '生效中'" type="text" @click="stop(scope.row,scope.$index)">停用</el-button>
+            <el-button v-if="scope.row.status === '已删除'|| scope.row.status === '已停用' || scope.row.status === '已结束'" type="text" @click="resEdit(scope.row,scope.$index)">重新添加</el-button>
+            <el-button type="text" @click="exportExcel(scope.row,scope.$index)">导出数据</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,6 +67,7 @@
 <script>
 import HeaderBar from "@/components/headerBar.vue";
 import img from "../../img/demo1.png";
+import { popList } from "@/api/popManager";
 export default {
   name: "popmanager",
   components: {
@@ -70,16 +76,94 @@ export default {
   data() {
     return {
       showArea: false, //头部商圈隐藏
+      traId:'',
+      popName:'',
+      statusList:'',
       pageNum: 1,
       pageSize: 30,
       totalCount: null,
       totalPage: null,
       popLists:[
-        {id:'1',img:img,name:'可用红包',jump:'APP页面',pushNum:'100',popNum:'200',clickNum:'300',sortIndex:'',startTime:'2018-08-24 16:00',endTime:'2018-08-24 16:00',updateTime:'2018-08-24 18:00',user:'wangyi',status:'未生效',see:'查看',export:'导出数据',del:'删除',stop:'',reEdit:''},
-        {id:'1',img:img,name:'可用红包',jump:'APP页面',pushNum:'100',popNum:'200',clickNum:'300',sortIndex:'',startTime:'2018-08-24 16:00',endTime:'2018-08-24 16:00',updateTime:'2018-08-24 18:00',user:'wangyi',status:'生效中',see:'查看',export:'导出数据',del:'',stop:'停用',reEdit:''},
-        {id:'1',img:img,name:'可用红包',jump:'APP页面',pushNum:'100',popNum:'200',clickNum:'300',sortIndex:'',startTime:'2018-08-24 16:00',endTime:'2018-08-24 16:00',updateTime:'2018-08-24 18:00',user:'wangyi',status:'已删除',see:'查看',export:'导出数据',del:'',stop:'',reEdit:'重新添加'},
-        {id:'1',img:img,name:'可用红包',jump:'APP页面',pushNum:'100',popNum:'200',clickNum:'300',sortIndex:'',startTime:'2018-08-24 16:00',endTime:'2018-08-24 16:00',updateTime:'2018-08-24 18:00',user:'wangyi',status:'已停用',see:'查看',export:'导出数据',del:'',stop:'',reEdit:'重新添加'},
-        {id:'1',img:img,name:'可用红包',jump:'APP页面',pushNum:'100',popNum:'200',clickNum:'300',sortIndex:'',startTime:'2018-08-24 16:00',endTime:'2018-08-24 16:00',updateTime:'2018-08-24 18:00',user:'wangyi',status:'已结束',see:'查看',export:'导出数据',del:'',stop:'',reEdit:'重新添加'}
+          {
+          "actionType": "专题详情",
+          "clickCount": 0,
+          "endTime": "2018-08-24 16:00:00",
+          "modifyTime": "2018-08-24 16:00:00",
+          "modifyUserName": "wangyi",
+          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+          "popCount": 200,
+          "pushCount": 100,
+          "sortIndex": 0,
+          "startTime": "2018-08-24 16:00:00",
+          "status": '未生效',
+          "traNames": "西湖/老余杭-便利店",
+          "windowId": 1,
+          "windowName": "可用红包"
+        },
+        {
+          "actionType": "专题详情",
+          "clickCount": 0,
+          "endTime": "2018-08-24 16:00:00",
+          "modifyTime": "2018-08-24 16:00:00",
+          "modifyUserName": "wangyi",
+          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+          "popCount": 200,
+          "pushCount": 100,
+          "sortIndex": 0,
+          "startTime": "2018-08-24 16:00:00",
+          "status": '生效中',
+          "traNames": "西湖/老余杭-便利店",
+          "windowId": 1,
+          "windowName": "可用红包"
+        },
+        {
+          "actionType": "专题详情",
+          "clickCount": 0,
+          "endTime": "2018-08-24 16:00:00",
+          "modifyTime": "2018-08-24 16:00:00",
+          "modifyUserName": "wangyi",
+          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+          "popCount": 200,
+          "pushCount": 100,
+          "sortIndex": 0,
+          "startTime": "2018-08-24 16:00:00",
+          "status": '已删除',
+          "traNames": "西湖/老余杭-便利店",
+          "windowId": 1,
+          "windowName": "可用红包"
+        },
+        {
+          "actionType": "专题详情",
+          "clickCount": 0,
+          "endTime": "2018-08-24 16:00:00",
+          "modifyTime": "2018-08-24 16:00:00",
+          "modifyUserName": "wangyi",
+          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+          "popCount": 200,
+          "pushCount": 100,
+          "sortIndex": 0,
+          "startTime": "2018-08-24 16:00:00",
+          "status": '已结束',
+          "traNames": "西湖/老余杭-便利店",
+          "windowId": 1,
+          "windowName": "可用红包"
+        },
+        {
+          "actionType": "专题详情",
+          "clickCount": 0,
+          "endTime": "2018-08-24 16:00:00",
+          "modifyTime": "2018-08-24 16:00:00",
+          "modifyUserName": "wangyi",
+          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+          "popCount": 200,
+          "pushCount": 100,
+          "sortIndex": 0,
+          "startTime": "2018-08-24 16:00:00",
+          "status": '已停用',
+          "traNames": "西湖/老余杭-便利店",
+          "windowId": 1,
+          "windowName": "可用红包"
+        }
       ]
     };
   },
@@ -89,10 +173,32 @@ export default {
      *  @statusList 状态选择项
      *  @popName 弹窗名称
     */
-    popRequest(statusList, popName) {
+    popRequest(traId, statusList, windowName, page) {
       console.log(`弹窗列表`);
-      console.log(statusList);
-      console.log(popName);
+      // console.log(statusList);
+      // console.log(popName);
+      this.traId = traId;
+      this.popName = windowName;
+      this.statusList = statusList;
+      this.pageNum = page ? page : this.pageNum;
+      let params = {
+        statusArray: this.statusList,
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        windowName: this.popName,
+        traId: this.traId
+      };
+      popList(params).then(res=>{
+        console.log(res.data);
+        if(res.data.statusCode === 2000){
+          this.totalPage = res.data.pageCount;
+          this.totalCount = res.data.totalSize;
+          res.data.body.pageData.forEach(el=>{
+            el.status = el.status === 1 ? "生效中" : el.status === 2 ? "已结束" : el.status === 3 ? "已停用" : el.status === 4 ? "已删除" : "未生效";
+          });
+          this.popLists = res.data.body.pageData;
+        };
+      },error=>{});
     },
     jumpAddPop(currentRow,currentRowText){
       let [popId, status, text ] = [ currentRow.id, currentRow.status, currentRowText ];
@@ -139,7 +245,10 @@ export default {
       console.log(`最后第${this.pageNum}页`);
       this.pageNum = this.totalPage;
       // this.popRequest();
-    }
+    },
+  },
+  created() {
+    this.popRequest();
   }
 };
 </script>

@@ -2,9 +2,9 @@
   <div class="add_pop">
     <el-row>
       <el-col :span="12">
-        <el-form class="demo-ruleForm" label-width="120px">
+        <el-form class="demo-ruleForm" label-width="120px" :model="ruleForm" :rule="rules" ref="ruleForm">
           <el-form-item label="弹窗名称" class="show" required>
-            <el-input placeholder="请填写名称" v-model="inputPopName" :disabled="allDisabled"></el-input>
+            <el-input maxlength="15" placeholder="请填写名称,最多15字" v-model="inputPopName" :disabled="allDisabled"></el-input>
           </el-form-item>
           <el-form-item label="开始时间" required class="show">
             <el-col :span="11">
@@ -43,9 +43,12 @@
             <el-upload
               :disabled="allDisabled"
               class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              :action="upLoadImgUrl"
+              :headers="headers"
               list-type="picture"
               :limit="1"
+              :file-list="imgFileList"
+              :on-success="successImg"
             >
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
@@ -69,7 +72,7 @@
           </el-form-item>
           <el-form-item label="投放商圈" required class="show">
             <el-checkbox-group v-model="businessName" @change="chooseBusiness">
-              <el-checkbox :disabled="allDisabled" v-for="(item,index) in businessAreaLists" :label="item.traName" :key="index" name="type" @change="selectBusinessArea(item.traId,index)"></el-checkbox>
+              <el-checkbox :disabled="allDisabled" v-for="(item,index) in businessAreaLists" :label="item.traName" :key="index" name="type" @change="selectBusinessArea(item,index)"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="选择用户" required class="show">
@@ -84,9 +87,9 @@
               </el-upload>
             </div>
             <!-- 商圈 -->
-            <el-checkbox-group v-model="businessName" @change="chooseBusiness" v-if="currentUserTypeIndex===1">
+            <!-- <el-checkbox-group v-model="businessName" @change="chooseBusiness" v-if="currentUserTypeIndex===1">
               <el-checkbox :disabled="allDisabled" v-for="(item,index) in businessAreaLists" :label="item.traName" :key="index" name="type" @change="selectBusinessArea(item.traId,index)"></el-checkbox>
-            </el-checkbox-group>
+            </el-checkbox-group> -->
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="m_r_10" @click="submitForm()" v-if="hiddenButton">保存</el-button>
@@ -109,7 +112,9 @@ export default {
       showUploadFile:false,  //图片上传过程不展示
       hiddenButton:true,
       headers: { sessionId: localStorage.getItem(`sessionId`) },
+      upLoadImgUrl:`${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       upExcleAddr:`${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${this.$route.params.topicId}/goods/upload`,
+      imgFileList:[],
       popId:'',
       jumpType: [{ name: "APP" }, { name: "H5" }],
       appSelect: [
@@ -146,7 +151,7 @@ export default {
           label: "专题详情"
         }
       ], //APP页面时，下拉框
-      selectUserType:[{name:"指定用户"},{name:"商圈"}], //选择用户单选框
+      selectUserType:[{name:"指定用户"},{name:"商圈全部用户"}], //选择用户单选框
       inputPopName:'', //输入的弹窗名称
       appSelectItem:'', //下拉框选中的值
       type: [], //单选框  --APP 或者 H5
@@ -174,6 +179,7 @@ export default {
         }else{};
       },error=>{});
     },
+    successImg(){},
     //app页面时的下拉框选择项
     selectPage(){
       // 当ID为16时，显示专题搜索框
@@ -234,8 +240,12 @@ export default {
       this.dataAssembly();
     },
     //选中的那个商圈
-    selectBusinessArea(traId,index){
-      console.warn(`商圈id:${traId},下标${index}`);
+    selectBusinessArea(item,index){
+      console.warn(`商圈:`);
+      console.log(item);
+      this.businessAreaLists.forEach(el=>{
+        el.traName === item.traName && (item.checked = !item.checked);
+      });
     },
     //选中的那个类型--切换下方显示的东西
     chooseUserItem(index,item){
@@ -247,10 +257,10 @@ export default {
     },
     //商圈最终数据组装
     dataAssembly(){
-      let idLists = [];
-      if(!this.businessName.length) return;
-      for(let i = 0; i < this.businessName.length; i++){this.businessAreaLists.forEach(el=>{if(el.traName === this.businessName[i]){idLists.push(el.traId);};});};
-      console.log(`商圈ID：${idLists}`);
+      let bussinessAreaFinallyLists = [];
+      this.businessAreaLists.forEach(el=>{bussinessAreaFinallyLists.push({checked: el.checked, traId: el.traId});});
+      console.log(`提交的商圈最终数据`);
+      console.log(bussinessAreaFinallyLists);
     },
     submitForm(){
       console.log(`提交`);
