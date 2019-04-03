@@ -1,16 +1,23 @@
 <template>
   <div class="header_bar">
     <header class="header">
-      <div class="left">
-        <!-- <el-checkbox :indeterminate="isIndeterminate">全选</el-checkbox> -->
-        <el-checkbox-group v-model="statusList">
+      <div class="left right">
+        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="selectAll">全选</el-checkbox>
+        <el-checkbox-group v-model="statusList" @change="seletItem">
           <el-checkbox
-            @change="changeStatus(item.status)"
+            v-for="(item,index) in checkBoxLists"
+            :label="item.name"
+            :key="index"
+          >{{item.name}}</el-checkbox>
+        </el-checkbox-group>
+        <!-- <el-checkbox-group v-model="statusList">
+          <el-checkbox
+            @change="changeStatus(item)"
             v-for="(item,index) in checkBoxLists"
             :label="item.status"
             :key="index"
           >{{item.name}}</el-checkbox>
-        </el-checkbox-group>
+        </el-checkbox-group>-->
       </div>
       <div class="middle" v-if="showArea">
         <el-select v-model="value" @blur="changeArea()">
@@ -37,7 +44,9 @@
           @select="selecthPopName"
         ></el-autocomplete>
         <el-button type="primary" class="search m_r_10" @click="searchPop()">搜索</el-button>
-        <router-link to="/addpop"><el-button type="danger">添加</el-button></router-link>
+        <router-link to="/addpop">
+          <el-button type="danger">添加</el-button>
+        </router-link>
       </div>
     </header>
   </div>
@@ -49,28 +58,44 @@ import { checkSpecial } from "@/api/shoppingGuide";
 export default {
   name: "headerBar",
   props: {
-    showArea: Boolean  //显示弹窗或者商圈
+    showArea: Boolean //显示弹窗或者商圈
   },
   data() {
     return {
-      statusList: [],  //选择的状态值  ''-全部状态 0-未生效 1-生效中 2-已结束 3-已停用 4-已删除
+      checkAll: false,
+      isIndeterminate: true,
+      statusList: [], //选择的状态值  0-未生效 1-生效中 2-已结束 3-已停用 4-已删除
       checkBoxLists: [
-        { name: "全部状态", status: -1 },
+        // { name: "全部状态", status: `` },
         { name: "未生效", status: 0 },
         { name: "生效中", status: 1 },
         { name: "已结束", status: 2 },
         { name: "已停用", status: 3 },
         { name: "已删除", status: 4 }
       ],
-      allAreaName: [],  //商圈
+      allAreaName: [], //商圈
       inputText: ``, //除弹窗输入框外的输入框
-      value: "",  //商圈ID号
-      num: 1,  //页码
-      popName: "",  //选择的弹窗名称
+      value: "", //商圈ID号
+      num: 1, //页码
+      popName: "", //选择的弹窗名称
       searchLists: [] //弹窗模糊搜索列表
     };
   },
   methods: {
+    selectAll(val) {
+      this.isIndeterminate = false;
+      val
+        ? this.checkBoxLists.forEach(el => {
+            this.statusList.push(el.name);
+          })
+        : (this.statusList = []);
+    },
+    seletItem(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.checkBoxLists.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.checkBoxLists.length;
+    },
     async allArea() {
       let params = {
         // statisticsAll:true,
@@ -84,17 +109,18 @@ export default {
     },
     search() {
       console.log(`搜索`);
-      let statusList = null;
-      this.statusList.includes(-1)?statusList="":(statusList=this.statusList.join(","));
-      // this.statusList = this.statusList.join(",");
-      this.$emit(
-        "statusAreaName",
-        this.value,
-        statusList,
-        this.inputText,
-        this.num
-      );
-      // this.statusList = [];
+      let statusList = [];
+      if (this.statusList.length === 5) {
+        statusList = "";
+      } else {
+        for (let i = 0; i < this.statusList.length; i++) {
+          this.checkBoxLists.forEach(el => {
+            el.name === this.statusList[i] && statusList.push(el.status);
+          });
+        };
+        statusList = statusList.join(",");
+      };
+      this.$emit("statusAreaName",this.value,statusList,this.inputText,this.num);
     },
     add() {
       console.log(this.$route);
@@ -102,12 +128,14 @@ export default {
         ? this.$router.push(`/addshopping`)
         : this.$router.push(`/specialinfor`);
     },
-    changeStatus(index) {
+    changeStatus(item) {
       /**
        *  0-末生效,1-生效中,2-已结束,3-已停用,4-已删除
        *  全部状态不传值
        */
-      console.log(`值${index}`);
+      console.log(`状态值`);
+      console.log(item);
+      // this.statusList.push(item.status);
       // console.warn(this.statusList);
     },
     changeArea() {
@@ -137,7 +165,8 @@ export default {
               });
             this.searchLists = res.data.body;
             fn(this.searchLists);
-          } else {}
+          } else {
+          }
         },
         error => {
           console.log(error);
@@ -183,7 +212,7 @@ export default {
 .search {
   margin-left: 10px;
 }
-.m_r_10{
-  margin-right:10px;
+.m_r_10 {
+  margin-right: 10px;
 }
 </style>
