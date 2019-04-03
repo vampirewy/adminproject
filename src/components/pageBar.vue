@@ -23,7 +23,7 @@ export default {
     pageNum: Number,
     totalPage: Number,
     totalCount: Number,
-    traId: Number,
+    traId: String,
     statusLists: String,
     name:String //导购名称或专题名称
   },
