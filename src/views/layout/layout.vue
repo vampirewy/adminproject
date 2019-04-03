@@ -107,7 +107,7 @@ const commentLists = [
     index:"3",
     sonName:[
       {name:"列表",path:"/popmanager"},
-      {name:"添加",path:"/addpop"}
+      // {name:"添加",path:"/addpop"}
     ]
   }
 ];

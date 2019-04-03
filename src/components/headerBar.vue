@@ -36,8 +36,8 @@
           placeholder="请输入弹窗名称"
           @select="selecthPopName"
         ></el-autocomplete>
-        <el-button type="primary" class="search" @click="searchPop()">搜索</el-button>
-        <el-button type="danger" @click="addPopName()">添加</el-button>
+        <el-button type="primary" class="search m_r_10" @click="searchPop()">搜索</el-button>
+        <router-link to="/addpop"><el-button type="danger">添加</el-button></router-link>
       </div>
     </header>
   </div>
@@ -152,9 +152,6 @@ export default {
       //状态选择 弹窗名称
       // this.$emit("searchPopName", this.statusList, this.popName);
       this.statusList = [];
-    },
-    addPopName() {
-      this.$router.push("/addpop");
     }
   },
   created() {
@@ -183,5 +180,8 @@ export default {
 }
 .search {
   margin-left: 10px;
+}
+.m_r_10{
+  margin-right:10px;
 }
 </style>

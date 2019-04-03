@@ -85,17 +85,23 @@ export default {
   },
   methods: {
     /**
+     *  列表请求函数
      *  @statusList 状态选择项
      *  @popName 弹窗名称
-     * */
+    */
     popRequest(statusList, popName) {
       console.log(`弹窗列表`);
       console.log(statusList);
       console.log(popName);
     },
+    jumpAddPop(currentRow,currentRowText){
+      let [popId, status, text ] = [ currentRow.id, currentRow.status, currentRowText ];
+      this.$router.push({ name: `addpop`, params: { popId, status, text} });
+    },
     see(currentRow,currentIndex){
       console.log(currentRow);
-      console.log('查看下标为:'+currentIndex);
+      console.log('查看下标为:' + currentIndex);
+      this.jumpAddPop(currentRow,currentRow.see);
     },
     del(currentRow,currentIndex){
       console.log(currentRow);
@@ -107,8 +113,10 @@ export default {
     },
     reEdit(currentRow,currentIndex){
       console.log(currentRow);
-      console.log('重新添加下标为:'+currentIndex);
+      console.log('重新添加下标为:' + currentIndex);
+      this.jumpAddPop(currentRow,currentRow.reEdit);
     },
+    //导出数据 -- excel
     exportExcel(currentRow,currentIndex){
       console.log(currentRow);
       console.log('导出:'+currentIndex);
