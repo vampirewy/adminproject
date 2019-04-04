@@ -85,11 +85,7 @@ export default {
   methods: {
     selectAll(val) {
       this.isIndeterminate = false;
-      val
-        ? this.checkBoxLists.forEach(el => {
-            this.statusList.push(el.name);
-          })
-        : (this.statusList = []);
+      val ? this.checkBoxLists.forEach(el => {this.statusList.push(el.name);}) : (this.statusList = []);
     },
     seletItem(value) {
       let checkedCount = value.length;

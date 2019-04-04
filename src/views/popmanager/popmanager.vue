@@ -213,7 +213,7 @@ export default {
       console.log(currentRow);
       console.log('删除ID为:'+currentRow.windowId);
       delItem(currentRow.windowId).then(res=>{
-        if(res.statusCode !==2000) return this.$message({message:res.msg,type:`error`});
+        if(res.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
         this.$message({message:`删除成功`,type:`success`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
@@ -222,7 +222,7 @@ export default {
       console.log(currentRow);
       console.log('停用ID为:'+currentRow.windowId);
       stopItem(currentRow.windowId).then(res=>{
-        if(res.statusCode !== 2000) return this.$message({message:res.msg,type:`error`});
+        if(res.statusCode !== 2000) return this.$message({message:res.data.msg,type:`error`});
         this.$message({message:`停用成功`,type:`success`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
@@ -241,7 +241,7 @@ export default {
       console.log(currentRow);
       let [ point, sortId,bizType ] = [currentRow.sortIndex,currentRow.windowId,`window-${localStorage.getItem('cityCode')}`];
       sort({point,sortId,bizType}).then(res=>{
-        if(res.statusCode !==2000) return this.$message({message:res.msg,type:`error`});
+        if(res.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
     },

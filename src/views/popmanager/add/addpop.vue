@@ -314,7 +314,7 @@ export default {
     },
     uploadExcel(res){
       console.log(`上传文件成功`);
-      if(res.statusCode !== 2000){return this.$message({message:res.msg,type:`error`})};
+      if(res.statusCode !== 2000){return this.$message({message:res.data.msg,type:`error`})};
       this.$message({message:`导入成功`,type:`success`});
       this.userIds = res.body;
     },
@@ -335,7 +335,7 @@ export default {
         actionParam:this.ruleForm.type.toLowerCase()=== jumpType ? '' : this.topicId ,  //选中专题详情时，传入专题ID号，反之空串--模糊搜索框的那个
         authorized:this.ruleForm.type.toLowerCase() === jumpType ? this.authorization : '',
         assignType:this.switchCollection.currentUserTypeIndex,
-        userIds: this.switchCollection.currentUserTypeIndex === 0 ? this.userIds : ''
+        userIds: this.switchCollection.currentUserTypeIndex === 0 ? this.userIds : []
       };
       // console.log(`最终传参`);
       // console.log(params);
@@ -350,7 +350,7 @@ export default {
           this.$message({message:`添加成功`,type:`success`});
           setTimeout(()=>{this.$router.push('/popmanager')},300);
         }else{
-          this.$message({message:error.msg,type:`error`});
+          this.$message({message:res.data.msg,type:`error`});
         };
       },error=>{});
     },
