@@ -65,9 +65,10 @@
 </template>
 
 <script>
+import {Message} from "element-ui";
 import HeaderBar from "@/components/headerBar.vue";
 import img from "../../img/demo1.png";
-import { popList, delItem, stopItem, exportData } from "@/api/popManager";
+import { popList, delItem, stopItem, exportData, sort } from "@/api/popManager";
 export default {
   name: "popmanager",
   components: {
@@ -113,7 +114,7 @@ export default {
           "startTime": "2018-08-24 16:00:00",
           "status": '生效中',
           "traNames": "西湖/老余杭-便利店",
-          "windowId": 1,
+          "windowId": 2,
           "windowName": "可用红包"
         },
         {
@@ -129,7 +130,7 @@ export default {
           "startTime": "2018-08-24 16:00:00",
           "status": '已删除',
           "traNames": "西湖/老余杭-便利店",
-          "windowId": 1,
+          "windowId": 3,
           "windowName": "可用红包"
         },
         {
@@ -145,7 +146,7 @@ export default {
           "startTime": "2018-08-24 16:00:00",
           "status": '已结束',
           "traNames": "西湖/老余杭-便利店",
-          "windowId": 1,
+          "windowId": 4,
           "windowName": "可用红包"
         },
         {
@@ -161,7 +162,7 @@ export default {
           "startTime": "2018-08-24 16:00:00",
           "status": '已停用',
           "traNames": "西湖/老余杭-便利店",
-          "windowId": 1,
+          "windowId": 5,
           "windowName": "可用红包"
         }
       ]
@@ -211,10 +212,20 @@ export default {
     del(currentRow){
       console.log(currentRow);
       console.log('删除ID为:'+currentRow.windowId);
+      delItem(currentRow.windowId).then(res=>{
+        if(res.statusCode !==2000) return this.$message({message:res.msg,type:`error`});
+        this.$message({message:`删除成功`,type:`success`});
+        setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
+      },error=>{});
     },
     stop(currentRow){
       console.log(currentRow);
       console.log('停用ID为:'+currentRow.windowId);
+      stopItem(currentRow.windowId).then(res=>{
+        if(res.statusCode !== 2000) return this.$message({message:res.msg,type:`error`});
+        this.$message({message:`停用成功`,type:`success`});
+        setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
+      },error=>{});
     },
     reEdit(currentRow,text){
       console.log(currentRow);
@@ -228,6 +239,11 @@ export default {
     sort(currentRow){
       console.log(`这里是排序`);
       console.log(currentRow);
+      let [ point, sortId,bizType ] = [currentRow.sortIndex,currentRow.windowId,`window-${localStorage.getItem('cityCode')}`];
+      sort({point,sortId,bizType}).then(res=>{
+        if(res.statusCode !==2000) return this.$message({message:res.msg,type:`error`});
+        setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
+      },error=>{});
     },
     handleCurrentChange(page) {
       console.log(`当前第${page}页`);

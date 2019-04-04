@@ -55,6 +55,7 @@
 <script>
 import { allArea } from "@/api/headerBar";
 import { checkSpecial } from "@/api/shoppingGuide";
+import { popList } from "@/api/popManager";
 export default {
   name: "headerBar",
   props: {
@@ -162,22 +163,18 @@ export default {
       //   `第1栏搜索名称${this.oneChoose.topicName},id号${this.oneChoose.topicId}`
       // );
     },
-    searchPopName(topicName, fn) {
-      let params = {
-        topicName: topicName
-      };
-      checkSpecial(params).then(
+    searchPopName(popName, fn) {
+      let params = {windowName: popName};
+      popList(params).then(
         res => {
           console.log(res.data);
           if (res.data.statusCode === 2000) {
-            res.data.body.length &&
-              res.data.body.forEach(el => {
-                el.value = el.topicName;
-              });
-            this.searchLists = res.data.body;
+            res.data.body.pageData.forEach(el=>{
+              el.value = el.windowName;
+            });
+            this.searchLists = res.data.body.pageData;
             fn(this.searchLists);
-          } else {
-          }
+          };
         },
         error => {
           console.log(error);

@@ -38,10 +38,7 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="弹窗图片" class="show">
-            <!-- :file-list="fileList" //显示在页面上的图片 {name:xxx,url:xxx} 
-              :on-success="" :on-preview="handlePreview"
-            -->
+          <el-form-item label="弹窗图片" class="show" required>
             <el-upload
               :disabled="allDisabled"
               class="upload-demo"
@@ -51,6 +48,7 @@
               :limit="1"
               :file-list="imgFileList"
               :on-success="successImg"
+              :on-remove="removeImg"
               :show-file-list="showSuccessImg"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -85,7 +83,7 @@
             <!-- 指定用户 -->
             <div class="flex" v-if="switchCollection.currentUserTypeIndex===0">
               <el-button type="primary" size="small"><a href="demo.xlsx" download="demo.xlsx">下载模版</a></el-button>
-              <el-upload :disabled="allDisabled" class="upload-demo" :action="upExcleAddr" :headers="headers" :on-success="uploadExcel"  :file-list="successFile">
+              <el-upload :disabled="allDisabled" class="upload-demo" :action="upExcleAddr" :headers="headers" :on-success="uploadExcel"  :file-list="successFile" :show-file-list="showFileProcess">
                 <el-button type="danger" class="m_l_30" size="small">导入Excel</el-button>
               </el-upload>
             </div>
@@ -112,15 +110,17 @@ export default {
       popId:'', //弹窗ID  --查看或者重新添加请求需要使用
       allDisabled: false, //查看禁用
       showSuccessImg:false,  //图片上传过程不展示
+      showFileProcess:false,
       hiddenButton:true,  //从查看、重新添加过来，对底部保存和取消按钮的控制
       showTopicSearch:false,   //选中专题详情时，显示专题搜索框
-      //跳转类型、选择用户切换集合
+      //跳转类型、选择用户切换集合(根据下标切换)
       switchCollection:{
         typeCurrentIndex:null,  //跳转类型切换时显示相对应的框
         currentUserTypeIndex:null, //选择用户切换显示对应的
       },
       headers: { sessionId: localStorage.getItem(`sessionId`) },
       upLoadImgUrl:`${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`, //图片上传地址
+      // upExcleAddr:`${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       upExcleAddr:`${process.env.VUE_APP_BASE_URL}/mall/shopping/window/upload`, //excel上传地址
       jumpType: [{ name: "APP" }, { name: "H5" }],  //跳转类型 app or h5 
       //APP页面时，下拉框  --返利商品、我的红包、充值、我的钱包... 传值为value
@@ -202,7 +202,7 @@ export default {
     fromPopLists(popId){
       let [windowId] = [popId];
       seeDetail(windowId).then(res=>{
-        console.log(res);
+        console.log(res.data);
         if(res.data.statusCode === 2000){
           this.ruleForm.inputPopName = res.data.body.windowName;  //名称
           this.ruleForm.startTime = res.data.body.startTime;  //开始时间
@@ -231,6 +231,10 @@ export default {
     selectStartTime(){},
     //结束时间
     selectEndTime(){},
+    removeImg(file,fileList){
+      console.log(`图片删除时`);
+      this.ruleForm.successImg = '';
+    },
     successImg(res){
       console.log(`图片上传`);
       console.log(res);
@@ -308,12 +312,15 @@ export default {
       console.log(`选择的用户类型下标:${index}`);
       this.switchCollection.currentUserTypeIndex = index;
     },
-    uploadExcel(){
+    uploadExcel(res){
       console.log(`上传文件成功`);
+      if(res.statusCode !== 2000){return this.$message({message:res.msg,type:`error`})};
+      this.$message({message:`导入成功`,type:`success`});
+      this.userIds = res.body;
     },
     //最终数据组装,包括商圈数据
     dataAssembly(){
-      let bussinessAreaFinallyLists = [];
+      let bussinessAreaFinallyLists = [],jumpType = 'h5';
       this.businessAreaLists.forEach(el=>{bussinessAreaFinallyLists.push({checked: el.checked, traId: el.traId});});
       // console.log(`提交的商圈最终数据`);
       // console.log(bussinessAreaFinallyLists);
@@ -324,9 +331,9 @@ export default {
         picUrl: this.ruleForm.successImg,    //上传图片地址
         traSelectionList:bussinessAreaFinallyLists,    //商圈
         actionType:this.ruleForm.type.toLowerCase(),  //跳转类型  --h5 --app
-        actionContent:this.ruleForm.type.toLowerCase()=== `h5` ? this.ruleForm.h5Url :this.appSelectItem ,  //app时，传入页面ID号或h5输入框地址
-        actionParam:this.ruleForm.type.toLowerCase()=== `h5`? '' : this.topicId ,  //选中专题详情时，传入专题ID号，反之空串--模糊搜索框的那个
-        authorized:this.ruleForm.type.toLowerCase() === `h5` ? this.authorization : '',
+        actionContent:this.ruleForm.type.toLowerCase()=== jumpType ? this.ruleForm.h5Url :this.appSelectItem ,  //app时，传入页面ID号或h5输入框地址
+        actionParam:this.ruleForm.type.toLowerCase()=== jumpType ? '' : this.topicId ,  //选中专题详情时，传入专题ID号，反之空串--模糊搜索框的那个
+        authorized:this.ruleForm.type.toLowerCase() === jumpType ? this.authorization : '',
         assignType:this.switchCollection.currentUserTypeIndex,
         userIds: this.switchCollection.currentUserTypeIndex === 0 ? this.userIds : ''
       };
@@ -355,7 +362,7 @@ export default {
         } else {
           console.log("error submit!!");
           return false;
-        }
+        };
       });
     }
   },
