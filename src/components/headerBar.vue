@@ -117,7 +117,7 @@ export default {
     search() {
       console.log(`搜索`);
       let statusList = [];
-      if (this.statusList.length === 5) {
+      if (this.statusList.length >= 5) {
         statusList = "";
       } else {
         for (let i = 0; i < this.statusList.length; i++) {
@@ -191,7 +191,7 @@ export default {
       console.log(`弹窗搜索`);
       // console.log(this.statusList);
       let statusList = [];
-      if (this.statusList.length === 5) {
+      if (this.statusList.length >= 5) {
         statusList = "";
       } else {
         for (let i = 0; i < this.statusList.length; i++) {

@@ -37,11 +37,11 @@
         <el-table-column align="center" prop="status" label="状态"></el-table-column>
         <el-table-column align="center" prop="operation" label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="see(scope.row)">查看</el-button>
-            <el-button v-if="scope.row.status === '未生效'" type="text" @click="del(scope.row,scope.$index)">删除</el-button>
-            <el-button v-if="scope.row.status === '生效中'" type="text" @click="stop(scope.row,scope.$index)">停用</el-button>
-            <el-button v-if="scope.row.status === '已删除'|| scope.row.status === '已停用' || scope.row.status === '已结束'" type="text" @click="resEdit(scope.row,scope.$index)">重新添加</el-button>
-            <el-button type="text" @click="exportExcel(scope.row,scope.$index)">导出数据</el-button>
+            <el-button type="text" @click="see(scope.row,'查看')">查看</el-button>
+            <el-button v-if="scope.row.status === '未生效'" type="text" @click="del(scope.row)">删除</el-button>
+            <el-button v-if="scope.row.status === '生效中'" type="text" @click="stop(scope.row)">停用</el-button>
+            <el-button v-if="scope.row.status === '已删除'|| scope.row.status === '已停用' || scope.row.status === '已结束'" type="text" @click="reEdit(scope.row,'重新添加')">重新添加</el-button>
+            <el-button type="text" @click="exportExcel(scope.row)">导出数据</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,7 +67,7 @@
 <script>
 import HeaderBar from "@/components/headerBar.vue";
 import img from "../../img/demo1.png";
-import { popList } from "@/api/popManager";
+import { popList, delItem, stopItem, exportData } from "@/api/popManager";
 export default {
   name: "popmanager",
   components: {
@@ -201,31 +201,29 @@ export default {
       },error=>{});
     },
     jumpAddPop(currentRow,currentRowText){
-      let [popId, status, text ] = [ currentRow.id, currentRow.status, currentRowText ];
+      let [popId, status, text ] = [ currentRow.windowId, currentRow.status, currentRowText ];
       this.$router.push({ name: `addpop`, params: { popId, status, text} });
     },
-    see(currentRow,currentIndex){
+    see(currentRow,text){
       console.log(currentRow);
-      console.log('查看下标为:' + currentIndex);
-      this.jumpAddPop(currentRow,currentRow.see);
+      this.jumpAddPop(currentRow,text);
     },
-    del(currentRow,currentIndex){
+    del(currentRow){
       console.log(currentRow);
-      console.log('删除下标为:'+currentIndex);
+      console.log('删除ID为:'+currentRow.windowId);
     },
-    stop(currentRow,currentIndex){
+    stop(currentRow){
       console.log(currentRow);
-      console.log('停用下标为:'+currentIndex);
+      console.log('停用ID为:'+currentRow.windowId);
     },
-    reEdit(currentRow,currentIndex){
+    reEdit(currentRow,text){
       console.log(currentRow);
-      console.log('重新添加下标为:' + currentIndex);
-      this.jumpAddPop(currentRow,currentRow.reEdit);
+      this.jumpAddPop(currentRow,text);
     },
     //导出数据 -- excel
-    exportExcel(currentRow,currentIndex){
+    exportExcel(currentRow){
+      console.log('导出:');
       console.log(currentRow);
-      console.log('导出:'+currentIndex);
     },
     sort(currentRow){
       console.log(`这里是排序`);
@@ -234,17 +232,17 @@ export default {
     handleCurrentChange(page) {
       console.log(`当前第${page}页`);
       this.pageNum = page;
-      // this.popRequest();
+      this.popRequest(this.traId,this.statusList,this.popName);
     },
     firstPage() {
       console.log(`第${this.pageNum}页`);
       this.pageNum = 1;
-      // this.popRequest();
+      this.popRequest(this.traId,this.statusList,popName);
     },
     lastPage() {
       console.log(`最后第${this.pageNum}页`);
       this.pageNum = this.totalPage;
-      // this.popRequest();
+      this.popRequest(this.traId,this.statusList,popName);
     },
   },
   created() {

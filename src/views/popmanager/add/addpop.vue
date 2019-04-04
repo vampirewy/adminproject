@@ -2,21 +2,22 @@
   <div class="add_pop">
     <el-row>
       <el-col :span="12">
-        <el-form class="demo-ruleForm" label-width="120px" :model="ruleForm" :rule="rules" ref="ruleForm">
-          <el-form-item label="弹窗名称" class="show" required>
-            <el-input maxlength="15" placeholder="请填写名称,最多15字" v-model="inputPopName" :disabled="allDisabled"></el-input>
+        <el-form class="demo-ruleForm" label-width="120px" :model="ruleForm" :rules="rules" ref="ruleForm">
+          <el-form-item label="弹窗名称" class="show"  prop="inputPopName">
+            <el-input maxlength="15" placeholder="请填写名称,最多15字" v-model="ruleForm.inputPopName" :disabled="allDisabled"></el-input>
           </el-form-item>
           <el-form-item label="开始时间" required class="show">
             <el-col :span="11">
               <el-form-item prop="startTime">
-                <!-- @change=""  v-model=""-->
                 <el-date-picker
+                  v-model="ruleForm.startTime"
                   :disabled="allDisabled"
                   type="datetime"
                   placeholder="选择开始时间"
                   style="width: 100%;"
                   default-time="16:00:00"
                   value-format="yyyy-MM-dd HH:mm:ss"
+                  @change="selectStartTime"
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -24,19 +25,20 @@
           <el-form-item label="结束时间" required class="show">
             <el-col :span="11">
               <el-form-item prop="endTime">
-                <!-- @change=""  v-model=""-->
                 <el-date-picker
+                  v-model="ruleForm.endTime"
                   :disabled="allDisabled"
                   type="datetime"
                   placeholder="选择结束时间"
                   style="width: 100%;"
                   default-time="16:00:00"
                   value-format="yyyy-MM-dd HH:mm:ss"
+                  @change="selectEndTime"
                 ></el-date-picker>
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="弹窗图片" required class="show">
+          <el-form-item label="弹窗图片" class="show">
             <!-- :file-list="fileList" //显示在页面上的图片 {name:xxx,url:xxx} 
               :on-success="" :on-preview="handlePreview"
             -->
@@ -49,50 +51,47 @@
               :limit="1"
               :file-list="imgFileList"
               :on-success="successImg"
+              :show-file-list="showSuccessImg"
             >
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="跳转类型" required class="show">
-            <el-radio-group v-model="type" @change="chooseType">
+          <el-form-item label="跳转类型" class="show" prop="type">
+            <el-radio-group v-model="ruleForm.type" @change="chooseType">
               <el-radio :disabled="allDisabled" v-for="(item,index) in jumpType" :label="item.name" :key="index" @change="chooseTypeItem(index,item)"></el-radio>
             </el-radio-group>
             <!-- APP框 -->
-            <div v-if="typeCurrentIndex===0">
+            <div v-if="switchCollection.typeCurrentIndex===0">
               <el-select :disabled="allDisabled" class="m_r_20" placeholder="请选择" v-model="appSelectItem" @change="selectPage">
                 <el-option v-for="item in appSelect" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
               <el-autocomplete :disabled="allDisabled" v-if="showTopicSearch" v-model="topicName" :fetch-suggestions="querySearchAsync" placeholder="请输入专题名称" @select="selectTopic"></el-autocomplete>
             </div>
             <!-- H5框 -->
-            <div class="flex" v-if="typeCurrentIndex===1">
+            <div class="flex" v-if="switchCollection.typeCurrentIndex===1">
               <el-checkbox class="m_l_30" v-model="authorization" :disabled="allDisabled">H5授权</el-checkbox>
-              <el-input :disabled="allDisabled" placeholder="页面可根据数据变化动态显示" v-model="h5Url"></el-input>
+              <el-input :disabled="allDisabled" placeholder="页面可根据数据变化动态显示" v-model="ruleForm.h5Url"></el-input>
             </div>
           </el-form-item>
-          <el-form-item label="投放商圈" required class="show">
-            <el-checkbox-group v-model="businessName" @change="chooseBusiness">
+          <el-form-item label="投放商圈" class="show" prop="businessName">
+            <el-checkbox-group v-model="ruleForm.businessName" @change="chooseBusiness">
               <el-checkbox :disabled="allDisabled" v-for="(item,index) in businessAreaLists" :label="item.traName" :key="index" name="type" @change="selectBusinessArea(item,index)"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="选择用户" required class="show">
-            <el-radio-group v-model="userType" @change="chooseUser">
+          <el-form-item label="选择用户" required class="show" prop="userType">
+            <el-radio-group v-model="ruleForm.userType" @change="chooseUser">
               <el-radio :disabled="allDisabled" v-for="(item,index) in selectUserType" :key="index" :label="item.name" @change="chooseUserItem(index,item)"></el-radio>
             </el-radio-group>
             <!-- 指定用户 -->
-            <div class="flex" v-if="currentUserTypeIndex===0">
+            <div class="flex" v-if="switchCollection.currentUserTypeIndex===0">
               <el-button type="primary" size="small"><a href="demo.xlsx" download="demo.xlsx">下载模版</a></el-button>
-              <el-upload :disabled="allDisabled" class="upload-demo" :action="upExcleAddr" :headers="headers" :on-success="uploadExcel" :show-file-list="showUploadFile" :file-list="successFile">
+              <el-upload :disabled="allDisabled" class="upload-demo" :action="upExcleAddr" :headers="headers" :on-success="uploadExcel"  :file-list="successFile">
                 <el-button type="danger" class="m_l_30" size="small">导入Excel</el-button>
               </el-upload>
             </div>
-            <!-- 商圈 -->
-            <!-- <el-checkbox-group v-model="businessName" @change="chooseBusiness" v-if="currentUserTypeIndex===1">
-              <el-checkbox :disabled="allDisabled" v-for="(item,index) in businessAreaLists" :label="item.traName" :key="index" name="type" @change="selectBusinessArea(item.traId,index)"></el-checkbox>
-            </el-checkbox-group> -->
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="m_r_10" @click="submitForm()" v-if="hiddenButton">保存</el-button>
+            <el-button type="primary" class="m_r_10" @click="submitForm('ruleForm')" v-if="hiddenButton">保存</el-button>
             <router-link to="/popmanager" v-if="hiddenButton"><el-button>取消</el-button></router-link>
           </el-form-item>
         </el-form>
@@ -102,21 +101,29 @@
 </template>
 
 <script>
+import {Message} from "element-ui";
 import { checkSpecial } from "@/api/shoppingGuide";
 import { guideAllArea } from "@/api/headerBar";
+import { addReeditDetail, seeDetail } from "@/api/popManager";
 export default {
   name: "addpop",
   data() {
     return {
+      popId:'', //弹窗ID  --查看或者重新添加请求需要使用
       allDisabled: false, //查看禁用
-      showUploadFile:false,  //图片上传过程不展示
-      hiddenButton:true,
+      showSuccessImg:false,  //图片上传过程不展示
+      hiddenButton:true,  //从查看、重新添加过来，对底部保存和取消按钮的控制
+      showTopicSearch:false,   //选中专题详情时，显示专题搜索框
+      //跳转类型、选择用户切换集合
+      switchCollection:{
+        typeCurrentIndex:null,  //跳转类型切换时显示相对应的框
+        currentUserTypeIndex:null, //选择用户切换显示对应的
+      },
       headers: { sessionId: localStorage.getItem(`sessionId`) },
-      upLoadImgUrl:`${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
-      upExcleAddr:`${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${this.$route.params.topicId}/goods/upload`,
-      imgFileList:[],
-      popId:'',
-      jumpType: [{ name: "APP" }, { name: "H5" }],
+      upLoadImgUrl:`${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`, //图片上传地址
+      upExcleAddr:`${process.env.VUE_APP_BASE_URL}/mall/shopping/window/upload`, //excel上传地址
+      jumpType: [{ name: "APP" }, { name: "H5" }],  //跳转类型 app or h5 
+      //APP页面时，下拉框  --返利商品、我的红包、充值、我的钱包... 传值为value
       appSelect: [
         {
           value: 2,
@@ -150,24 +157,36 @@ export default {
           value: 16,
           label: "专题详情"
         }
-      ], //APP页面时，下拉框
+      ], 
+      imgFileList:[], //图片显示在页面上的 --在successImg中暂未使用 [{name:xxxx,value:xxxx}]
       selectUserType:[{name:"指定用户"},{name:"商圈全部用户"}], //选择用户单选框
-      inputPopName:'', //输入的弹窗名称
-      appSelectItem:'', //下拉框选中的值
-      type: [], //单选框  --APP 或者 H5
-      typeCurrentIndex:null,  //类型切换时显示相对应的框
-      showTopicSearch:null,
-      topicName:'',
-      topicId:'',
-      searchTopicLists:[],
-      authorization:'',
-      h5Url:'',
-      currentUserTypeIndex:null, //选择用户切换显示对应的
-      userType:'',
-      businessAreaLists:[], //所有商圈
-      businessName:[], //选中的商圈名
-      selectBusinessName:[],
-      successFile:[]
+      ruleForm:{
+        inputPopName:'',  //弹窗名称  --对应后台参数 windowName 判定
+        startTime:'',     //开始时间  --对应后台参数 startTime 判定
+        endTime:'',       //结束时间  --对应后台参数 endTime 判定
+        successImg:'',    //图片上传成功，后台返回地址  --对应后台参数 picUrl
+        type: [],         //跳转类型
+        h5Url:'',         //单选框  --APP 或者 H5  --对应参数 actionType  -app -h5 需做小写转换  判定
+        businessName:[],  //选中的商圈名  判定
+        userType:''       //选中的用户类型 --指定用户 or 商圈全部用户  --对应后台参数 assignType  --0指定用户 1商圈用户 传currentUserTypeIndex 就可 判定
+      },
+      authorization:'',  //h5授权  对应后台参数  authorized -- true or false
+      userIds:[],        //选定userType为0时，必须上传文件，装载后台回传回来的信息
+      rules:{
+        inputPopName:[{message:'请输入弹窗名称',required:true,trigger:"blur"},{max:15,message:'最多15个字',trigger:"blur"}],
+        startTime: [{type: "string",required: true,message: "请选择开始日期",trigger: "change"}],
+        endTime: [{type: "string",required: true,message: "请选择结束时间",trigger: "change"}],
+        type:[{require:true,message:'请选择跳转类型',trigger:'change'}],
+        businessName:[{type: "array",required: true,message: "请至少选择一个投放商圈",trigger: "change"}],
+        userType:[{type:'string',required:true,message:'请至少选择一种用户类型',trigger:"change"}]
+      },
+      appSelectItem:'', //下拉框选中的value值
+      topicName:'',     //回显使用 
+      topicId:'',      //选中的专题ID号
+      searchTopicLists:[],  //专题模糊搜索时装载的数据
+      businessAreaLists:[], //所有商圈  --对应后台参数 traSelectionList =>装载所有商圈 [{traId:xxx,checked:xxx}]
+      selectBusinessName:[],  //页面上显示的选中商圈
+      successFile:[]  //上传件后回显值
     };
   },
   methods: {
@@ -179,7 +198,46 @@ export default {
         }else{};
       },error=>{});
     },
-    successImg(){},
+    //从查看，重新添加过来的
+    fromPopLists(popId){
+      let [windowId] = [popId];
+      seeDetail(windowId).then(res=>{
+        console.log(res);
+        if(res.data.statusCode === 2000){
+          this.ruleForm.inputPopName = res.data.body.windowName;  //名称
+          this.ruleForm.startTime = res.data.body.startTime;  //开始时间
+          this.ruleForm.endTime = res.data.body.endTime;      //结束时间
+          this.ruleForm.successImg = res.data.body.picUrl;    //上传的图片地址
+          this.imgFileList.push({name:res.data.body.picUrl,value:res.data.body.picUrl});   //显示在页面上的图片地址
+          this.ruleForm.type = res.data.body.actionType.toUpperCase();    //跳转类型 --APP H5
+          if(this.ruleForm.type === `APP`){  
+            this.appSelect.forEach(el=>{if(res.data.body.actionContent === el.value) this.appSelectItem = el.value;});
+            if(res.data.body.actionContent === '16'){  //专题详情为16
+              this.showTopicSearch = true;            //显示专题搜索框    
+              this.topicId = res.data.body.actionParam;  //专题ID号
+              this.topicName = res.data.body.actionParamName;  //显示在页面上的专题名称
+            };
+          }else{
+            this.ruleForm.h5Url = res.data.body.actionContent;  //显示的h5页面地址
+          };
+          this.businessAreaLists = res.data.body.traSelectionList;   //商圈赋值
+          this.businessAreaLists.forEach(el=>{ el.checked && this.ruleForm.businessName.push(el.traName)});  //选中的商圈
+          this.ruleForm.userType = res.data.body.assignType;  //选中的用户类型
+          this.userIds = res.data.body.userIds;
+        }else{};
+      },error=>{});
+    },
+    //开始时间
+    selectStartTime(){},
+    //结束时间
+    selectEndTime(){},
+    successImg(res){
+      console.log(`图片上传`);
+      console.log(res);
+      this.showSuccessImg = true;
+      this.ruleForm.successImg = res.body;
+      // this.imgFileList = [{name:res.body,url:res.body}];
+    },
     //app页面时的下拉框选择项
     selectPage(){
       // 当ID为16时，显示专题搜索框
@@ -220,50 +278,85 @@ export default {
     },
     //跳转类型 --app or h5
     chooseType() {
-      console.log(`跳转类型${this.type}`);
+      console.log(`跳转类型${this.ruleForm.type}`);
     },
     //选中app or h5时的详细
     chooseTypeItem(index, item) {
       console.log(`跳转类型的下标${index}`);
-      this.typeCurrentIndex = index;
+      this.switchCollection.typeCurrentIndex = index;
       // this.typeCurrentIndex ? (this.authorization = false, this.h5Url = '') : (this.appSelectItem = '', this.showTopicSearch = false) ;
-    },
-    //用户类型选择 -- 指定用户 or 商圈
-    chooseUser(){
-      console.log(`选择用户类型：${this.userType}`);
     },
     //选择的商圈 --显示在页面上
     chooseBusiness(){
-      console.warn(`选择的商圈`);
+      // console.warn(`选择的商圈`);
       // console.log(this.businessName);
       // console.log(this.businessAreaLists);
-      this.dataAssembly();
+      // this.dataAssembly();
     },
     //选中的那个商圈
     selectBusinessArea(item,index){
-      console.warn(`商圈:`);
-      console.log(item);
       this.businessAreaLists.forEach(el=>{
         el.traName === item.traName && (item.checked = !item.checked);
       });
     },
+    //用户类型选择 -- 指定用户 or 商圈全部用户
+    chooseUser(){
+      console.log(`选择用户类型：${this.ruleForm.userType}`);
+    },
     //选中的那个类型--切换下方显示的东西
     chooseUserItem(index,item){
       console.log(`选择的用户类型下标:${index}`);
-      this.currentUserTypeIndex = index;
+      this.switchCollection.currentUserTypeIndex = index;
     },
     uploadExcel(){
       console.log(`上传文件成功`);
     },
-    //商圈最终数据组装
+    //最终数据组装,包括商圈数据
     dataAssembly(){
       let bussinessAreaFinallyLists = [];
       this.businessAreaLists.forEach(el=>{bussinessAreaFinallyLists.push({checked: el.checked, traId: el.traId});});
-      console.log(`提交的商圈最终数据`);
-      console.log(bussinessAreaFinallyLists);
+      // console.log(`提交的商圈最终数据`);
+      // console.log(bussinessAreaFinallyLists);
+      let params = {
+        windowName:this.ruleForm.inputPopName,  //弹窗名称
+        startTime: this.ruleForm.startTime,   
+        endTime: this.ruleForm.endTime,
+        picUrl: this.ruleForm.successImg,    //上传图片地址
+        traSelectionList:bussinessAreaFinallyLists,    //商圈
+        actionType:this.ruleForm.type.toLowerCase(),  //跳转类型  --h5 --app
+        actionContent:this.ruleForm.type.toLowerCase()=== `h5` ? this.ruleForm.h5Url :this.appSelectItem ,  //app时，传入页面ID号或h5输入框地址
+        actionParam:this.ruleForm.type.toLowerCase()=== `h5`? '' : this.topicId ,  //选中专题详情时，传入专题ID号，反之空串--模糊搜索框的那个
+        authorized:this.ruleForm.type.toLowerCase() === `h5` ? this.authorization : '',
+        assignType:this.switchCollection.currentUserTypeIndex,
+        userIds: this.switchCollection.currentUserTypeIndex === 0 ? this.userIds : ''
+      };
+      // console.log(`最终传参`);
+      // console.log(params);
+      return params;
     },
-    submitForm(){
+    async finallyDataSubmit(){
+      const params = await this.dataAssembly();
+      console.log(`第310行最终传参所得参数为`);
+      console.log(params);
+      addReeditDetail(params).then(res=>{
+        if(res.data.statusCode ===2000){
+          this.$message({message:`添加成功`,type:`success`});
+          setTimeout(()=>{this.$router.push('/popmanager')},300);
+        }else{
+          this.$message({message:error.msg,type:`error`});
+        };
+      },error=>{});
+    },
+    submitForm(formName){
       console.log(`提交`);
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.finallyDataSubmit();
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     }
   },
   created(){
@@ -274,6 +367,7 @@ export default {
       this.hiddenButton = false; //隐藏保存，取消按钮
     };
     this.popId = this.$route.params.popId;
+    this.fromPopLists(this.$route.params.popId);
   }
 };
 </script>
