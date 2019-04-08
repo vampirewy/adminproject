@@ -46,6 +46,7 @@
               :headers="headers"
               list-type="picture"
               :limit="1"
+              name="file"
               :file-list="imgFileList"
               :on-success="successImg"
               :on-remove="removeImg"
@@ -54,7 +55,7 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label="跳转类型" class="show" prop="type">
+          <el-form-item label="跳转类型" class="show" prop="type" required>
             <el-radio-group v-model="ruleForm.type" @change="chooseType">
               <el-radio :disabled="allDisabled" v-for="(item,index) in jumpType" :label="item.name" :key="index" @change="chooseTypeItem(index,item)"></el-radio>
             </el-radio-group>
@@ -158,7 +159,7 @@ export default {
           label: "专题详情"
         }
       ], 
-      imgFileList:[], //图片显示在页面上的 --在successImg中暂未使用 [{name:xxxx,value:xxxx}]
+      imgFileList:[], //图片显示在页面上的 --在successImg中暂未使用 [{name:xxxx,url:xxxx}]
       selectUserType:[{name:"指定用户"},{name:"商圈全部用户"}], //选择用户单选框
       ruleForm:{
         inputPopName:'',  //弹窗名称  --对应后台参数 windowName 判定
@@ -176,6 +177,7 @@ export default {
         inputPopName:[{message:'请输入弹窗名称',required:true,trigger:"blur"},{max:15,message:'最多15个字',trigger:"blur"}],
         startTime: [{type: "string",required: true,message: "请选择开始日期",trigger: "change"}],
         endTime: [{type: "string",required: true,message: "请选择结束时间",trigger: "change"}],
+        // imgFileList:[{type:'array',message:'请上传图片',required:true}],
         type:[{require:true,message:'请选择跳转类型',trigger:'change'}],
         businessName:[{type: "array",required: true,message: "请至少选择一个投放商圈",trigger: "change"}],
         userType:[{type:'string',required:true,message:'请至少选择一种用户类型',trigger:"change"}]
@@ -208,21 +210,25 @@ export default {
           this.ruleForm.startTime = res.data.body.startTime;  //开始时间
           this.ruleForm.endTime = res.data.body.endTime;      //结束时间
           this.ruleForm.successImg = res.data.body.picUrl;    //上传的图片地址
-          this.imgFileList.push({name:res.data.body.picUrl,value:res.data.body.picUrl});   //显示在页面上的图片地址
+          this.showSuccessImg = true;
+          this.imgFileList.push({name:res.data.body.picUrl,url:res.data.body.picUrl});   //显示在页面上的图片地址
           this.ruleForm.type = res.data.body.actionType.toUpperCase();    //跳转类型 --APP H5
-          if(this.ruleForm.type === `APP`){  
-            this.appSelect.forEach(el=>{if(res.data.body.actionContent === el.value) this.appSelectItem = el.value;});
+          if(this.ruleForm.type === `APP`){
+            this.switchCollection.typeCurrentIndex = 0;  //跳转类型的下标 --0 app
+            this.appSelect.forEach(el=>{if(res.data.body.actionContent == el.value) this.appSelectItem = el.value;});
             if(res.data.body.actionContent === '16'){  //专题详情为16
               this.showTopicSearch = true;            //显示专题搜索框    
               this.topicId = res.data.body.actionParam;  //专题ID号
               this.topicName = res.data.body.actionParamName;  //显示在页面上的专题名称
             };
           }else{
+            this.switchCollection.typeCurrentIndex = 1; //跳转类型的下标 --1 h5
             this.ruleForm.h5Url = res.data.body.actionContent;  //显示的h5页面地址
           };
           this.businessAreaLists = res.data.body.traSelectionList;   //商圈赋值
           this.businessAreaLists.forEach(el=>{ el.checked && this.ruleForm.businessName.push(el.traName)});  //选中的商圈
-          this.ruleForm.userType = res.data.body.assignType;  //选中的用户类型
+          this.ruleForm.userType = res.data.body.assignType ? '商圈全部用户' : '指定用户';  //选中的用户类型
+          this.switchCollection.currentUserTypeIndex = res.data.body.assignType; //选中的用户类型下标 --0 指定用户 --1 商圈全部用户
           this.userIds = res.data.body.userIds;
         }else{};
       },error=>{});
