@@ -85,86 +85,86 @@ export default {
       totalCount: null,
       totalPage: null,
       popLists:[
-          {
-          "actionType": "专题详情",
-          "clickCount": 0,
-          "endTime": "2018-08-24 16:00:00",
-          "modifyTime": "2018-08-24 16:00:00",
-          "modifyUserName": "wangyi",
-          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
-          "popCount": 200,
-          "pushCount": 100,
-          "sortIndex": 0,
-          "startTime": "2018-08-24 16:00:00",
-          "status": '未生效',
-          "traNames": "西湖/老余杭-便利店",
-          "windowId": 1,
-          "windowName": "可用红包"
-        },
-        {
-          "actionType": "专题详情",
-          "clickCount": 0,
-          "endTime": "2018-08-24 16:00:00",
-          "modifyTime": "2018-08-24 16:00:00",
-          "modifyUserName": "wangyi",
-          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
-          "popCount": 200,
-          "pushCount": 100,
-          "sortIndex": 0,
-          "startTime": "2018-08-24 16:00:00",
-          "status": '生效中',
-          "traNames": "西湖/老余杭-便利店",
-          "windowId": 2,
-          "windowName": "可用红包"
-        },
-        {
-          "actionType": "专题详情",
-          "clickCount": 0,
-          "endTime": "2018-08-24 16:00:00",
-          "modifyTime": "2018-08-24 16:00:00",
-          "modifyUserName": "wangyi",
-          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
-          "popCount": 200,
-          "pushCount": 100,
-          "sortIndex": 0,
-          "startTime": "2018-08-24 16:00:00",
-          "status": '已删除',
-          "traNames": "西湖/老余杭-便利店",
-          "windowId": 3,
-          "windowName": "可用红包"
-        },
-        {
-          "actionType": "专题详情",
-          "clickCount": 0,
-          "endTime": "2018-08-24 16:00:00",
-          "modifyTime": "2018-08-24 16:00:00",
-          "modifyUserName": "wangyi",
-          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
-          "popCount": 200,
-          "pushCount": 100,
-          "sortIndex": 0,
-          "startTime": "2018-08-24 16:00:00",
-          "status": '已结束',
-          "traNames": "西湖/老余杭-便利店",
-          "windowId": 4,
-          "windowName": "可用红包"
-        },
-        {
-          "actionType": "专题详情",
-          "clickCount": 0,
-          "endTime": "2018-08-24 16:00:00",
-          "modifyTime": "2018-08-24 16:00:00",
-          "modifyUserName": "wangyi",
-          "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
-          "popCount": 200,
-          "pushCount": 100,
-          "sortIndex": 0,
-          "startTime": "2018-08-24 16:00:00",
-          "status": '已停用',
-          "traNames": "西湖/老余杭-便利店",
-          "windowId": 5,
-          "windowName": "可用红包"
-        }
+        //   {
+        //   "actionType": "专题详情",
+        //   "clickCount": 0,
+        //   "endTime": "2018-08-24 16:00:00",
+        //   "modifyTime": "2018-08-24 16:00:00",
+        //   "modifyUserName": "wangyi",
+        //   "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+        //   "popCount": 200,
+        //   "pushCount": 100,
+        //   "sortIndex": 0,
+        //   "startTime": "2018-08-24 16:00:00",
+        //   "status": '未生效',
+        //   "traNames": "西湖/老余杭-便利店",
+        //   "windowId": 1,
+        //   "windowName": "可用红包"
+        // },
+        // {
+        //   "actionType": "专题详情",
+        //   "clickCount": 0,
+        //   "endTime": "2018-08-24 16:00:00",
+        //   "modifyTime": "2018-08-24 16:00:00",
+        //   "modifyUserName": "wangyi",
+        //   "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+        //   "popCount": 200,
+        //   "pushCount": 100,
+        //   "sortIndex": 0,
+        //   "startTime": "2018-08-24 16:00:00",
+        //   "status": '生效中',
+        //   "traNames": "西湖/老余杭-便利店",
+        //   "windowId": 2,
+        //   "windowName": "可用红包"
+        // },
+        // {
+        //   "actionType": "专题详情",
+        //   "clickCount": 0,
+        //   "endTime": "2018-08-24 16:00:00",
+        //   "modifyTime": "2018-08-24 16:00:00",
+        //   "modifyUserName": "wangyi",
+        //   "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+        //   "popCount": 200,
+        //   "pushCount": 100,
+        //   "sortIndex": 0,
+        //   "startTime": "2018-08-24 16:00:00",
+        //   "status": '已删除',
+        //   "traNames": "西湖/老余杭-便利店",
+        //   "windowId": 3,
+        //   "windowName": "可用红包"
+        // },
+        // {
+        //   "actionType": "专题详情",
+        //   "clickCount": 0,
+        //   "endTime": "2018-08-24 16:00:00",
+        //   "modifyTime": "2018-08-24 16:00:00",
+        //   "modifyUserName": "wangyi",
+        //   "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+        //   "popCount": 200,
+        //   "pushCount": 100,
+        //   "sortIndex": 0,
+        //   "startTime": "2018-08-24 16:00:00",
+        //   "status": '已结束',
+        //   "traNames": "西湖/老余杭-便利店",
+        //   "windowId": 4,
+        //   "windowName": "可用红包"
+        // },
+        // {
+        //   "actionType": "专题详情",
+        //   "clickCount": 0,
+        //   "endTime": "2018-08-24 16:00:00",
+        //   "modifyTime": "2018-08-24 16:00:00",
+        //   "modifyUserName": "wangyi",
+        //   "picUrl": "http://images.alpha.pinpianyi.cn/images/common/7393f45591c64ba98a2ae1de37530b96.jpg",
+        //   "popCount": 200,
+        //   "pushCount": 100,
+        //   "sortIndex": 0,
+        //   "startTime": "2018-08-24 16:00:00",
+        //   "status": '已停用',
+        //   "traNames": "西湖/老余杭-便利店",
+        //   "windowId": 5,
+        //   "windowName": "可用红包"
+        // }
       ]
     };
   },
@@ -192,8 +192,8 @@ export default {
       popList(params).then(res=>{
         console.log(res.data);
         if(res.data.statusCode === 2000){
-          this.totalPage = res.data.pageCount;
-          this.totalCount = res.data.totalSize;
+          this.totalPage = res.data.body.pageCount;
+          this.totalCount = res.data.body.totalSize;
           res.data.body.pageData.forEach(el=>{
             el.status = el.status === 1 ? "生效中" : el.status === 2 ? "已结束" : el.status === 3 ? "已停用" : el.status === 4 ? "已删除" : "未生效";
           });
@@ -213,7 +213,8 @@ export default {
       console.log(currentRow);
       console.log('删除ID为:'+currentRow.windowId);
       delItem(currentRow.windowId).then(res=>{
-        if(res.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
+        console.log(res);
+        if(res.data.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
         this.$message({message:`删除成功`,type:`success`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
@@ -222,7 +223,7 @@ export default {
       console.log(currentRow);
       console.log('停用ID为:'+currentRow.windowId);
       stopItem(currentRow.windowId).then(res=>{
-        if(res.statusCode !== 2000) return this.$message({message:res.data.msg,type:`error`});
+        if(res.data.statusCode !== 2000) return this.$message({message:res.data.msg,type:`error`});
         this.$message({message:`停用成功`,type:`success`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
@@ -253,12 +254,12 @@ export default {
     firstPage() {
       console.log(`第${this.pageNum}页`);
       this.pageNum = 1;
-      this.popRequest(this.traId,this.statusList,popName);
+      this.popRequest(this.traId,this.statusList,this.popName);
     },
     lastPage() {
       console.log(`最后第${this.pageNum}页`);
       this.pageNum = this.totalPage;
-      this.popRequest(this.traId,this.statusList,popName);
+      this.popRequest(this.traId,this.statusList,this.popName);
     },
   },
   created() {

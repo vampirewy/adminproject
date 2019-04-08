@@ -314,7 +314,8 @@ export default {
     },
     uploadExcel(res){
       console.log(`上传文件成功`);
-      if(res.statusCode !== 2000){return this.$message({message:res.data.msg,type:`error`})};
+      console.log(res);
+      if(res.statusCode !== 2000){return this.$message({message:res.msg,type:`error`})};
       this.$message({message:`导入成功`,type:`success`});
       this.userIds = res.body;
     },
