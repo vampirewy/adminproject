@@ -83,7 +83,7 @@
             </el-radio-group>
             <!-- 指定用户 -->
             <div class="flex" v-if="switchCollection.currentUserTypeIndex===0">
-              <el-button type="primary" size="small"><a href="弹框指定用户导入模板.xlsx" download>下载模版</a></el-button>
+              <el-button  type="primary" size="small"><a href="弹框指定用户导入模板.xlsx" download>下载模版</a></el-button>
               <el-upload :disabled="allDisabled" class="upload-demo" :action="upExcleAddr" :headers="headers" :on-success="uploadExcel"  :file-list="successFile" :show-file-list="showFileProcess">
                 <el-button type="danger" class="m_l_30" size="small">导入Excel</el-button>
               </el-upload>
