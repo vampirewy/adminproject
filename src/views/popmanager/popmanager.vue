@@ -12,7 +12,7 @@
             </template>
         </el-table-column>
         <el-table-column align="center" prop="windowName" label="名称"></el-table-column>
-        <el-table-column align="center" prop="actionType" label="跳转到"></el-table-column>
+        <el-table-column align="center" prop="actionText" label="跳转到"></el-table-column>
         <el-table-column align="center" prop="pushCount popCount" label="推送量/弹窗量" width="90">
           <template slot-scope="scope">
             <span>{{scope.row.pushCount?scope.row.pushCount:'-'}}</span>&nbsp;/&nbsp;<span>{{scope.row.popCount?scope.row.popCount:'-'}}</span>
@@ -237,14 +237,20 @@ export default {
       console.log('导出:');
       console.log(currentRow);
       exportData(currentRow.windowId).then(res=>{
-          console.log(res.headers);
-          let blob = new Blob([res.data], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
-          let objectUrl = URL.createObjectURL(blob);
-          window.location.href = objectUrl;
+        const Y = new Date().getFullYear();
+        const M = new Date().getMonth() + 1;
+        const D = new Date().getDate();
+        let blob = new Blob([res.data], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+        let objectUrl = URL.createObjectURL(blob);
+        let downloadElement = document.createElement('a');
+        let href = window.URL.createObjectURL(blob); //创建下载的链接
+        downloadElement.href = href;
+        downloadElement.download = `${currentRow.windowName} ${Y}-${M}-${D}`; //下载后文件名
+        document.body.appendChild(downloadElement);
+        downloadElement.click(); //点击下载
+        document.body.removeChild(downloadElement); //下载完成移除元素
+        window.URL.revokeObjectURL(href); //释放掉blob对象 
       },error=>{});
-    },
-    onSubmit(){
-
     },
     sort(currentRow){
       console.log(`这里是排序`);
