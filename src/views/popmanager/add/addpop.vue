@@ -252,10 +252,10 @@ export default {
     selectPage(){
       // 当ID为16时，显示专题搜索框
       console.log(`选中的APP页面ID号:${this.appSelectItem}`);
-      if(this.appSelectItem !=16 ) return this.showTopicSearch = false; this.topicName = ''; this.topicId = '';
-      this.showTopicSearch = true;
       this.topicName = '';
       this.topicId = '';
+      if(this.appSelectItem != 16 ) return this.showTopicSearch = false;
+      this.showTopicSearch = true;
     },
     //专题模糊搜索
     querySearchAsync(queryString, fn){
@@ -344,6 +344,7 @@ export default {
         assignType:this.switchCollection.currentUserTypeIndex,
         userIds: this.switchCollection.currentUserTypeIndex === 0 ? this.userIds : []
       };
+      console.log(`专题ID号${this.topicId}`);
       // console.log(`最终传参`);
       // console.log(params);
       return params;

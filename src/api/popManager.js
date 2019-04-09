@@ -39,9 +39,9 @@ export function stopItem(params) {
 //导出数据
 export function exportData(params) {
   return service({
-    url: ``,
-    method: ``,
-    data: params
+    url: `/mall/shopping/window/${params}/exportOut`,
+    method: `post`,
+    responseType:'blob'
   })
 }
 
