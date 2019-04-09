@@ -237,6 +237,7 @@ export default {
       console.log('导出:');
       console.log(currentRow);
       exportData(currentRow.windowId).then(res=>{
+          console.log(res.headers);
           let blob = new Blob([res.data], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
           let objectUrl = URL.createObjectURL(blob);
           window.location.href = objectUrl;
