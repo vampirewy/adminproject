@@ -257,7 +257,8 @@ export default {
       console.log(currentRow);
       let [ point, sortId,bizType ] = [currentRow.sortIndex,currentRow.windowId,`window-${localStorage.getItem('cityCode')}`];
       sort({point,sortId,bizType}).then(res=>{
-        if(res.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
+        console.log(res);
+        if(res.data.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
         setTimeout(()=>{this.popRequest(this.traId,this.statusList,this.popName)},300);
       },error=>{});
     },
