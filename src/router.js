@@ -14,8 +14,8 @@ export default new Router({
   routes: [{
     path: "/",
     name: "layOut",
-    // redirect: window.location.href.split("/#")[1],
-    redirect: localStorage.getItem('cityCode') == 'manager' ? '/brandmanage' : '/shoppingGuide',
+    redirect: window.location.href.split("/#")[1],
+    // redirect: localStorage.getItem('cityCode') == 'manager' ? '/brandmanage' : '/shoppingGuide',
     component: Layout,
     children: [{
         path: "/shoppingGuide",
