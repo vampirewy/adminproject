@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      showArea: true, //头部栏商圈选择
       input: ``,
       totalCount: null,
       totalPage: null,

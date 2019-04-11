@@ -1,49 +1,74 @@
 <template>
-<div class="brand_extension">
-  <header class="header">
-    <el-autocomplete v-model="brandName" :fetch-suggestions="querySearchAsync" placeholder="请输入品牌名称" @select="selectBrandName"></el-autocomplete>
-    <el-button type="primary" class="add" @click="search()">搜索</el-button>
-    <el-button type="danger" class="add" @click="dialogFormVisible=true">添加</el-button>
-  </header>
-  <section>
-    <el-table :data="brandLists" style="width: 100%" border stripe>
-      <!-- <el-table-column align="center" type="index"></el-table-column> -->
-      <el-table-column align="center" prop="brandId" label="ID" width="75"></el-table-column>
-      <el-table-column align="center" prop="brandName" label="品牌名称" width="100">
-        <template slot-scope="scope">
-          <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
-          <el-input size="mini" v-model="scope.row.brandName" @blur="editRow(scope.row)" v-if="scope.$index===editIndex"></el-input>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="goodsCount" label="商品数量"></el-table-column>
-      <el-table-column align="center" prop="recoverCount" label="回收数量"></el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" @click="edit(scope.row,scope.$index)">编辑</el-button>
-          <el-button type="text" @click="del(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </section>
-  <footer>
-    <div class="pagination">
-      <el-button size="mini" @click.native="firstPage">首页</el-button>
-      <el-pagination background layout="prev, pager, next,total,jumper" prev-text="上一页" next-text="下一页" :total="totalCount" :page-size="pageSize" :current-page.sync="pageNum" @current-change="handleCurrentChange"></el-pagination>
-      <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div>
-  </footer>
-  <el-dialog title="添加品牌名称" :visible.sync="dialogFormVisible">
-    <el-form>
-      <!-- <el-form-item label="请输入品牌名称"> -->
-      <el-input maxlength="10" placeholder="请输入品牌名称" autocomplete="off" v-model="addBrandName" @blur="add()"></el-input>
-      <!-- </el-form-item> -->
-    </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="save">保存</el-button>
-    </div>
-  </el-dialog>
-</div>
+  <div class="brand_extension">
+    <header class="header">
+      <el-autocomplete
+        v-model="brandName"
+        :fetch-suggestions="querySearchAsync"
+        placeholder="请输入品牌名称"
+        @select="selectBrandName"
+      ></el-autocomplete>
+      <el-button type="primary" class="add" @click="search()">搜索</el-button>
+      <el-button type="danger" class="add" @click="dialogFormVisible=true">添加</el-button>
+    </header>
+    <section>
+      <el-table :data="brandLists" style="width: 100%" border stripe>
+        <!-- <el-table-column align="center" type="index"></el-table-column> -->
+        <el-table-column align="center" prop="brandId" label="ID" width="75"></el-table-column>
+        <el-table-column align="center" prop="brandName" label="品牌名称" width="100">
+          <template slot-scope="scope">
+            <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
+            <el-input
+              size="mini"
+              v-model="scope.row.newBrandName"
+              @blur="editRow(scope.row)"
+              v-if="scope.$index===editIndex"
+            ></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="goodsCount" label="商品数量"></el-table-column>
+        <el-table-column align="center" prop="recoverCount" label="回收数量"></el-table-column>
+        <el-table-column align="center" label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" @click="edit(scope.row,scope.$index)">编辑</el-button>
+            <el-button type="text" @click="del(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </section>
+    <footer>
+      <div class="pagination">
+        <el-button size="mini" @click.native="firstPage">首页</el-button>
+        <el-pagination
+          background
+          layout="prev, pager, next,total,jumper"
+          prev-text="上一页"
+          next-text="下一页"
+          :total="totalCount"
+          :page-size="pageSize"
+          :current-page.sync="pageNum"
+          @current-change="handleCurrentChange"
+        ></el-pagination>
+        <el-button size="mini" @click.native="lastPage">尾页</el-button>
+      </div>
+    </footer>
+    <el-dialog title="添加品牌名称" :visible.sync="dialogFormVisible">
+      <el-form>
+        <!-- <el-form-item label="请输入品牌名称"> -->
+        <el-input
+          maxlength="10"
+          placeholder="请输入品牌名称"
+          autocomplete="off"
+          v-model="addBrandName"
+          @blur="add()"
+        ></el-input>
+        <!-- </el-form-item> -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -69,6 +94,7 @@ export default {
       searchLists: [],
       totalCount: null,
       totalPage: null,
+      timer: null,
       pageSize: 30,
       pageNum: 1,
       editIndex: null //切换是展示或编辑的input框
@@ -87,6 +113,10 @@ export default {
           if (res.data.statusCode === 2000) {
             this.totalCount = res.data.body.totalSize;
             this.totalPage = res.data.body.pageCount;
+            res.data.body.pageData.length &&
+              res.data.body.pageData.forEach(el => {
+                el.newBrandName = el.brandName;
+              });
             this.brandLists = res.data.body.pageData;
           } else {}
         },
@@ -114,26 +144,23 @@ export default {
         let params = {
           brandName: this.addBrandName
         };
-        addBrand(params).then(
-          res => {
-            if (res.data.statusCode === 2000) {
-              this.$message({
-                message: `添加成功`,
-                type: `success`
-              });
-              this.dialogFormVisible = false;
-              this.pageNum = 1;
-              this.brandRequest(this.pageNum, this.pageSize);
-            } else {
-              this.$message({
-                message: res.data.msg,
-                type: `error`
-              });
-            }
-            this.addBrandName = "";
-          },
-          error => {}
-        );
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          addBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `添加成功`, type: `success` });
+                this.dialogFormVisible = false;
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize);
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              }
+              this.addBrandName = "";
+            },
+            error => {}
+          );
+        }, 500);
       }
     },
     searchBrand(brandName, fn) {
@@ -167,34 +194,64 @@ export default {
       console.warn(currentRow);
       let params = {
         brandId: currentRow.brandId,
-        brandName: currentRow.brandName
+        brandName: currentRow.newBrandName
       };
-      modifyBrand(params).then(
-        res => {
-          if (res.data.statusCode === 2000) {
-            this.$message({
-              message: `修改成功`,
-              type: `success`
-            });
-            this.pageNum = 1;
-            this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-          } else {
-            this.$message({
-              message: res.data.msg,
-              type: `error`
-            });
-          }
-          // this.editShow = false;
+      this.$confirm("确认修改吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+          modifyBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `修改成功`, type: `success` });
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+                this.editIndex = null;
+                currentRow.brandName = currentRow.newBrandName;
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              };
+            },
+            error => {}
+          );
+        }).catch(() => {
+          console.log(`执行了`);
           this.editIndex = null;
-        },
-        error => {}
-      );
+          currentRow.newBrandName = currentRow.brandName;
+        });
     },
+    // modifyRequest(currentRow) {
+    //   let params = {
+    //     brandId: currentRow.brandId,
+    //     brandName: currentRow.newBrandName
+    //   };
+    //   modifyBrand(params).then(
+    //     res => {
+    //       if (res.data.statusCode === 2000) {
+    //         this.$message({ message: `修改成功`, type: `success` });
+    //         this.pageNum = 1;
+    //         this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+    //         this.editIndex = null;
+    //         currentRow.brandName = currentRow.newBrandName;
+    //         currentRow.editText = `编辑`;
+    //       } else {
+    //         this.$message({ message: res.data.msg, type: `error` });
+    //       };
+    //     },
+    //     error => {}
+    //   );
+    // },
     edit(currentRow, currentIndex) {
       console.log(`编辑当前行为：`);
       console.log(currentRow);
       console.log(currentIndex);
       this.editIndex = currentIndex;
+      // if (currentRow.editText === `编辑`) {
+      //   currentRow.editText = `保存`;
+      // }else{
+      //   this.modifyRequest(currentRow);
+      // };
       // this.editShow = true;
     },
     del(currentRow) {
