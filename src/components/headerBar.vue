@@ -55,6 +55,7 @@
 <script>
 import { allArea } from "@/api/headerBar";
 import { getRequest, postRequest } from "@/utils/ajax";
+import { popList } from "@/api/popManager";
 export default {
   name: "headerBar",
   props: {

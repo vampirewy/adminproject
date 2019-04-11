@@ -1,6 +1,6 @@
 <template>
   <div class="shoppingguide">
-    <HeaderBar @statusAreaName="shoppingGuideRequest"></HeaderBar>
+    <HeaderBar :showArea="showArea" @statusAreaName="shoppingGuideRequest"></HeaderBar>
     <div class="lists">
       <el-table :data="shoppingGuideLists" style="width: 100%" border stripe>
         <!-- <el-table-column align="center" type="index"></el-table-column> -->
