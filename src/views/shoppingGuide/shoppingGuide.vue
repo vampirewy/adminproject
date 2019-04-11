@@ -1,57 +1,5 @@
 <template>
   <div class="shoppingguide">
-<<<<<<< HEAD
-    <HeaderBar @statusAreaName="shoppingGuideRequest"></HeaderBar>
-    <div class="lists">
-      <el-table :data="shoppingGuideLists" style="width: 100%" border stripe>
-        <!-- <el-table-column align="center" type="index"></el-table-column> -->
-        <el-table-column align="center" prop="guideId" label="导购ID" width="75"></el-table-column>
-        <el-table-column align="center" prop="templateCodeText" label="模版" width="60"></el-table-column>
-        <el-table-column align="center" prop="guideName" label="名称"></el-table-column>
-        <el-table-column align="center" prop="guideNameDisplay" label="显示名称"></el-table-column>
-        <el-table-column align="center" prop="traNames" label="商圈"></el-table-column>
-        <el-table-column align="center" prop="sortIndex" label="排序">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.sortIndex" size="mini" @blur="sort(scope.row)"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" prop="startTime" label="生效时间"></el-table-column>
-        <el-table-column align="center" prop="endTime" label="结束时间"></el-table-column>
-        <el-table-column align="center" prop="modifyTime" label="更新时间"></el-table-column>
-        <el-table-column align="center" prop="modifyUserName" label="更新人"></el-table-column>
-        <el-table-column align="center" prop="status" label="状态"></el-table-column>
-        <el-table-column align="center" prop="operation" label="操作">
-          <template slot-scope="scope">
-            <el-button @click="edit(scope.row)" type="text" v-if="scope.row.status==='未生效'">编辑</el-button>
-            <el-button type="text" v-if="scope.row.status==='未生效'" @click="del(scope.row)">删除</el-button>
-            <el-button type="text" v-if="scope.row.status==='生效中'" @click="delay(scope.row)">延长时间</el-button>
-            <el-button type="text" v-if="scope.row.status==='生效中'" @click="stop(scope.row)">停用</el-button>
-            <el-button
-              type="text"
-              v-if="scope.row.status==='已停用'||scope.row.status==='已结束'||scope.row.status==='已删除'"
-              @click="see(scope.row)"
-            >查看</el-button>
-            <el-button
-              type="text"
-              v-if="scope.row.status==='已停用'||scope.row.status==='已结束'||scope.row.status==='已删除'"
-              @click="resEdit(scope.row,`重新添加`)"
-            >重新添加</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <PageBar
-      @pageBar="shoppingGuideRequest"
-      :pageNum="pageNum"
-      :pageSize="pageSize"
-      :totalPage="totalPage"
-      :totalCount="totalCount"
-      :traId="traId"
-      :statusLists="statusLists"
-      :name="guideName"
-    ></PageBar>
-    <!-- <div class="pagination">
-=======
     <HeaderBar @statusAreaName="shoppingGuideRequest" :showArea="showArea"></HeaderBar>
     <el-row>
       <el-col :span="24">
@@ -94,7 +42,6 @@
       </el-col>
     </el-row>
     <div class="pagination">
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
       <el-button size="mini" @click.native="firstPage">首页</el-button>
       <el-pagination
         background
@@ -107,7 +54,7 @@
         @current-change="handleCurrentChange"
       ></el-pagination>
       <el-button size="mini" @click.native="lastPage">尾页</el-button>
-    </div> -->
+    </div>
   </div>
 </template>
 

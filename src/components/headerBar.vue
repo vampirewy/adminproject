@@ -67,30 +67,19 @@ export default {
       isIndeterminate: true,
       statusList: [], //选择的状态值  0-未生效 1-生效中 2-已结束 3-已停用 4-已删除
       checkBoxLists: [
-<<<<<<< HEAD
-        { name: "全部状态", status: -1 },
-=======
         // { name: "全部状态", status: `` },
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
         { name: "未生效", status: 0 },
         { name: "生效中", status: 1 },
         { name: "已结束", status: 2 },
         { name: "已停用", status: 3 },
         { name: "已删除", status: 4 }
       ],
-<<<<<<< HEAD
-      allAreaName: [],
-      inputText: ``, //输入框(名称)
-      value: "", //商圈选中的值
-      num: 1 //页码
-=======
       allAreaName: [], //商圈
       inputText: ``, //除弹窗输入框外的输入框
       value: "", //商圈ID号
       num: 1, //页码
       popName: "", //选择的弹窗名称
       searchLists: [] //弹窗模糊搜索列表
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
     };
   },
   methods: {
@@ -124,16 +113,6 @@ export default {
      */
     search() {
       console.log(`搜索`);
-<<<<<<< HEAD
-      let statusList = null;
-      this.statusList.includes(-1)?statusList="":(statusList=this.statusList.join(","));
-      this.$emit(
-        "statusAreaName",
-        this.value,
-        statusList,
-        this.inputText,
-        this.num
-=======
       let statusList = [];
       if (this.statusList.length >= 5) {
         statusList = "";
@@ -151,7 +130,6 @@ export default {
         statusList,   //状态值
         this.inputText,  //导购、专题输入框
         this.num  //页面1
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
       );
     },
     add() {
@@ -160,16 +138,6 @@ export default {
         ? this.$router.push(`/addshopping`)
         : this.$router.push(`/specialinfor`);
     },
-<<<<<<< HEAD
-    changeStatus(index) {
-      /**
-       *  0-末生效,1-生效中,2-已结束,3-已停用,4-已删除
-       *  全部状态不传值
-       */
-      console.log(`值${index}`);
-      console.warn(this.statusList);
-    },
-=======
     // changeStatus(item) {
     //   /**
     //    *  0-末生效,1-生效中,2-已结束,3-已停用,4-已删除
@@ -178,7 +146,6 @@ export default {
     //   console.log(`状态值`);
     //   console.log(item);
     // },
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
     changeArea() {
       // console.log(this.value);
     },
