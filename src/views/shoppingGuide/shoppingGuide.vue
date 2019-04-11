@@ -82,7 +82,7 @@ export default {
   methods: {
     shoppingGuideRequest(traId, statusLists, guideName, page) {
       console.log(`==============================`);
-      console.log(page, traId, statusLists, guideName);
+      console.log( traId, statusLists, guideName,page);
       console.log(`==============================`);
       this.traId = traId;
       this.statusLists = statusLists;

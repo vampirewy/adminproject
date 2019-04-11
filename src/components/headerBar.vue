@@ -120,7 +120,8 @@ export default {
           });
         }
         statusList = statusList.join(",");
-      }
+      };
+      console.log(statusList);
       this.$emit(
         "statusAreaName",
         this.value,  //商圈ID号
