@@ -1,6 +1,6 @@
 <template>
   <div class="spcial_guide">
-    <HeaderBar :allAreaName="allAreaName" @statusAreaName="specialGuideRequest"></HeaderBar>
+    <HeaderBar :showArea="showArea" @statusAreaName="specialGuideRequest"></HeaderBar>
     <el-row>
       <el-col :span="24">
         <el-table :data="specialGuideLists" stripe style="width:100%" border>
@@ -92,6 +92,7 @@ export default {
   },
   data() {
     return {
+      showArea:true,
       totalCount: null,
       totalPage: null,
       pageSize: 30,

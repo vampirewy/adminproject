@@ -100,6 +100,15 @@ const commentLists = [
       { name: "信息", path: "/specialinfor" }
       // { name: "商品", path: "/specialgood" }
     ]
+  },
+  {
+    name:"弹窗管理",
+    value:"3310",
+    index:"3",
+    sonName:[
+      {name:"列表",path:"/popmanager"},
+      // {name:"添加",path:"/addpop"}
+    ]
   }
 ];
 export default {
@@ -139,9 +148,14 @@ export default {
     }
   },
   created() {
-    this.defaultActive = window.location.href.split("/#")[1];
-    console.log(`城市code:${this.value}`);
-    localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists) ;
+    localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists);
+    if(this.value==`manager`){
+      window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/brandmanage';
+      this.defaultActive = window.location.href.split("/#")[1];
+    }else{
+      // window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide'
+      this.defaultActive = window.location.href.split("/#")[1];
+    };
   },
   // mounted() {
   //   this.defaultActive = window.location.href.split("/#")[1];
@@ -149,8 +163,10 @@ export default {
   // },
   updated() {
     this.defaultActive = window.location.href.split("/#")[1];
+    console.log(this.defaultActive);
     console.log(`城市code:${this.value}`);
     localStorage.getItem('cityCode') == 'manager' ?(this.navLists = baseLists): (this.navLists = commentLists);
+
   },
   computed: {},
   watch: {

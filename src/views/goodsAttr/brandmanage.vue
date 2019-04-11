@@ -16,12 +16,12 @@
         <el-table-column align="center" prop="brandId" label="ID" width="75"></el-table-column>
         <el-table-column align="center" prop="brandName" label="品牌名称" width="100">
           <template slot-scope="scope">
-            <span v-if="!editShow">{{scope.row.brandName}}</span>
+            <span v-if="scope.$index!==editIndex">{{scope.row.brandName}}</span>
             <el-input
               size="mini"
-              v-model="scope.row.brandName"
+              v-model="scope.row.newBrandName"
               @blur="editRow(scope.row)"
-              v-if="editShow"
+              v-if="scope.$index===editIndex"
             ></el-input>
           </template>
         </el-table-column>
@@ -29,7 +29,7 @@
         <el-table-column align="center" prop="recoverCount" label="回收数量"></el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="edit(scope.row)">编辑</el-button>
+            <el-button type="text" @click="edit(scope.row,scope.$index)">编辑</el-button>
             <el-button type="text" @click="del(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -64,7 +64,7 @@
         <!-- </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </el-dialog>
@@ -87,13 +87,15 @@ export default {
       brandName: "", //输入品牌名称
       addBrandName: "", //添加输入名称
       dialogFormVisible: false, //弹窗
-      editShow: false, //编辑时，品牌名称改成输入框
+      // editShow: false, //编辑时，品牌名称改成输入框
       brandLists: [],
       searchLists: [],
       totalCount: null,
       totalPage: null,
+      timer: null,
       pageSize: 30,
-      pageNum: 1
+      pageNum: 1,
+      editIndex: null //切换是展示或编辑的input框
     };
   },
   methods: {
@@ -109,6 +111,10 @@ export default {
           if (res.data.statusCode === 2000) {
             this.totalCount = res.data.body.totalSize;
             this.totalPage = res.data.body.pageCount;
+            res.data.body.pageData.length &&
+              res.data.body.pageData.forEach(el => {
+                el.newBrandName = el.brandName;
+              });
             this.brandLists = res.data.body.pageData;
           } else {
           }
@@ -128,27 +134,30 @@ export default {
     //保存
     save() {
       if (!this.reg.test(this.addBrandName)) {
-        this.$message({ message: `只可输入汉字英文字`,type:`error` });
+        this.$message({ message: `只可输入汉字英文字`, type: `error` });
         this.addBrandName = "";
-      }else{
+      } else {
         let params = {
           brandName: this.addBrandName
         };
-        addBrand(params).then(
-          res => {
-            if (res.data.statusCode === 2000) {
-              this.$message({ message: `添加成功`, type: `success` });
-              this.dialogFormVisible = false;
-              this.pageNum = 1;
-              this.brandRequest(this.pageNum, this.pageSize);
-            } else {
-              this.$message({ message: res.data.msg, type: `error` });
-            }
-            this.addBrandName = "";
-          },
-          error => {}
-        );
-      };
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          addBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `添加成功`, type: `success` });
+                this.dialogFormVisible = false;
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize);
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              }
+              this.addBrandName = "";
+            },
+            error => {}
+          );
+        }, 500);
+      }
     },
     searchBrand(brandName, fn) {
       let params = {
@@ -181,28 +190,68 @@ export default {
       console.warn(currentRow);
       let params = {
         brandId: currentRow.brandId,
-        brandName: currentRow.brandName
+        brandName: currentRow.newBrandName
       };
-      modifyBrand(params).then(
-        res => {
-          if (res.data.statusCode === 2000) {
-            this.$message({ message: `修改成功`, type: `success` });
-            this.pageNum = 1;
-            this.brandRequest(this.pageNum, this.pageSize, this.brandName);
-            this.editShow = false;
-          } else {
-            this.$message({ message: res.data.msg, type: `error` });
-          }
-        },
-        error => {}
-      );
+      this.$confirm("确认修改吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+          modifyBrand(params).then(
+            res => {
+              if (res.data.statusCode === 2000) {
+                this.$message({ message: `修改成功`, type: `success` });
+                this.pageNum = 1;
+                this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+                this.editIndex = null;
+                currentRow.brandName = currentRow.newBrandName;
+              } else {
+                this.$message({ message: res.data.msg, type: `error` });
+              };
+            },
+            error => {}
+          );
+        }).catch(() => {
+          console.log(`执行了`);
+          this.editIndex = null;
+          currentRow.newBrandName = currentRow.brandName;
+        });
     },
-    edit(currentRow) {
+    // modifyRequest(currentRow) {
+    //   let params = {
+    //     brandId: currentRow.brandId,
+    //     brandName: currentRow.newBrandName
+    //   };
+    //   modifyBrand(params).then(
+    //     res => {
+    //       if (res.data.statusCode === 2000) {
+    //         this.$message({ message: `修改成功`, type: `success` });
+    //         this.pageNum = 1;
+    //         this.brandRequest(this.pageNum, this.pageSize, this.brandName);
+    //         this.editIndex = null;
+    //         currentRow.brandName = currentRow.newBrandName;
+    //         currentRow.editText = `编辑`;
+    //       } else {
+    //         this.$message({ message: res.data.msg, type: `error` });
+    //       };
+    //     },
+    //     error => {}
+    //   );
+    // },
+    edit(currentRow, currentIndex) {
       console.log(`编辑当前行为：`);
       console.log(currentRow);
-      this.editShow = true;
+      console.log(currentIndex);
+      this.editIndex = currentIndex;
+      // if (currentRow.editText === `编辑`) {
+      //   currentRow.editText = `保存`;
+      // }else{
+      //   this.modifyRequest(currentRow);
+      // };
+      // this.editShow = true;
     },
     del(currentRow) {
+      this.editIndex = null;
       console.log(`删除当前行为:`);
       console.log(currentRow);
       let [brandId] = [currentRow.brandId];
@@ -222,19 +271,22 @@ export default {
     handleCurrentChange(page) {
       console.log(`当前第${page}页`);
       this.pageNum = page;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     },
     firstPage() {
       console.log(`第${this.pageNum}页`);
       this.pageNum = 1;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     },
     lastPage() {
       console.log(`最后第${this.pageNum}页`);
       this.pageNum = this.totalPage;
-      this.editShow = false;
+      // this.editShow = false;
+      this.editIndex = null;
       this.brandRequest(this.pageNum, this.pageSize);
     }
   },

@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "alpha": "vue-cli-service build --mode alpha",
-    "dv2": "vue-cli-service build --mode dv2",
-    "build": "vue-cli-service build",
+    "serve:dv2": "vue-cli-service serve --mode dv2",
+    "serve:alpha": "vue-cli-service serve --mode alpha",
+    "alpha": "vue-cli-service build --mode alpha && node alpha.js",
+    "dv2": "vue-cli-service build --mode dv2 && node dv2.js",
+    "build": "vue-cli-service build && node pro.js",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
@@ -38,6 +40,7 @@
     "less-loader": "^4.1.0",
     "node-sass": "^4.9.2",
     "sass-loader": "^7.0.3",
+    "scp2": "^0.5.0",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-template-compiler": "^2.5.21"

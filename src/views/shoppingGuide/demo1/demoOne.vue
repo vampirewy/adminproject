@@ -92,7 +92,7 @@
             style="margin-left:10px;"
             @click="toSpecialGuide"
           >创建新专题</el-button>
-          <el-checkbox style="margin-left:10px;" @change="authorization" v-model="ruleForm.authorization">H5授权</el-checkbox>
+          <!-- <el-checkbox style="margin-left:10px;" @change="authorization" v-model="ruleForm.authorization">H5授权</el-checkbox> -->
         </div>
       </el-form-item>
       <el-form-item label="是否展示商品" class="show" prop="goods">
