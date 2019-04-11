@@ -23,9 +23,9 @@ export default {
     pageNum: Number,
     totalPage: Number,
     totalCount: Number,
-    traId: String,
+    traId: Number,
     statusLists: String,
-    name:String //导购名称或专题名称
+    name: String //导购名称或专题名称
   },
   data() {
     return {
@@ -43,7 +43,13 @@ export default {
       this.$emit("pageBar", this.traId, this.statusLists, this.name, pageNum);
     },
     lastPage() {
-      this.$emit("pageBar", this.traId, this.statusLists, this.name, this.totalPage);
+      this.$emit(
+        "pageBar",
+        this.traId,
+        this.statusLists,
+        this.name,
+        this.totalPage
+      );
     }
   }
 };
