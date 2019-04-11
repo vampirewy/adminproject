@@ -413,11 +413,7 @@ export default {
     if (this.$route.params.topicId) {
       console.log(this.$route.params.topicId);
       this.topicId = this.$route.params.topicId;
-<<<<<<< HEAD
-      this.uploadExcle = `${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${
-=======
       this.upExcleAddr = `${process.env.VUE_APP_BASE_URL}/mall/shopping/topics/${
->>>>>>> 12aa97205888de70f09c6e1f20d7dfb57b74bfd6
         this.$route.params.topicId
       }/goods/upload`;
       //需要topicId,单跳无效
