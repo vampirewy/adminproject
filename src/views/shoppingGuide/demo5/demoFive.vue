@@ -216,10 +216,10 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="跳转页面" class="show">
-        <el-radio-group v-model="item.type" @change="chooseTypes(item.type)" style="margin-right:10px;">
+        <el-radio-group v-model="item.type" @change="chooseTypes(item.type,index)" style="margin-right:10px;">
           <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
         </el-radio-group>
-        <el-select style="display:block" v-model="item.appSelectText" placeholder="请选择" @change="selectPage(item.appSelectText)" v-if="item.appSelect">
+        <el-select style="display:block" v-model="item.appSelectText" placeholder="请选择" @change="selectPage(item.appSelectText,index)" v-if="item.appSelect">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
         <el-autocomplete v-if="item.special" v-model="item.topicName" :fetch-suggestions="querySearchAsync" placeholder="请输入专题名称" @select="select3" :disabled="allDisabled"></el-autocomplete>
@@ -960,96 +960,115 @@ export default {
       );
     },
     //跳转的是app还是h5(单选框)
-    chooseTypes(chooseType, num) {
-      switch (num) {
-        case 1:
-          this.oneChoose.type = chooseType;
-          console.log(`第1栏跳转方式${this.oneChoose.type}`);
-          console.log(`第1栏app选中项${this.oneChoose.selectText}`);
-          if (chooseType === "APP") {
-            this.oneChoose.showSelect = true;
-            this.oneChoose.param = false;
-          } else {
-            this.oneChoose.showSelect = false;
-            this.oneChoose.param = true;
-            this.oneChoose.special = false; //专题搜索框
-          }
-          if (
-            this.oneChoose.type === "APP" &&
-            this.oneChoose.selectText === 16
-          ) {
-            this.oneChoose.special = true;
-          }
-          break;
-        case 2:
-          this.twoChoose.type = chooseType;
-          console.log(`第2栏跳转方式${this.twoChoose.type}`);
-          console.log(`第2栏app选中项${this.twoChoose.selectText}`);
-          if (chooseType === "APP") {
-            this.twoChoose.showSelect = true;
-            this.twoChoose.param = false;
-          } else {
-            this.twoChoose.showSelect = false;
-            this.twoChoose.param = true;
-            this.twoChoose.special = false; //专题搜索框
-          }
-          if (
-            this.twoChoose.type === "APP" &&
-            this.twoChoose.selectText === 16
-          ) {
-            this.twoChoose.special = true;
-          }
-          break;
-        case 3:
-          this.threeChoose.type = chooseType;
-          console.log(`第3栏跳转方式${this.threeChoose.type}`);
-          console.log(`第3栏app选中项${this.threeChoose.selectText}`);
-          if (chooseType === "APP") {
-            this.threeChoose.showSelect = true;
-            this.threeChoose.param = false;
-          } else {
-            this.threeChoose.showSelect = false;
-            this.threeChoose.param = true;
-            this.threeChoose.special = false; //专题搜索框
-          }
-          if (
-            this.threeChoose.type === "APP" &&
-            this.threeChoose.selectText === 16
-          ) {
-            this.threeChoose.special = true;
-          }
-          break;
+    // chooseTypes(chooseType, num) {
+    //   switch (num) {
+    //     case 1:
+    //       this.oneChoose.type = chooseType;
+    //       console.log(`第1栏跳转方式${this.oneChoose.type}`);
+    //       console.log(`第1栏app选中项${this.oneChoose.selectText}`);
+    //       if (chooseType === "APP") {
+    //         this.oneChoose.showSelect = true;
+    //         this.oneChoose.param = false;
+    //       } else {
+    //         this.oneChoose.showSelect = false;
+    //         this.oneChoose.param = true;
+    //         this.oneChoose.special = false; //专题搜索框
+    //       }
+    //       if (
+    //         this.oneChoose.type === "APP" &&
+    //         this.oneChoose.selectText === 16
+    //       ) {
+    //         this.oneChoose.special = true;
+    //       }
+    //       break;
+    //     case 2:
+    //       this.twoChoose.type = chooseType;
+    //       console.log(`第2栏跳转方式${this.twoChoose.type}`);
+    //       console.log(`第2栏app选中项${this.twoChoose.selectText}`);
+    //       if (chooseType === "APP") {
+    //         this.twoChoose.showSelect = true;
+    //         this.twoChoose.param = false;
+    //       } else {
+    //         this.twoChoose.showSelect = false;
+    //         this.twoChoose.param = true;
+    //         this.twoChoose.special = false; //专题搜索框
+    //       }
+    //       if (
+    //         this.twoChoose.type === "APP" &&
+    //         this.twoChoose.selectText === 16
+    //       ) {
+    //         this.twoChoose.special = true;
+    //       }
+    //       break;
+    //     case 3:
+    //       this.threeChoose.type = chooseType;
+    //       console.log(`第3栏跳转方式${this.threeChoose.type}`);
+    //       console.log(`第3栏app选中项${this.threeChoose.selectText}`);
+    //       if (chooseType === "APP") {
+    //         this.threeChoose.showSelect = true;
+    //         this.threeChoose.param = false;
+    //       } else {
+    //         this.threeChoose.showSelect = false;
+    //         this.threeChoose.param = true;
+    //         this.threeChoose.special = false; //专题搜索框
+    //       }
+    //       if (
+    //         this.threeChoose.type === "APP" &&
+    //         this.threeChoose.selectText === 16
+    //       ) {
+    //         this.threeChoose.special = true;
+    //       }
+    //       break;
+    //   }
+    // },
+    chooseTypes(type, index) {
+      console.log(`当前跳转的下标${index}`);
+      console.log(type);
+      // this.activitiesSection[index].type = type;
+      // this.activitiesSection[index].appSelect = true;
+      if (type === 'APP') {
+        this.activitiesSection[index].appSelect = true;
+        this.activitiesSection[index].type = type;
+        this.activitiesSection[index].h5Param = false;
+        (this.activitiesSection[index].appSelectText === 16) && (this.activitiesSection[index].special = true);
+      } else {
+        this.activitiesSection[index].h5Param = true;
+        this.activitiesSection[index].appSelect = false;
+        this.activitiesSection[index].special = false;
       }
     },
     //app这边的下拉选项框
-    selectPage(page, num) {
-      switch (num) {
-        case 1:
-          if (page === 16) {
-            this.oneChoose.special = true;
-          } else {
-            this.oneChoose.special = false;
-          }
-          this.oneChoose.selectText = page;
-          console.log(`第1栏选中code:${this.oneChoose.selectText}`);
-          break;
-        case 2:
-          if (page === 16) {
-            this.twoChoose.special = true;
-          } else {
-            this.twoChoose.special = false;
-          }
-          this.twoChoose.selectText = page;
-          break;
-        case 3:
-          if (page === 16) {
-            this.threeChoose.special = true;
-          } else {
-            this.threeChoose.special = false;
-          }
-          this.threeChoose.selectText = page;
-          break;
-      }
+    selectPage(selectedIndex, index) {
+      console.log(selectedIndex);
+      selectedIndex === 16 ? this.activitiesSection[index].special = true : this.activitiesSection[index].special = false;
+      this.activitiesSection[index].appSelectText = selectedIndex;
+      // switch (num) {
+      //   case 1:
+      //     if (page === 16) {
+      //       this.oneChoose.special = true;
+      //     } else {
+      //       this.oneChoose.special = false;
+      //     }
+      //     this.oneChoose.selectText = page;
+      //     console.log(`第1栏选中code:${this.oneChoose.selectText}`);
+      //     break;
+      //   case 2:
+      //     if (page === 16) {
+      //       this.twoChoose.special = true;
+      //     } else {
+      //       this.twoChoose.special = false;
+      //     }
+      //     this.twoChoose.selectText = page;
+      //     break;
+      //   case 3:
+      //     if (page === 16) {
+      //       this.threeChoose.special = true;
+      //     } else {
+      //       this.threeChoose.special = false;
+      //     }
+      //     this.threeChoose.selectText = page;
+      //     break;
+      // }
     },
     h5Path(num) {
       switch (num) {
