@@ -1,13 +1,7 @@
 <template>
-  <div>
-    <el-form
-      :model="ruleForm"
-      :rules="rules"
-      ref="ruleForm"
-      label-width="120px"
-      class="demo-ruleForm"
-    >
-      <!-- <el-form-item label="活动1" required>
+<div>
+  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+    <!-- <el-form-item label="活动1" required>
         <el-form-item label="活动图片" prop="fileOne" class="show">
           <el-upload
             class="upload-demo"
@@ -213,82 +207,47 @@
           ></el-input>
         </el-form-item>
       </el-form-item> -->
-      <el-form-item v-for="(item,index) in activitiesSection" :key="index" :label="item.name" required>
-        <el-form-item label="活动图片" class="show">
-          <el-upload 
-            class="upload-demo"
-            :action="upImgUrl"
-            :headers="headers"
-            :show-file-list="showImgLists"
-            :limit="1"
-            :file-list="item.filePic"
-            name="file"
-            :on-remove="removeImg"
-            :before-remove="beforeRemoveImg"
-            :on-success="(res,file)=>{return successImg(res,file,index)}"
-          >
-            <el-button type="primary" size="mini">上传图片</el-button>
-            <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="跳转页面" class="show">
-          <el-radio-group
-            v-model="item.type"
-            @change="chooseTypes(item.type)"
-            style="margin-right:10px;"
-          >
-            <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
-          </el-radio-group>
-          <el-select
-            style="display:block"
-            v-model="item.appSelectText"
-            placeholder="请选择"
-            @change="selectPage(item.appSelectText)"
-            v-if="item.appSelect"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-autocomplete
-            v-if="item.special"
-            v-model="item.topicName"
-            :fetch-suggestions="querySearchAsync"
-            placeholder="请输入专题名称"
-            @select="select3"
-            :disabled="allDisabled"
-          ></el-autocomplete>
-          <el-button type="primary" v-if="item.special" @click="toSpecialGuide">创建新专题</el-button>
-          <el-checkbox
-            style="margin-left:10px;"
-            v-if="item.h5Param"
-            @change="authorization(3)"
-            v-model="item.authorization"
-          >H5授权</el-checkbox>
-          <el-input
-            placeholder="页面可根据数据变化动态显示"
-            @blur="h5Path(3)"
-            v-model="item.path"
-            v-if="item.h5Param"
-          ></el-input>
-        </el-form-item>
+    <el-form-item v-for="(item,index) in activitiesSection" :key="index" :label="item.name" required>
+      <el-form-item label="活动图片" class="show">
+        <el-upload class="upload-demo" :action="upImgUrl" :headers="headers" :show-file-list="showImgLists" :limit="1" :file-list="item.filePic" name="file" :on-remove="(file, fileList)=>{ return removeImg(file, fileList,index)}"
+          :on-success="(res,file)=>{return successImg(res,file,index)}">
+          <el-button type="primary" size="mini">上传图片</el-button>
+          <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
+        </el-upload>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
-        <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
-        <el-button @click="cancel()" v-if="newCreate">取消</el-button>
+      <el-form-item label="跳转页面" class="show">
+        <el-radio-group v-model="item.type" @change="chooseTypes(item.type)" style="margin-right:10px;">
+          <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
+        </el-radio-group>
+        <el-select style="display:block" v-model="item.appSelectText" placeholder="请选择" @change="selectPage(item.appSelectText)" v-if="item.appSelect">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <el-autocomplete v-if="item.special" v-model="item.topicName" :fetch-suggestions="querySearchAsync" placeholder="请输入专题名称" @select="select3" :disabled="allDisabled"></el-autocomplete>
+        <el-button type="primary" v-if="item.special" @click="toSpecialGuide">创建新专题</el-button>
+        <el-checkbox style="margin-left:10px;" v-if="item.h5Param" @change="authorization(3)" v-model="item.authorization">H5授权</el-checkbox>
+        <el-input placeholder="页面可根据数据变化动态显示" @blur="h5Path(3)" v-model="item.path" v-if="item.h5Param"></el-input>
       </el-form-item>
-    </el-form>
-  </div>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
+      <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
+      <el-button @click="cancel()" v-if="newCreate">取消</el-button>
+    </el-form-item>
+  </el-form>
+</div>
 </template>
 
 <script>
-import { getRequest, postRequest } from "@/utils/ajax";
-import { MessageBounced } from "@/utils/message";
-import { Message } from "element-ui";
+import {
+  getRequest,
+  postRequest
+} from "@/utils/ajax";
+import {
+  MessageBounced
+} from "@/utils/message";
+import {
+  Message
+} from "element-ui";
 import {
   create,
   guideDetails,
@@ -296,7 +255,9 @@ import {
   onlyDelayTime,
   checkSpecial
 } from "@/api/shoppingGuide";
-import { guideAllArea } from "@/api/headerBar";
+import {
+  guideAllArea
+} from "@/api/headerBar";
 export default {
   name: "demoFive",
   props: {
@@ -319,7 +280,7 @@ export default {
         path: "", //页面路径
         goods: "" //是否展示商品
       },
-      /**  
+      /**
        * picUrl:上传的图片地址
        * filePic:显示在页面上的图片地址
        * type 跳转类型为APP还是H5
@@ -330,10 +291,48 @@ export default {
        * path为输入框里的值
        * authorization h5授权
        */
-      activitiesSection:[
-        {name:'活动1',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''},
-        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''},
-        {name:'活动2',picUrl:'',filePic:[],type:'',appSelect:false,appSelectText:'',topicName:'',topicId:'',special:false,h5Param:false,path:'',authorization:''}
+      activitiesSection: [{
+          name: '活动1',
+          picUrl: '',
+          filePic: [],
+          type: '',
+          appSelect: false,
+          appSelectText: '',
+          topicName: '',
+          topicId: '',
+          special: false,
+          h5Param: false,
+          path: '',
+          authorization: ''
+        },
+        {
+          name: '活动2',
+          picUrl: '',
+          filePic: [],
+          type: '',
+          appSelect: false,
+          appSelectText: '',
+          topicName: '',
+          topicId: '',
+          special: false,
+          h5Param: false,
+          path: '',
+          authorization: ''
+        },
+        {
+          name: '活动2',
+          picUrl: '',
+          filePic: [],
+          type: '',
+          appSelect: false,
+          appSelectText: '',
+          topicName: '',
+          topicId: '',
+          special: false,
+          h5Param: false,
+          path: '',
+          authorization: ''
+        }
       ],
       rules: {
         // resource: [
@@ -345,9 +344,11 @@ export default {
         //     trigger: "successImg"
         //   }
         // ],
-        goods: [
-          { required: true, message: "请至少选择一项", trigger: "change" }
-        ]
+        goods: [{
+          required: true,
+          message: "请至少选择一项",
+          trigger: "change"
+        }]
       },
       oneChoose: {
         type: "", //app还是h5
@@ -359,7 +360,7 @@ export default {
         param: false, //h5输入框显示
         path: "", //h5路径
         picUrl: "",
-        authorization:""
+        authorization: ""
       },
       twoChoose: {
         type: "",
@@ -371,7 +372,7 @@ export default {
         param: false,
         path: "",
         picUrl: "",
-        authorization:""
+        authorization: ""
       },
       threeChoose: {
         type: "",
@@ -383,17 +384,22 @@ export default {
         param: false,
         path: "",
         picUrl: "",
-        authorization:""
+        authorization: ""
       },
-      headers: { sessionId: localStorage.getItem(`sessionId`) },
+      headers: {
+        sessionId: localStorage.getItem(`sessionId`)
+      },
       upImgUrl: `${process.env.VUE_APP_BASE_URL}/mall/support/uploadPic`,
       fileOne: [], //装图片
       fileTwo: [],
       fileThree: [],
       searchLists: [], //模糊搜索的数据
-      jumpType: [{ name: "APP" }, { name: "H5" }],
-      options: [
-        {
+      jumpType: [{
+        name: "APP"
+      }, {
+        name: "H5"
+      }],
+      options: [{
           value: 2,
           label: "返利商品"
         },
@@ -430,7 +436,9 @@ export default {
   },
   methods: {
     fromShoppingGuide() {
-      let params = { guideId: this.guideId };
+      let params = {
+        guideId: this.guideId
+      };
       guideDetails(params).then(
         res => {
           if (res.data.statusCode === 2000) {
@@ -441,9 +449,9 @@ export default {
                 this.ruleForm.type.push(el.traName);
               }
             });
-            this.ruleForm.showName = res.data.body.guideNameDisplay
-              ? true
-              : false; //是否展示名称
+            this.ruleForm.showName = res.data.body.guideNameDisplay ?
+              true :
+              false; //是否展示名称
             this.ruleForm.name = res.data.body.guideName; //导购名称
             this.ruleForm.startTime = res.data.body.startTime; //开始时间
             this.ruleForm.endTime = res.data.body.endTime; //结束时间
@@ -524,8 +532,7 @@ export default {
               name: this.threeChoose.picUrl,
               value: this.threeChoose.picUrl
             });
-          } else {
-          }
+          } else {}
         },
         error => {
           console.log(error);
@@ -535,31 +542,37 @@ export default {
     toSpecialGuide() {
       this.$router.push("/specialinfor");
     },
-    authorization(num){
-      switch(num){
+    authorization(num) {
+      switch (num) {
         case 1:
-        console.log(`第栏H5授权${this.oneChoose.authorization}`);
-        break;
+          console.log(`第栏H5授权${this.oneChoose.authorization}`);
+          break;
         case 2:
-        console.log(`第栏H5授权${this.twoChoose.authorization}`);
-        break;
+          console.log(`第栏H5授权${this.twoChoose.authorization}`);
+          break;
         case 3:
-        console.log(`第栏H5授权${this.threeChoose.authorization}`);
-        break;
+          console.log(`第栏H5授权${this.threeChoose.authorization}`);
+          break;
       };
     },
     cancel() {
       this.$router.push("/ShoppingGuide");
     },
-    assemblyInformation(){
+    assemblyInformation() {
       console.log(`父组件`);
       console.log(this.publicPart);
-      let lists = [],params = {};
-      this.publicPart.length && this.publicPart.forEach(el=>{
-        if(Object.values(el).includes("")||Object.values(el).includes(null)) return;
+      let lists = [],
+        params = {};
+      this.publicPart.length && this.publicPart.forEach(el => {
+        if (Object.values(el).includes("") || Object.values(el).includes(null)) return;
         el.templateCode = `T5`;
-        el.businessArea.forEach(el=>{lists.push({checked:el.checked,traId:el.traId});});
-        params.guideNameDisplay = el.showName ? 1 : 0 ;
+        el.businessArea.forEach(el => {
+          lists.push({
+            checked: el.checked,
+            traId: el.traId
+          });
+        });
+        params.guideNameDisplay = el.showName ? 1 : 0;
         params.guideName = el.guideName;
         params.startTime = el.startTime;
         params.endTime = el.endTime;
@@ -592,12 +605,18 @@ export default {
         onlyDelayTime(params).then(
           res => {
             if (res.data.statusCode === 2000) {
-              this.$message({ message: `修改成功`, type: `success` });
+              this.$message({
+                message: `修改成功`,
+                type: `success`
+              });
               setTimeout(() => {
                 this.$router.push("/shoppingGuide");
               }, 500);
             } else {
-              this.$message({ message: res.data.msg, type: `error` });
+              this.$message({
+                message: res.data.msg,
+                type: `error`
+              });
             }
           },
           error => {}
@@ -607,13 +626,16 @@ export default {
           activity = [],
           fanllyLists = [];
         this.areaLists.forEach(el => {
-          lists.push({ checked: el.checked, traId: el.traId });
+          lists.push({
+            checked: el.checked,
+            traId: el.traId
+          });
         });
         Promise.all([
-          this.checkActivityData1(),
-          this.checkActivityData2(),
-          this.checkActivityData3()
-        ])
+            this.checkActivityData1(),
+            this.checkActivityData2(),
+            this.checkActivityData3()
+          ])
           .then(
             res => {
               console.log(res);
@@ -644,7 +666,7 @@ export default {
                   actionContent: el.type === "APP" ? el.selectText : el.path,
                   picUrl: el.picUrl,
                   actionParam: el.topicId,
-                  authorized:el.authorization
+                  authorized: el.authorization
                 });
               });
               console.log(fanllyLists);
@@ -667,12 +689,18 @@ export default {
             res => {
               if (res.data.statusCode === 2000) {
                 console.log(res.data.body);
-                this.$message({ message: `修改成功`, type: `success` });
+                this.$message({
+                  message: `修改成功`,
+                  type: `success`
+                });
                 setTimeout(() => {
                   this.$router.push("/shoppingGuide");
                 }, 500);
               } else {
-                this.$message({ message: res.data.msg, type: `error` });
+                this.$message({
+                  message: res.data.msg,
+                  type: `error`
+                });
               }
             },
             error => {}
@@ -685,13 +713,16 @@ export default {
         activity = [],
         fanllyLists = [];
       this.areaLists.forEach(el => {
-        lists.push({ checked: el.checked, traId: el.traId });
+        lists.push({
+          checked: el.checked,
+          traId: el.traId
+        });
       });
       Promise.all([
-        this.checkActivityData1(),
-        this.checkActivityData2(),
-        this.checkActivityData3()
-      ])
+          this.checkActivityData1(),
+          this.checkActivityData2(),
+          this.checkActivityData3()
+        ])
         .then(
           res => {
             console.log(res);
@@ -727,7 +758,7 @@ export default {
                 actionContent: el.type === "APP" ? el.selectText : el.path,
                 picUrl: el.picUrl,
                 actionParam: el.topicId,
-                authorized:el.authorization
+                authorized: el.authorization
               });
             });
             console.log(fanllyLists);
@@ -769,7 +800,10 @@ export default {
     checkActivityData1() {
       let promise = new Promise((resolve, reject) => {
         if (this.oneChoose.picUrl === "") {
-          this.$message({ message: `请上传活动一的图片`, type: `error` });
+          this.$message({
+            message: `请上传活动一的图片`,
+            type: `error`
+          });
         } else {
           if (this.oneChoose.type === "APP") {
             if (this.oneChoose.selectText == "") {
@@ -790,7 +824,10 @@ export default {
               return resolve(`通过活动一的h5页面参数`);
             }
           } else {
-            this.$message({ message: `请选择活动一的跳转页面`, type: `error` });
+            this.$message({
+              message: `请选择活动一的跳转页面`,
+              type: `error`
+            });
           }
         }
       });
@@ -799,7 +836,10 @@ export default {
     checkActivityData2() {
       let promise = new Promise((resolve, reject) => {
         if (this.twoChoose.picUrl === "") {
-          this.$message({ message: `请上传活动二的图片`, type: `error` });
+          this.$message({
+            message: `请上传活动二的图片`,
+            type: `error`
+          });
         } else {
           if (this.twoChoose.type === "APP") {
             if (this.twoChoose.selectText == "") {
@@ -820,7 +860,10 @@ export default {
               return resolve(`通过活动二的h5页面参数`);
             }
           } else {
-            this.$message({ message: `请选择活动二的跳转页面`, type: `error` });
+            this.$message({
+              message: `请选择活动二的跳转页面`,
+              type: `error`
+            });
           }
         }
       });
@@ -829,7 +872,10 @@ export default {
     checkActivityData3() {
       let promise = new Promise((resolve, reject) => {
         if (this.threeChoose.picUrl === "") {
-          this.$message({ message: `请上传活动三的图片`, type: `error` });
+          this.$message({
+            message: `请上传活动三的图片`,
+            type: `error`
+          });
         } else {
           if (this.threeChoose.type === "APP") {
             if (this.threeChoose.selectText == "") {
@@ -850,7 +896,10 @@ export default {
               return resolve(`通过活动三的h5页面参数`);
             }
           } else {
-            this.$message({ message: `请选择活动三的跳转页面`, type: `error` });
+            this.$message({
+              message: `请选择活动三的跳转页面`,
+              type: `error`
+            });
           }
         }
       });
@@ -871,8 +920,7 @@ export default {
               });
             this.searchLists = res.data.body;
             fn(this.searchLists);
-          } else {
-          }
+          } else {}
         },
         error => {
           console.log(error);
@@ -1025,65 +1073,74 @@ export default {
           break;
       }
     },
-    imgOne(res) {
-      console.log(res);
-      if (res.statusCode === 2000) {
-        this.fileOne.push({ name: res.body, url: res.body });
-        this.oneChoose.picUrl = res.body;
-      } else {
-        this.$message({ message: res.msg, type: `error` });
-      }
-    },
+    // imgOne(res) {
+    //   console.log(res);
+    //   if (res.statusCode === 2000) {
+    //     this.fileOne.push({ name: res.body, url: res.body });
+    //     this.oneChoose.picUrl = res.body;
+    //   } else {
+    //     this.$message({ message: res.msg, type: `error` });
+    //   }
+    // },
     // handlePreview(file) {
     //   console.warn(file);
     // },
-    removeOne(files, fileList) {
-      //确认删除后，数组清空,因为只有一个文件
-      this.fileOne = [];
-      this.oneChoose.picUrl = "";
+    // removeOne(files, fileList) {
+    //   //确认删除后，数组清空,因为只有一个文件
+    //   this.fileOne = [];
+    //   this.oneChoose.picUrl = "";
+    // },
+    // beforeRemoveOne(file, fileList) {
+    //   return this.$confirm(`确定移除 ${file.name}？`);
+    // },
+    // imgTwo(res) {
+    //   console.log(res);
+    //   if (res.statusCode === 2000) {
+    //     this.fileTwo.push({ name: res.body, url: res.body });
+    //     this.twoChoose.picUrl = res.body;
+    //   } else {
+    //     this.$message({ message: res.msg, type: `error` });
+    //   }
+    // },
+    // removeTwo(files, fileList) {
+    //   //确认删除后，数组清空,因为只有一个文件
+    //   this.fileTwo = [];
+    //   this.twoChoose.picUrl = "";
+    // },
+    // beforeRemoveTwo(file, fileList) {
+    //   return this.$confirm(`确定移除 ${file.name}？`);
+    // },
+    // imgThree(res) {
+    //   console.log(res);
+    //   if (res.statusCode === 2000) {
+    //     this.fileThree.push({ name: res.body, url: res.body });
+    //     this.threeChoose.picUrl = res.body;
+    //   } else {
+    //     this.$message({ message: res.msg, type: `error` });
+    //   }
+    // },
+    // removeThree(files, fileList) {
+    //   //确认删除后，数组清空,因为只有一个文件
+    //   this.fileThree = [];
+    //   this.threeChoose.picUrl = "";
+    // },
+    // beforeRemoveThree(file, fileList) {
+    //   return this.$confirm(`确定移除 ${file.name}？`);
+    // },
+    removeImg(file, fileList, index) {
+      console.log(`需要删除的文件下标${index}`);
+      console.log(file);
+      this.activitiesSection[index].picUrl = '';
+      this.activitiesSection[index].filePic = [];
     },
-    beforeRemoveOne(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    imgTwo(res) {
-      console.log(res);
-      if (res.statusCode === 2000) {
-        this.fileTwo.push({ name: res.body, url: res.body });
-        this.twoChoose.picUrl = res.body;
-      } else {
-        this.$message({ message: res.msg, type: `error` });
-      }
-    },
-    removeTwo(files, fileList) {
-      //确认删除后，数组清空,因为只有一个文件
-      this.fileTwo = [];
-      this.twoChoose.picUrl = "";
-    },
-    beforeRemoveTwo(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    imgThree(res) {
-      console.log(res);
-      if (res.statusCode === 2000) {
-        this.fileThree.push({ name: res.body, url: res.body });
-        this.threeChoose.picUrl = res.body;
-      } else {
-        this.$message({ message: res.msg, type: `error` });
-      }
-    },
-    removeThree(files, fileList) {
-      //确认删除后，数组清空,因为只有一个文件
-      this.fileThree = [];
-      this.threeChoose.picUrl = "";
-    },
-    beforeRemoveThree(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    removeImg(){},
-    beforeRemoveImg(){},
-    successImg(res,file,index){
-      if(res.statusCode !== 2000){ return new MessageBounced(res.msg,`error`).messageWindow();};
-      res.statusCode === 2000 && this.activitiesSection[index].filePic.push({name:res.body,url:res.body}) && (this.activitiesSection[index].picUrl = res.body,this.showImgLists = true);
+    successImg(res, file, index) {
+      if (res.statusCode !== 2000) {
+        return new MessageBounced(res.msg, `error`).messageWindow();
+      };
+      res.statusCode === 2000 && this.activitiesSection[index].filePic.push({
+        name: res.body,
+        url: res.body
+      }) && (this.activitiesSection[index].picUrl = res.body, this.showImgLists = true);
       console.log(this.activitiesSection);
     }
   },
@@ -1126,15 +1183,15 @@ export default {
 
 <style scoped lang="less">
 .guide_setting {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 .show {
-  text-align: left;
+    text-align: left;
 }
 .text_align {
-  text-align: left;
+    text-align: left;
 }
 .m_l_10 {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 </style>
