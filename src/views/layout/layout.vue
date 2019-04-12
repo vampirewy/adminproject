@@ -130,7 +130,6 @@ export default {
       // this.defaultActive = window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide';
       this.defaultActive = window.location.href.split("/#")[1];
     };
-
   },
   // mounted() {
   //   this.defaultActive = window.location.href.split("/#")[1];
