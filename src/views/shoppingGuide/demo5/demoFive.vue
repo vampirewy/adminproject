@@ -1,7 +1,13 @@
 <template>
-<div>
-  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-    <!-- <el-form-item label="活动1" required>
+  <div>
+    <el-form
+      :model="ruleForm"
+      :rules="rules"
+      ref="ruleForm"
+      label-width="120px"
+      class="demo-ruleForm"
+    >
+      <!-- <el-form-item label="活动1" required>
         <el-form-item label="活动图片" prop="fileOne" class="show">
           <el-upload
             class="upload-demo"
@@ -206,48 +212,87 @@
             :disabled="allDisabled"
           ></el-input>
         </el-form-item>
-      </el-form-item> -->
-    <el-form-item v-for="(item,index) in activitiesSection" :key="index" :label="item.name" required>
-      <el-form-item label="活动图片" class="show">
-        <el-upload class="upload-demo" :action="upImgUrl" :headers="headers" :show-file-list="showImgLists" :limit="1" :file-list="item.filePic" name="file" :on-remove="(file, fileList)=>{ return removeImg(file, fileList,index)}"
-          :on-success="(res,file)=>{return successImg(res,file,index)}">
-          <el-button type="primary" size="mini">上传图片</el-button>
-          <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
-        </el-upload>
+      </el-form-item>-->
+      <el-form-item
+        v-for="(item,index) in activitiesSection"
+        :key="index"
+        :label="item.name"
+        required
+      >
+        <el-form-item label="活动图片" class="show">
+          <el-upload
+            class="upload-demo"
+            :action="upImgUrl"
+            :headers="headers"
+            :show-file-list="showImgLists"
+            :limit="1"
+            :file-list="item.filePic"
+            name="file"
+            :on-remove="(file, fileList)=>{ return removeImg(file, fileList,index)}"
+            :on-success="(res,file)=>{return successImg(res,file,index)}"
+          >
+            <el-button type="primary" size="mini">上传图片</el-button>
+            <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="跳转页面" class="show">
+          <el-radio-group
+            v-model="item.type"
+            @change="chooseTypes(item.type,index)"
+            style="margin-right:10px;"
+          >
+            <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
+          </el-radio-group>
+          <el-select
+            style="display:block"
+            v-model="item.appSelectText"
+            placeholder="请选择"
+            @change="selectPage(item.appSelectText,index)"
+            v-if="item.appSelect"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-autocomplete
+            v-if="item.special"
+            v-model="item.topicName"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="请输入专题名称"
+            @select="(item)=>{return select(item,index)}"
+            :disabled="allDisabled"
+          ></el-autocomplete>
+          <el-button type="primary" v-if="item.special" @click="toSpecialGuide">创建新专题</el-button>
+          <el-checkbox
+            style="margin-left:10px;"
+            v-if="item.h5Param"
+            @change="authorization(index,item.authorization)"
+            v-model="item.authorization"
+          >H5授权</el-checkbox>
+          <el-input
+            placeholder="页面可根据数据变化动态显示"
+            @blur="h5Path(index,item.path)"
+            v-model="item.path"
+            v-if="item.h5Param"
+          ></el-input>
+        </el-form-item>
       </el-form-item>
-      <el-form-item label="跳转页面" class="show">
-        <el-radio-group v-model="item.type" @change="chooseTypes(item.type,index)" style="margin-right:10px;">
-          <el-radio v-for="(item,index) in jumpType" :label="item.name" :key="index"></el-radio>
-        </el-radio-group>
-        <el-select style="display:block" v-model="item.appSelectText" placeholder="请选择" @change="selectPage(item.appSelectText,index)" v-if="item.appSelect">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <el-autocomplete v-if="item.special" v-model="item.topicName" :fetch-suggestions="querySearchAsync" placeholder="请输入专题名称" @select="select3" :disabled="allDisabled"></el-autocomplete>
-        <el-button type="primary" v-if="item.special" @click="toSpecialGuide">创建新专题</el-button>
-        <el-checkbox style="margin-left:10px;" v-if="item.h5Param" @change="authorization(3)" v-model="item.authorization">H5授权</el-checkbox>
-        <el-input placeholder="页面可根据数据变化动态显示" @blur="h5Path(3)" v-model="item.path" v-if="item.h5Param"></el-input>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
+        <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
+        <el-button @click="cancel()" v-if="newCreate">取消</el-button>
       </el-form-item>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm('ruleForm')" v-if="newCreate">保存</el-button>
-      <!-- <el-button type="primary" @click="modifyForm('ruleForm')" v-if="modifySave">保存</el-button> -->
-      <el-button @click="cancel()" v-if="newCreate">取消</el-button>
-    </el-form-item>
-  </el-form>
-</div>
+    </el-form>
+  </div>
 </template>
 
 <script>
-import {
-  getRequest,
-  postRequest
-} from "@/utils/ajax";
-import {
-  MessageBounced
-} from "@/utils/message";
-import {
-  Message
-} from "element-ui";
+import { getRequest, postRequest } from "@/utils/ajax";
+import { MessageBounced } from "@/utils/message";
+import { Message } from "element-ui";
 import {
   create,
   guideDetails,
@@ -255,9 +300,7 @@ import {
   onlyDelayTime,
   checkSpecial
 } from "@/api/shoppingGuide";
-import {
-  guideAllArea
-} from "@/api/headerBar";
+import { guideAllArea } from "@/api/headerBar";
 export default {
   name: "demoFive",
   props: {
@@ -291,47 +334,48 @@ export default {
        * path为输入框里的值
        * authorization h5授权
        */
-      activitiesSection: [{
-          name: '活动1',
-          picUrl: '',
+      activitiesSection: [
+        {
+          name: "活动1",
+          picUrl: "",
           filePic: [],
-          type: '',
+          type: "",
           appSelect: false,
-          appSelectText: '',
-          topicName: '',
-          topicId: '',
+          appSelectText: "",
+          topicName: "",
+          topicId: "",
           special: false,
           h5Param: false,
-          path: '',
-          authorization: ''
+          path: "",
+          authorization: false
         },
         {
-          name: '活动2',
-          picUrl: '',
+          name: "活动2",
+          picUrl: "",
           filePic: [],
-          type: '',
+          type: "",
           appSelect: false,
-          appSelectText: '',
-          topicName: '',
-          topicId: '',
+          appSelectText: "",
+          topicName: "",
+          topicId: "",
           special: false,
           h5Param: false,
-          path: '',
-          authorization: ''
+          path: "",
+          authorization: false
         },
         {
-          name: '活动2',
-          picUrl: '',
+          name: "活动3",
+          picUrl: "",
           filePic: [],
-          type: '',
+          type: "",
           appSelect: false,
-          appSelectText: '',
-          topicName: '',
-          topicId: '',
+          appSelectText: "",
+          topicName: "",
+          topicId: "",
           special: false,
           h5Param: false,
-          path: '',
-          authorization: ''
+          path: "",
+          authorization: false
         }
       ],
       rules: {
@@ -344,11 +388,13 @@ export default {
         //     trigger: "successImg"
         //   }
         // ],
-        goods: [{
-          required: true,
-          message: "请至少选择一项",
-          trigger: "change"
-        }]
+        goods: [
+          {
+            required: true,
+            message: "请至少选择一项",
+            trigger: "change"
+          }
+        ]
       },
       oneChoose: {
         type: "", //app还是h5
@@ -394,12 +440,16 @@ export default {
       fileTwo: [],
       fileThree: [],
       searchLists: [], //模糊搜索的数据
-      jumpType: [{
-        name: "APP"
-      }, {
-        name: "H5"
-      }],
-      options: [{
+      jumpType: [
+        {
+          name: "APP"
+        },
+        {
+          name: "H5"
+        }
+      ],
+      options: [
+        {
           value: 2,
           label: "返利商品"
         },
@@ -449,9 +499,9 @@ export default {
                 this.ruleForm.type.push(el.traName);
               }
             });
-            this.ruleForm.showName = res.data.body.guideNameDisplay ?
-              true :
-              false; //是否展示名称
+            this.ruleForm.showName = res.data.body.guideNameDisplay
+              ? true
+              : false; //是否展示名称
             this.ruleForm.name = res.data.body.guideName; //导购名称
             this.ruleForm.startTime = res.data.body.startTime; //开始时间
             this.ruleForm.endTime = res.data.body.endTime; //结束时间
@@ -477,7 +527,8 @@ export default {
               //为H5时，显示输入路径框
               this.oneChoose.param = true;
               this.oneChoose.path = res.data.body.actionList[0].actionContent;
-              this.oneChoose.authorization = res.data.body.actionList[0].authorized;
+              this.oneChoose.authorization =
+                res.data.body.actionList[0].authorized;
             }
             this.oneChoose.picUrl = res.data.body.actionList[0].picUrl;
             this.fileOne.push({
@@ -501,7 +552,8 @@ export default {
             } else {
               this.twoChoose.param = true;
               this.twoChoose.path = res.data.body.actionList[1].actionContent;
-              this.twoChoose.authorization = res.data.body.actionList[1].authorized;
+              this.twoChoose.authorization =
+                res.data.body.actionList[1].authorized;
             }
             this.twoChoose.picUrl = res.data.body.actionList[1].picUrl;
             this.fileTwo.push({
@@ -525,14 +577,16 @@ export default {
             } else {
               this.threeChoose.param = true;
               this.threeChoose.path = res.data.body.actionList[2].actionContent;
-              this.threeChoose.authorization = res.data.body.actionList[2].authorized;
+              this.threeChoose.authorization =
+                res.data.body.actionList[2].authorized;
             }
             this.threeChoose.picUrl = res.data.body.actionList[2].picUrl;
             this.fileThree.push({
               name: this.threeChoose.picUrl,
               value: this.threeChoose.picUrl
             });
-          } else {}
+          } else {
+          }
         },
         error => {
           console.log(error);
@@ -542,47 +596,64 @@ export default {
     toSpecialGuide() {
       this.$router.push("/specialinfor");
     },
-    authorization(num) {
-      switch (num) {
-        case 1:
-          console.log(`第栏H5授权${this.oneChoose.authorization}`);
-          break;
-        case 2:
-          console.log(`第栏H5授权${this.twoChoose.authorization}`);
-          break;
-        case 3:
-          console.log(`第栏H5授权${this.threeChoose.authorization}`);
-          break;
-      };
+    //h5授权
+    authorization(currentIndex, currentAuthorization) {
+      this.activitiesSection[currentIndex].authorization = currentAuthorization;
     },
     cancel() {
       this.$router.push("/ShoppingGuide");
     },
-    assemblyInformation() {
+    assemblyFatherInformation() {
       console.log(`父组件`);
       console.log(this.publicPart);
       let lists = [],
         params = {};
-      this.publicPart.length && this.publicPart.forEach(el => {
-        if (Object.values(el).includes("") || Object.values(el).includes(null)) return;
-        el.templateCode = `T5`;
-        el.businessArea.forEach(el => {
-          lists.push({
-            checked: el.checked,
-            traId: el.traId
+      this.publicPart.length &&
+        this.publicPart.forEach(el => {
+          if (
+            Object.values(el).includes("") ||
+            Object.values(el).includes(null)
+          )
+            return;
+          el.templateCode = `T5`;
+          el.businessArea.forEach(el => {
+            lists.push({
+              checked: el.checked,
+              traId: el.traId
+            });
           });
+          params.guideNameDisplay = el.showName ? 1 : 0;
+          params.guideName = el.guideName;
+          params.startTime = el.startTime;
+          params.endTime = el.endTime;
+          params.traSelectionList = lists;
+          params.actionList = [];
         });
-        params.guideNameDisplay = el.showName ? 1 : 0;
-        params.guideName = el.guideName;
-        params.startTime = el.startTime;
-        params.endTime = el.endTime;
-        params.traSelectionList = lists;
-        params.actionList = [];
-      });
+      return params;
     },
-    submitForm(formName) {
-      this.$emit('dataCorrection');
-      this.assemblyInformation();
+    assemblySonInformation() {
+      let fanllyData = [
+        {
+          actionType: el.type,
+          actionContent: el.type === "APP" ? el.selectText : el.path,
+          picUrl: el.picUrl,
+          actionParam: el.topicId,
+          authorized: el.authorization
+        }
+      ];
+      this.activitiesSection.forEach(el => {
+        if (el.type === "APP") return (el.h5Path = "");
+        el.topicName = "";
+        el.topicId = "";
+        el.appSelectText = "";
+      });
+      console.log("子组件");
+      console.log(this.activitiesSection);
+    },
+    async submitForm(formName) {
+      this.$emit("dataCorrection");
+      const fatherResponse = await this.assemblyFatherInformation();
+      const sonResponse = await this.assemblySonInformation();
       // this.subData();
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -632,10 +703,10 @@ export default {
           });
         });
         Promise.all([
-            this.checkActivityData1(),
-            this.checkActivityData2(),
-            this.checkActivityData3()
-          ])
+          this.checkActivityData1(),
+          this.checkActivityData2(),
+          this.checkActivityData3()
+        ])
           .then(
             res => {
               console.log(res);
@@ -719,10 +790,10 @@ export default {
         });
       });
       Promise.all([
-          this.checkActivityData1(),
-          this.checkActivityData2(),
-          this.checkActivityData3()
-        ])
+        this.checkActivityData1(),
+        this.checkActivityData2(),
+        this.checkActivityData3()
+      ])
         .then(
           res => {
             console.log(res);
@@ -749,7 +820,7 @@ export default {
             } else {
               this.threeChoose.selectText = "";
               this.threeChoose.topicId = "";
-            };
+            }
             activity = [this.oneChoose, this.twoChoose, this.threeChoose];
             activity.forEach(el => {
               // console.log(el);
@@ -907,56 +978,26 @@ export default {
     },
     //模糊搜索
     searchTopic(topicName, fn) {
-      let params = {
-        topicName: topicName
-      };
-      checkSpecial(params).then(
+      let params = { topicName: topicName };
+      getRequest("/mall/shopping/topics/dropdown", params).then(
         res => {
-          console.log(res.data);
-          if (res.data.statusCode === 2000) {
-            res.data.body.length &&
-              res.data.body.forEach(el => {
-                el.value = el.topicName;
-              });
-            this.searchLists = res.data.body;
-            fn(this.searchLists);
-          } else {}
+          res.body.length &&
+            res.body.forEach(el => {
+              el.value = el.topicName;
+            });
+          this.searchLists = res.body;
+          fn(this.searchLists);
         },
-        error => {
-          console.log(error);
-        }
+        error => {}
       );
     },
     querySearchAsync(queryString, fn) {
       this.searchTopic(queryString, fn);
     },
-    select1(item) {
-      //只要topicId,当选择app页面中的专题详情时
-      console.log(item);
-      this.oneChoose.topicName = item.value;
-      this.oneChoose.topicId = item.topicId;
-      console.info(
-        `第1栏搜索名称${this.oneChoose.topicName},id号${this.oneChoose.topicId}`
-      );
-    },
-    select2(item) {
-      console.info(`第2栏搜索`);
-      console.log(item);
-      this.twoChoose.topicName = item.value;
-      this.twoChoose.topicId = item.topicId;
-      console.info(
-        `第2栏搜索名称${this.twoChoose.topicName},id号${this.twoChoose.topicId}`
-      );
-    },
-    select3(item) {
-      console.info(`第三栏搜索`);
-      console.log(item);
-      this.threeChoose.topicName = item.value;
-      this.threeChoose.topicId = item.topicId;
-      console.info(
-        `第3栏搜索名称${this.threeChoose.topicName},id号${
-          this.threeChoose.topicId
-        }`
+    select(item, index) {
+      this.activitiesSection[index].topicId = item.topicId;
+      console.log(
+        `目前选中中的专题ID为${this.activitiesSection[index].topicId}`
       );
     },
     //跳转的是app还是h5(单选框)
@@ -1021,26 +1062,30 @@ export default {
     //       break;
     //   }
     // },
+    //选择跳转页面选择项(完成)
     chooseTypes(type, index) {
       console.log(`当前跳转的下标${index}`);
       console.log(type);
       // this.activitiesSection[index].type = type;
       // this.activitiesSection[index].appSelect = true;
-      if (type === 'APP') {
+      if (type === "APP") {
         this.activitiesSection[index].appSelect = true;
         this.activitiesSection[index].type = type;
         this.activitiesSection[index].h5Param = false;
-        (this.activitiesSection[index].appSelectText === 16) && (this.activitiesSection[index].special = true);
+        this.activitiesSection[index].appSelectText === 16 &&
+          (this.activitiesSection[index].special = true);
       } else {
         this.activitiesSection[index].h5Param = true;
         this.activitiesSection[index].appSelect = false;
         this.activitiesSection[index].special = false;
       }
     },
-    //app这边的下拉选项框
+    //app这边的下拉选项框(完成)
     selectPage(selectedIndex, index) {
       console.log(selectedIndex);
-      selectedIndex === 16 ? this.activitiesSection[index].special = true : this.activitiesSection[index].special = false;
+      selectedIndex === 16
+        ? (this.activitiesSection[index].special = true)
+        : (this.activitiesSection[index].special = false);
       this.activitiesSection[index].appSelectText = selectedIndex;
       // switch (num) {
       //   case 1:
@@ -1070,96 +1115,24 @@ export default {
       //     break;
       // }
     },
-    h5Path(num) {
-      switch (num) {
-        case 1:
-          console.log(`第1栏h5路径${this.oneChoose.path}`);
-          break;
-        case 2:
-          console.log(`第2栏h5路径${this.twoChoose.path}`);
-          break;
-        case 3:
-          console.log(`第3栏h5路径${this.threeChoose.path}`);
-          break;
-        case 4:
-          console.log(`第4栏h5路径${this.fourChoose.path}`);
-          break;
-        case 5:
-          console.log(`第5栏h5路径${this.fiveChoose.path}`);
-          break;
-        case 6:
-          console.log(`第6栏h5路径${this.sixChoose.path}`);
-          break;
-      }
-    },
-    // imgOne(res) {
-    //   console.log(res);
-    //   if (res.statusCode === 2000) {
-    //     this.fileOne.push({ name: res.body, url: res.body });
-    //     this.oneChoose.picUrl = res.body;
-    //   } else {
-    //     this.$message({ message: res.msg, type: `error` });
-    //   }
-    // },
-    // handlePreview(file) {
-    //   console.warn(file);
-    // },
-    // removeOne(files, fileList) {
-    //   //确认删除后，数组清空,因为只有一个文件
-    //   this.fileOne = [];
-    //   this.oneChoose.picUrl = "";
-    // },
-    // beforeRemoveOne(file, fileList) {
-    //   return this.$confirm(`确定移除 ${file.name}？`);
-    // },
-    // imgTwo(res) {
-    //   console.log(res);
-    //   if (res.statusCode === 2000) {
-    //     this.fileTwo.push({ name: res.body, url: res.body });
-    //     this.twoChoose.picUrl = res.body;
-    //   } else {
-    //     this.$message({ message: res.msg, type: `error` });
-    //   }
-    // },
-    // removeTwo(files, fileList) {
-    //   //确认删除后，数组清空,因为只有一个文件
-    //   this.fileTwo = [];
-    //   this.twoChoose.picUrl = "";
-    // },
-    // beforeRemoveTwo(file, fileList) {
-    //   return this.$confirm(`确定移除 ${file.name}？`);
-    // },
-    // imgThree(res) {
-    //   console.log(res);
-    //   if (res.statusCode === 2000) {
-    //     this.fileThree.push({ name: res.body, url: res.body });
-    //     this.threeChoose.picUrl = res.body;
-    //   } else {
-    //     this.$message({ message: res.msg, type: `error` });
-    //   }
-    // },
-    // removeThree(files, fileList) {
-    //   //确认删除后，数组清空,因为只有一个文件
-    //   this.fileThree = [];
-    //   this.threeChoose.picUrl = "";
-    // },
-    // beforeRemoveThree(file, fileList) {
-    //   return this.$confirm(`确定移除 ${file.name}？`);
-    // },
+    h5Path(currentIndex, currentH5Path) {},
     removeImg(file, fileList, index) {
       console.log(`需要删除的文件下标${index}`);
       console.log(file);
-      this.activitiesSection[index].picUrl = '';
+      this.activitiesSection[index].picUrl = "";
       this.activitiesSection[index].filePic = [];
     },
     successImg(res, file, index) {
       if (res.statusCode !== 2000) {
         return new MessageBounced(res.msg, `error`).messageWindow();
-      };
-      res.statusCode === 2000 && this.activitiesSection[index].filePic.push({
-        name: res.body,
-        url: res.body
-      }) && (this.activitiesSection[index].picUrl = res.body, this.showImgLists = true);
+      }
+      res.statusCode === 2000 &&
+        this.activitiesSection[index].filePic.push({
+          name: res.body,
+          url: res.body
+        }) &&
+        ((this.activitiesSection[index].picUrl = res.body),
+        (this.showImgLists = true));
       console.log(this.activitiesSection);
     }
   },
@@ -1202,15 +1175,15 @@ export default {
 
 <style scoped lang="less">
 .guide_setting {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 .show {
-    text-align: left;
+  text-align: left;
 }
 .text_align {
-    text-align: left;
+  text-align: left;
 }
 .m_l_10 {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 </style>
