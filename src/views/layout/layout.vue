@@ -42,7 +42,7 @@
 </template>
 
 <script>
-const baseLists = [{
+const baseInfor = [{
   name: "商品属性",
   value: "manager",
   index: "1",
@@ -51,7 +51,7 @@ const baseLists = [{
     path: "/brandmanage"
   }]
 }];
-const commentLists = [{
+const otherCityInfor = [{
     name: "导购管理",
     value: "3310",
     index: "1",
@@ -123,14 +123,14 @@ export default {
     }
   },
   created() {
-    localStorage.getItem('cityCode') == 'manager' ? (this.navLists = baseLists) : (this.navLists = commentLists);
+    localStorage.getItem('cityCode') == 'manager' ? (this.navLists = baseInfor) : (this.navLists = otherCityInfor);
     if (this.value == `manager`) {
-      window.location.href = window.location.href.substring(0, window.location.href.indexOf('#') + 1) + '/brandmanage';
-      this.defaultActive = window.location.href.split("/#")[1];
+      this.defaultActive = window.location.href = window.location.href.substring(0, window.location.href.indexOf('#') + 1) + '/brandmanage';
     } else {
-      this.defaultActive = window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide';
-      // this.defaultActive = window.location.href.split("/#")[1];
+      // this.defaultActive = window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide';
+      this.defaultActive = window.location.href.split("/#")[1];
     };
+
   },
   // mounted() {
   //   this.defaultActive = window.location.href.split("/#")[1];
@@ -140,8 +140,7 @@ export default {
     this.defaultActive = window.location.href.split("/#")[1];
     console.log(this.defaultActive);
     console.log(`城市code:${this.value}`);
-    localStorage.getItem('cityCode') == 'manager' ? (this.navLists = baseLists) : (this.navLists = commentLists);
-
+    localStorage.getItem('cityCode') == 'manager' ? (this.navLists = baseInfor) : (this.navLists = otherCityInfor);
   },
   computed: {},
   watch: {
