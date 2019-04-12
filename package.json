@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "upload":"node scp.js",
-    "serve:test":"vue-cli-service serve --mode test",
     "serve:dv2": "vue-cli-service serve --mode dv2",
     "serve:alpha": "vue-cli-service serve --mode alpha",
     "alpha": "vue-cli-service build --mode alpha && node alpha.js",
