@@ -128,8 +128,8 @@ export default {
       window.location.href = window.location.href.substring(0, window.location.href.indexOf('#') + 1) + '/brandmanage';
       this.defaultActive = window.location.href.split("/#")[1];
     } else {
-      // window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide'
-      this.defaultActive = window.location.href.split("/#")[1];
+      this.defaultActive = window.location.href = window.location.href.substring(0,window.location.href.indexOf('#')+1) + '/shoppingGuide';
+      // this.defaultActive = window.location.href.split("/#")[1];
     };
   },
   // mounted() {
