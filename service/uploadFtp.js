@@ -86,33 +86,36 @@ const conn = new Client();
 //   }
 // }
 // upload(serviceInfor.documentFile);
+function uploadFile() {
+  client.scp(
+    serviceInfor.documentFile,
+    {
+      host: serviceInfor.hostName,
+      username: serviceInfor.userName,
+      password: serviceInfor.password,
+      path: serviceInfor.path
+    },
+    err => {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log(chalk.red(err));
+      } else {
+        begin.stop();
+        // eslint-disable-next-line prettier/prettier
+        console.log(chalk.green(`文件在${process.env.NODE_ENV}环境上传完毕!\n`));
+      }
+    }
+  );
+}
 // eslint-disable-next-line prettier/prettier
 conn.on("ready", () => {
     console.log(chalk.green("已连接至服务器...."));
-    conn.exec(`rm -rf ${serviceInfor.path}\n`, (err, stream) => {
+    conn.exec(`rm -rf ${serviceInfor.path}/\n`, (err, stream) => {
       if (err) throw err;
       // eslint-disable-next-line prettier/prettier
       stream.on("close", () => {
           begin.start();
-          client.scp(
-            serviceInfor.documentFile,
-            {
-              host: serviceInfor.hostName,
-              username: serviceInfor.userName,
-              password: serviceInfor.password,
-              path: serviceInfor.path
-            },
-            err => {
-              if (err) {
-                // eslint-disable-next-line no-console
-                console.log(chalk.red(err));
-              } else {
-                begin.stop();
-                // eslint-disable-next-line prettier/prettier
-                console.log(chalk.green(`文件在${process.env.NODE_ENV}环境上传完毕!\n`));
-              }
-            }
-          );
+          uploadFile();
           conn.end();
         })
         .on("data", data => {
