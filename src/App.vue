@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view/>
-    <img class="test" src="./img/demo1.png" alt="">
+    <!-- <img class="test" src="./img/demo1.png" alt=""> -->
   </div>
 </template>
 
@@ -23,8 +23,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  .test{
-    display:none;
-  }
+  // .test{
+  //   display:none;
+  // }
 }
 </style>

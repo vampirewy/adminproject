@@ -1,6 +1,6 @@
 const client = require('scp2');
 client.scp('dist/', {
-  host: '172.16.31.21',
+  host: '172.16.31.47',
   username: 'ppy',
   password: 'pg@app',
   path: '/ppy/web/admin/op'
