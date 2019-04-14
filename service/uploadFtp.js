@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const client = require("scp2");
 const chalk = require("chalk");
 const ora = require("ora");
@@ -30,6 +29,7 @@ function uploadFile() {
 function start(conn) {
   conn
     .on("ready", () => {
+      // eslint-disable-next-line no-console
       console.log(chalk.green("已连接至服务器...."));
       conn.exec(`rm -rf ${serviceInfor.path}/\n`, (err, stream) => {
         if (err) throw err;
@@ -40,9 +40,11 @@ function start(conn) {
             conn.end();
           })
           .on("data", data => {
+            // eslint-disable-next-line no-console
             console.log("STDOUT: " + data);
           })
           .stderr.on("data", data => {
+            // eslint-disable-next-line no-console
             console.log("STDERR: " + data);
           });
       });
