@@ -104,11 +104,13 @@ import {Message} from "element-ui";
 import { checkSpecial } from "@/api/shoppingGuide";
 import { guideAllArea } from "@/api/headerBar";
 import { addReeditDetail, seeDetail } from "@/api/popManager";
+import { setTimeout, clearTimeout } from 'timers';
 export default {
   name: "addpop",
   data() {
     return {
       popId:'', //弹窗ID  --查看或者重新添加请求需要使用
+      timer : null,
       allDisabled: false, //查看禁用
       showSuccessImg:false,  //图片上传过程不展示
       showFileProcess:false,
@@ -366,7 +368,10 @@ export default {
       console.log(`提交`);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.finallyDataSubmit();
+          clearTimeout(this.timer);
+          this.timer = setTimeout(()=>{
+            this.finallyDataSubmit();
+          },500);
         } else {
           console.log("error submit!!");
           return false;
