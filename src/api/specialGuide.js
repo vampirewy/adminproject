@@ -85,33 +85,33 @@ export function delLists(params) {
   });
 }
 //查看专题详情
-export function topicDetails(params){
+export function topicDetails(params) {
   return service({
-    url:`mall/shopping/topics/${params}/detail`,
-    method:`get`
+    url: `mall/shopping/topics/${params}/detail`,
+    method: `get`
   });
 }
 //修改无活动信息
-export function modifyNoActivity(params){
+export function modifyNoActivity(params) {
   return service({
-    url:`mall/shopping/topics/${params.topicId}/modify`,
-    method:`post`,
-    data:params
+    url: `mall/shopping/topics/${params.topicId}/modify`,
+    method: `post`,
+    data: params
   });
 }
 //修改有活动的信息
-export function modifyActivity(params){
+export function modifyActivity(params) {
   return service({
-    url:`mall/shopping/topics/${params.topicId}/modifyMoneyOff`,
-    method:`post`,
-    data:params
-  })
+    url: `mall/shopping/topics/${params.topicId}/modifyMoneyOff`,
+    method: `post`,
+    data: params
+  });
 }
 //生效中只修改时间
-export function onlyModifyTime(params){
+export function onlyModifyTime(params) {
   return service({
-    url:`mall/shopping/topics/${params.topicId}/extendEndTime`,
-    method:`post`,
-    data:params
+    url: `mall/shopping/topics/${params.topicId}/extendEndTime`,
+    method: `post`,
+    data: params
   });
 }

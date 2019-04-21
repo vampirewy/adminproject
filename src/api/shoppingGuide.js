@@ -53,19 +53,19 @@ export function guideDetails(params) {
     method: `get`
   });
 }
-//延长时间 
-export function onlyDelayTime(params){
+//延长时间
+export function onlyDelayTime(params) {
   return service({
-    url:`/mall/shopping/guides/${params.guideId}/extendEndTime`,
-    method:`post`,
-    data:params
+    url: `/mall/shopping/guides/${params.guideId}/extendEndTime`,
+    method: `post`,
+    data: params
   });
 }
 //修改导购信息
-export function modifyGuide(params){
+export function modifyGuide(params) {
   return service({
-    url:`/mall/shopping/guides/${params.guideId}/modify`,
-    method:`post`,
-    data:params
+    url: `/mall/shopping/guides/${params.guideId}/modify`,
+    method: `post`,
+    data: params
   });
 }

@@ -1,7 +1,7 @@
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const CompressionPlugin = require('compression-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
-  publicPath: './',
+  publicPath: "./",
   devServer: {
     port: 8888,
     compress: true,
@@ -20,7 +20,7 @@ module.exports = {
     // }
   },
   configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       return {
         optimization: {
           minimizer: [
@@ -43,7 +43,7 @@ module.exports = {
             deleteOriginalAssets: false //不删除源文件
           })
         ]
-      }
+      };
     }
   }
-}
+};
