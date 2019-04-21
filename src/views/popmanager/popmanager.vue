@@ -77,11 +77,12 @@ export default {
   data() {
     return {
       showArea: false, //头部商圈隐藏
+      reg: /^[+]?\d*$/,
       traId:'',
       popName:'',
       statusList:'',
       pageNum: 1,
-      pageSize: 30,
+      pageSize: 10,
       totalCount: null,
       totalPage: null,
       popLists:[
@@ -256,6 +257,9 @@ export default {
       console.log(`这里是排序`);
       console.log(currentRow);
       let [ point, sortId,bizType ] = [currentRow.sortIndex,currentRow.windowId,`window-${localStorage.getItem('cityCode')}`];
+      if(!this.reg.test(point)){return this.$message({message:'请输入大于0的正整数',type:'error'});}if(point === '0'){
+        return this.$message({message:'不能输入0',type:'error'});
+      }else if(point === ''){return this.$message({message:'不能输入空',type:'error'})};
       sort({point,sortId,bizType}).then(res=>{
         console.log(res);
         if(res.data.statusCode !==2000) return this.$message({message:res.data.msg,type:`error`});
