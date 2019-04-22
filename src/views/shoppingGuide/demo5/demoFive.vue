@@ -219,7 +219,7 @@
         :label="item.name"
         required
       >
-        <el-form-item label="活动图片" class="show" :prop="index===0?ruleForm.onePicUrl:index===1?ruleForm.twoPicUrl:ruleForm.threePicUrl">
+        <el-form-item label="活动图片" class="show">
           <el-upload
             class="upload-demo"
             :action="upImgUrl"
