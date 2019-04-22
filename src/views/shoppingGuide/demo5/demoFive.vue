@@ -314,9 +314,9 @@ export default {
       // showImgLists: false,
       // areaLists: [],
       ruleForm: {
-        onePicUrl:[],
-        twoPicUrl:[],
-        threePicUrl:[]
+        onePicUrl:"",
+        twoPicUrl:"",
+        threePicUrl:""
       },
       /**
        * picUrl:上传的图片地址
