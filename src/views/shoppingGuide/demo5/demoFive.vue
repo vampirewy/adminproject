@@ -219,12 +219,12 @@
         :label="item.name"
         required
       >
-        <el-form-item label="活动图片" class="show">
+        <el-form-item label="活动图片" class="show" :prop="index===0?ruleForm.onePicUrl:index===1?ruleForm.twoPicUrl:ruleForm.threePicUrl">
           <el-upload
             class="upload-demo"
             :action="upImgUrl"
             :headers="headers"
-            :show-file-list="showImgLists"
+            :show-file-list="item.showImgLists"
             :limit="1"
             :file-list="item.filePic"
             name="file"
@@ -311,17 +311,12 @@ export default {
       newCreate: true, //新建保存
       modifyTime: false, //只可修改结束时间
       allDisabled: false, //全部禁用
-      showImgLists: false,
+      // showImgLists: false,
       // areaLists: [],
       ruleForm: {
-        startTime: "", //开始时间
-        endTime: "", //结束时间
-        type: [], //选择商圈
-        // resource: "模版1", //默认模版
-        fileList: [], //显示在页面上图片
-        submitImg: "", //初阶上转的图片
-        path: "", //页面路径
-        goods: "" //是否展示商品
+        onePicUrl:[],
+        twoPicUrl:[],
+        threePicUrl:[]
       },
       /**
        * picUrl:上传的图片地址
@@ -339,6 +334,7 @@ export default {
           name: "活动1",
           picUrl: "",
           filePic: [],
+          showImgLists: false,
           type: "",
           appSelect: false,
           appSelectText: "",
@@ -353,6 +349,7 @@ export default {
           name: "活动2",
           picUrl: "",
           filePic: [],
+          showImgLists: false,
           type: "",
           appSelect: false,
           appSelectText: "",
@@ -367,6 +364,7 @@ export default {
           name: "活动3",
           picUrl: "",
           filePic: [],
+          showImgLists: false,
           type: "",
           appSelect: false,
           appSelectText: "",
@@ -379,6 +377,9 @@ export default {
         }
       ],
       rules: {
+        onePicUrl:[
+          {required:true,message:"请上传活动一图片"}
+        ]
         // resource: [
         //   { required: true, message: "请选择使用模版", trigger: "change" }
         // ],
@@ -388,13 +389,13 @@ export default {
         //     trigger: "successImg"
         //   }
         // ],
-        goods: [
-          {
-            required: true,
-            message: "请至少选择一项",
-            trigger: "change"
-          }
-        ]
+        // goods: [
+        //   {
+        //     required: true,
+        //     message: "请至少选择一项",
+        //     trigger: "change"
+        //   }
+        // ]
       },
       oneChoose: {
         type: "", //app还是h5
@@ -608,58 +609,74 @@ export default {
       console.log(this.publicPart);
       let lists = [],
         params = {};
-      this.publicPart.length &&
-        this.publicPart.forEach(el => {
-          if (
-            Object.values(el).includes("") ||
-            Object.values(el).includes(null)
-          )
-            return;
-          el.templateCode = `T5`;
-          el.businessArea.forEach(el => {
-            lists.push({
-              checked: el.checked,
-              traId: el.traId
-            });
+      this.publicPart.forEach(el => {
+        if (Object.values(el).includes("") || Object.values(el).includes(null))
+          return;
+        el.templateCode = `T5`;
+        el.businessArea.forEach(el => {
+          lists.push({
+            checked: el.checked,
+            traId: el.traId
           });
-          params.guideNameDisplay = el.showName ? 1 : 0;
-          params.guideName = el.guideName;
-          params.startTime = el.startTime;
-          params.endTime = el.endTime;
-          params.traSelectionList = lists;
-          params.actionList = [];
         });
+        params.templateCode = el.templateCode;
+        params.guideNameDisplay = el.showName ? 1 : 0;
+        params.guideName = el.guideName;
+        params.startTime = el.startTime;
+        params.endTime = el.endTime;
+        params.traSelectionList = lists;
+        params.actionList = [];
+      });
+      console.log(params);
+      if (!Object.keys(params).length) return false;
       return params;
     },
-    assemblySonInformation() {
-      let fanllyData = [
-        {
-          actionType: el.type,
-          actionContent: el.type === "APP" ? el.selectText : el.path,
-          picUrl: el.picUrl,
-          actionParam: el.topicId,
-          authorized: el.authorization
-        }
-      ];
+    assemblySonInformation(fatherParams) {
+      console.log("父参数");
+      console.log(fatherParams);
+      if (!fatherParams) {
+        return false;
+      }
+      // console.log(`父组合完成的`);
+      // console.log(fatherParams);
+      let sonParams = [];
       this.activitiesSection.forEach(el => {
-        if (el.type === "APP") return (el.h5Path = "");
-        el.topicName = "";
-        el.topicId = "";
-        el.appSelectText = "";
+        sonParams.push({
+          actionType: el.type,
+          actionContent: el.type === "APP" ? el.appSelectText : el.path,
+          picUrl: el.picUrl,
+          actionParam:
+            el.type === "APP" && el.appSelectText === 16 ? el.topicId : "",
+          authorized: el.authorization
+        });
       });
+      fatherParams.actionList = sonParams;
       console.log("子组件");
-      console.log(this.activitiesSection);
+      console.log(fatherParams);
+      return fatherParams;
+      // console.log(this.activitiesSection);
+    },
+    add(subParams) {
+      postRequest("/mall/shopping/guides/create", subParams).then(
+        res => {
+          console.log(res);
+          new MessageBounced(`修改成功`, `success`).messageWindow();
+          setTimeout(() => {
+            this.$router.push("/shoppingGuide");
+          }, 300);
+        },
+        error => {
+          new MessageBounced(error.msg, `error`).messageWindow();
+        }
+      );
     },
     async submitForm(formName) {
       this.$emit("dataCorrection");
       const fatherResponse = await this.assemblyFatherInformation();
-      const sonResponse = await this.assemblySonInformation();
-      // this.subData();
+      const sonResponse = await this.assemblySonInformation(fatherResponse);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // this.timer = setTimeout(() => {
-          //   this.subData();
-          // }, 500);
+          sonResponse && this.add(sonResponse);
         } else {
           console.log("error submit!!");
           return false;
@@ -778,204 +795,6 @@ export default {
           );
       }
     },
-    //提交信息
-    subData() {
-      let lists = [],
-        activity = [],
-        fanllyLists = [];
-      this.areaLists.forEach(el => {
-        lists.push({
-          checked: el.checked,
-          traId: el.traId
-        });
-      });
-      Promise.all([
-        this.checkActivityData1(),
-        this.checkActivityData2(),
-        this.checkActivityData3()
-      ])
-        .then(
-          res => {
-            console.log(res);
-            // this.fanlly=[{
-            //   actionContent:path||selectText,
-            //   actionType:type,
-            //   picUrl:picUrl,
-            //   actionParam:topicId
-            // }];
-            if (this.oneChoose.type === "APP") {
-              this.oneChoose.path = "";
-            } else {
-              this.oneChoose.selectText = "";
-              this.oneChoose.topicId = "";
-            }
-            if (this.twoChoose.type === "APP") {
-              this.twoChoose.path = "";
-            } else {
-              this.twoChoose.selectText = "";
-              this.twoChoose.topicId = "";
-            }
-            if (this.threeChoose.type === "APP") {
-              this.threeChoose.path = "";
-            } else {
-              this.threeChoose.selectText = "";
-              this.threeChoose.topicId = "";
-            }
-            activity = [this.oneChoose, this.twoChoose, this.threeChoose];
-            activity.forEach(el => {
-              // console.log(el);
-              fanllyLists.push({
-                actionType: el.type,
-                actionContent: el.type === "APP" ? el.selectText : el.path,
-                picUrl: el.picUrl,
-                actionParam: el.topicId,
-                authorized: el.authorization
-              });
-            });
-            console.log(fanllyLists);
-            let params = {
-              templateCode: "T5",
-              guideNameDisplay: this.ruleForm.showName ? 1 : 0, //是否名称展示
-              startTime: this.ruleForm.startTime,
-              endTime: this.ruleForm.endTime,
-              guideName: this.ruleForm.name, //导购名称
-              traSelectionList: lists, //选择的商圈
-              actionList: fanllyLists
-            };
-            console.log(params);
-            return create(params);
-          },
-          error => {}
-        )
-        .then(
-          res => {
-            console.log(res.data);
-            if (res.data.statusCode === 2000) {
-              this.$message({
-                message: `创建成功`,
-                type: `success`
-              });
-              this.$router.push("/shoppingGuide");
-            } else {
-              this.$message({
-                message: res.data.msg,
-                type: `error`
-              });
-            }
-          },
-          error => {
-            console.log(error);
-          }
-        );
-    },
-    checkActivityData1() {
-      let promise = new Promise((resolve, reject) => {
-        if (this.oneChoose.picUrl === "") {
-          this.$message({
-            message: `请上传活动一的图片`,
-            type: `error`
-          });
-        } else {
-          if (this.oneChoose.type === "APP") {
-            if (this.oneChoose.selectText == "") {
-              this.$message({
-                message: `请选择活动一的app页面`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动一的app页面`);
-            }
-          } else if (this.oneChoose.type === "H5") {
-            if (this.oneChoose.path == "") {
-              this.$message({
-                message: `请填写活动一的h5页面参数`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动一的h5页面参数`);
-            }
-          } else {
-            this.$message({
-              message: `请选择活动一的跳转页面`,
-              type: `error`
-            });
-          }
-        }
-      });
-      return promise;
-    },
-    checkActivityData2() {
-      let promise = new Promise((resolve, reject) => {
-        if (this.twoChoose.picUrl === "") {
-          this.$message({
-            message: `请上传活动二的图片`,
-            type: `error`
-          });
-        } else {
-          if (this.twoChoose.type === "APP") {
-            if (this.twoChoose.selectText == "") {
-              this.$message({
-                message: `请选择活动二的app页面`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动二的app页面`);
-            }
-          } else if (this.twoChoose.type === "H5") {
-            if (this.twoChoose.path == "") {
-              this.$message({
-                message: `请填写活动二的h5页面参数`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动二的h5页面参数`);
-            }
-          } else {
-            this.$message({
-              message: `请选择活动二的跳转页面`,
-              type: `error`
-            });
-          }
-        }
-      });
-      return promise;
-    },
-    checkActivityData3() {
-      let promise = new Promise((resolve, reject) => {
-        if (this.threeChoose.picUrl === "") {
-          this.$message({
-            message: `请上传活动三的图片`,
-            type: `error`
-          });
-        } else {
-          if (this.threeChoose.type === "APP") {
-            if (this.threeChoose.selectText == "") {
-              this.$message({
-                message: `请选择活动三的app页面`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动三的app页面`);
-            }
-          } else if (this.threeChoose.type === "H5") {
-            if (this.threeChoose.path == "") {
-              this.$message({
-                message: `请填写活动三的h5页面参数`,
-                type: `error`
-              });
-            } else {
-              return resolve(`通过活动三的h5页面参数`);
-            }
-          } else {
-            this.$message({
-              message: `请选择活动三的跳转页面`,
-              type: `error`
-            });
-          }
-        }
-      });
-      return promise;
-    },
     //模糊搜索
     searchTopic(topicName, fn) {
       let params = { topicName: topicName };
@@ -1072,8 +891,7 @@ export default {
         this.activitiesSection[index].appSelect = true;
         this.activitiesSection[index].type = type;
         this.activitiesSection[index].h5Param = false;
-        this.activitiesSection[index].appSelectText === 16 &&
-          (this.activitiesSection[index].special = true);
+        this.activitiesSection[index].appSelectText === 16 && (this.activitiesSection[index].special = true);
       } else {
         this.activitiesSection[index].h5Param = true;
         this.activitiesSection[index].appSelect = false;
@@ -1132,7 +950,7 @@ export default {
           url: res.body
         }) &&
         ((this.activitiesSection[index].picUrl = res.body),
-        (this.showImgLists = true));
+        (this.activitiesSection[index].showImgLists = true));
       console.log(this.activitiesSection);
     }
   },
