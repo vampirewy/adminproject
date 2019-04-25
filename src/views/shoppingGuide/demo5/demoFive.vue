@@ -214,13 +214,14 @@
         </el-form-item>
       </el-form-item>-->
       <el-form-item
-        v-for="(item,index) in activitiesSection"
+        v-for="(item,index) in ruleForm.activitiesSection"
         :key="index"
         :label="item.name"
         required
       >
-        <el-form-item label="活动图片" class="show">
+        <el-form-item label="活动图片" class="show" :rules="activitiesSectionRules.filePic" :prop=" 'activitiesSection.' + index  + '.filePic' ">
           <el-upload
+            ref="ruleForm"
             class="upload-demo"
             :action="upImgUrl"
             :headers="headers"
@@ -235,7 +236,7 @@
             <span slot="tip" class="el-upload__tip m_l_10">只能上传1张图片</span>
           </el-upload>
         </el-form-item>
-        <el-form-item label="跳转页面" class="show">
+        <el-form-item label="跳转页面" class="show" :rules="activitiesSectionRules.type" :prop=" 'activitiesSection.'+ index + '.type' ">
           <el-radio-group
             v-model="item.type"
             @change="chooseTypes(item.type,index)"
@@ -314,89 +315,70 @@ export default {
       // showImgLists: false,
       // areaLists: [],
       ruleForm: {
-        onePicUrl:"",
-        twoPicUrl:"",
-        threePicUrl:""
-      },
-      /**
-       * picUrl:上传的图片地址
-       * filePic:显示在页面上的图片地址
-       * type 跳转类型为APP还是H5
-       * appSelect 选中APP时，显示下拉框
-       * appSelectText 下拉框选中的值
-       * special 下拉框的值为专题页面时，显示专题名称
-       * h5Param 选中H5时显示的内容框
-       * path为输入框里的值
-       * authorization h5授权
-       */
-      activitiesSection: [
-        {
-          name: "活动1",
-          picUrl: "",
-          filePic: [],
-          showImgLists: false,
-          type: "",
-          appSelect: false,
-          appSelectText: "",
-          topicName: "",
-          topicId: "",
-          special: false,
-          h5Param: false,
-          path: "",
-          authorization: false
-        },
-        {
-          name: "活动2",
-          picUrl: "",
-          filePic: [],
-          showImgLists: false,
-          type: "",
-          appSelect: false,
-          appSelectText: "",
-          topicName: "",
-          topicId: "",
-          special: false,
-          h5Param: false,
-          path: "",
-          authorization: false
-        },
-        {
-          name: "活动3",
-          picUrl: "",
-          filePic: [],
-          showImgLists: false,
-          type: "",
-          appSelect: false,
-          appSelectText: "",
-          topicName: "",
-          topicId: "",
-          special: false,
-          h5Param: false,
-          path: "",
-          authorization: false
-        }
-      ],
-      rules: {
-        onePicUrl:[
-          {required:true,message:"请上传活动一图片"}
+        /**
+         * picUrl:上传的图片地址
+         * filePic:显示在页面上的图片地址
+         * type 跳转类型为APP还是H5
+         * appSelect 选中APP时，显示下拉框
+         * appSelectText 下拉框选中的值
+         * special 下拉框的值为专题页面时，显示专题名称
+         * h5Param 选中H5时显示的内容框
+         * path为输入框里的值
+         * authorization h5授权
+         */
+        activitiesSection: [
+          {
+            name: "活动1",
+            picUrl: "",
+            filePic: [],
+            showImgLists: false,
+            type: "",
+            appSelect: false,
+            appSelectText: "",
+            topicName: "",
+            topicId: "",
+            special: false,
+            h5Param: false,
+            path: "",
+            authorization: false
+          },
+          {
+            name: "活动2",
+            picUrl: "",
+            filePic: [],
+            showImgLists: false,
+            type: "",
+            appSelect: false,
+            appSelectText: "",
+            topicName: "",
+            topicId: "",
+            special: false,
+            h5Param: false,
+            path: "",
+            authorization: false
+          },
+          {
+            name: "活动3",
+            picUrl: "",
+            filePic: [],
+            showImgLists: false,
+            type: "",
+            appSelect: false,
+            appSelectText: "",
+            topicName: "",
+            topicId: "",
+            special: false,
+            h5Param: false,
+            path: "",
+            authorization: false
+          }
         ]
-        // resource: [
-        //   { required: true, message: "请选择使用模版", trigger: "change" }
-        // ],
-        // fileList: [
-        //   {
-        //     message: "请上传图片",
-        //     trigger: "successImg"
-        //   }
-        // ],
-        // goods: [
-        //   {
-        //     required: true,
-        //     message: "请至少选择一项",
-        //     trigger: "change"
-        //   }
-        // ]
       },
+      activitiesSectionRules: {
+        filePic:[{required:true, message:`请上传活动图片`}],
+        type:[{required:true,message:"请选择跳转类型",trigger:"change"}]
+      },
+      rules: {},
       oneChoose: {
         type: "", //app还是h5
         topicName: "", //专题名称
@@ -599,7 +581,7 @@ export default {
     },
     //h5授权
     authorization(currentIndex, currentAuthorization) {
-      this.activitiesSection[currentIndex].authorization = currentAuthorization;
+      this.ruleForm.activitiesSection[currentIndex].authorization = currentAuthorization;
     },
     cancel() {
       this.$router.push("/ShoppingGuide");
@@ -607,8 +589,7 @@ export default {
     assemblyFatherInformation() {
       console.log(`父组件`);
       console.log(this.publicPart);
-      let lists = [],
-        params = {};
+      let lists = [],params = {};
       this.publicPart.forEach(el => {
         if (Object.values(el).includes("") || Object.values(el).includes(null))
           return;
@@ -634,19 +615,16 @@ export default {
     assemblySonInformation(fatherParams) {
       console.log("父参数");
       console.log(fatherParams);
-      if (!fatherParams) {
-        return false;
-      }
+      if (!fatherParams) { return false; };
       // console.log(`父组合完成的`);
       // console.log(fatherParams);
       let sonParams = [];
-      this.activitiesSection.forEach(el => {
+      this.ruleForm.activitiesSection.forEach(el => {
         sonParams.push({
           actionType: el.type,
           actionContent: el.type === "APP" ? el.appSelectText : el.path,
           picUrl: el.picUrl,
-          actionParam:
-            el.type === "APP" && el.appSelectText === 16 ? el.topicId : "",
+          actionParam: el.type === "APP" && el.appSelectText === 16 ? el.topicId : "",
           authorized: el.authorization
         });
       });
@@ -654,9 +632,9 @@ export default {
       console.log("子组件");
       console.log(fatherParams);
       return fatherParams;
-      // console.log(this.activitiesSection);
+      // console.log(this.ruleForm.activitiesSection);
     },
-    add(subParams) {
+    insert(subParams) {
       postRequest("/mall/shopping/guides/create", subParams).then(
         res => {
           console.log(res);
@@ -676,7 +654,7 @@ export default {
       const sonResponse = await this.assemblySonInformation(fatherResponse);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          sonResponse && this.add(sonResponse);
+          sonResponse && this.insert(sonResponse);
         } else {
           console.log("error submit!!");
           return false;
@@ -814,9 +792,9 @@ export default {
       this.searchTopic(queryString, fn);
     },
     select(item, index) {
-      this.activitiesSection[index].topicId = item.topicId;
+      this.ruleForm.activitiesSection[index].topicId = item.topicId;
       console.log(
-        `目前选中中的专题ID为${this.activitiesSection[index].topicId}`
+        `目前选中中的专题ID为${this.ruleForm.activitiesSection[index].topicId}`
       );
     },
     //跳转的是app还是h5(单选框)
@@ -885,26 +863,27 @@ export default {
     chooseTypes(type, index) {
       console.log(`当前跳转的下标${index}`);
       console.log(type);
-      // this.activitiesSection[index].type = type;
-      // this.activitiesSection[index].appSelect = true;
+      // this.ruleForm.activitiesSection[index].type = type;
+      // this.ruleForm.activitiesSection[index].appSelect = true;
       if (type === "APP") {
-        this.activitiesSection[index].appSelect = true;
-        this.activitiesSection[index].type = type;
-        this.activitiesSection[index].h5Param = false;
-        this.activitiesSection[index].appSelectText === 16 && (this.activitiesSection[index].special = true);
+        this.ruleForm.activitiesSection[index].appSelect = true;
+        this.ruleForm.activitiesSection[index].type = type;
+        this.ruleForm.activitiesSection[index].h5Param = false;
+        this.ruleForm.activitiesSection[index].appSelectText === 16 &&
+          (this.ruleForm.activitiesSection[index].special = true);
       } else {
-        this.activitiesSection[index].h5Param = true;
-        this.activitiesSection[index].appSelect = false;
-        this.activitiesSection[index].special = false;
+        this.ruleForm.activitiesSection[index].h5Param = true;
+        this.ruleForm.activitiesSection[index].appSelect = false;
+        this.ruleForm.activitiesSection[index].special = false;
       }
     },
     //app这边的下拉选项框(完成)
     selectPage(selectedIndex, index) {
       console.log(selectedIndex);
       selectedIndex === 16
-        ? (this.activitiesSection[index].special = true)
-        : (this.activitiesSection[index].special = false);
-      this.activitiesSection[index].appSelectText = selectedIndex;
+        ? (this.ruleForm.activitiesSection[index].special = true)
+        : (this.ruleForm.activitiesSection[index].special = false);
+      this.ruleForm.activitiesSection[index].appSelectText = selectedIndex;
       // switch (num) {
       //   case 1:
       //     if (page === 16) {
@@ -937,21 +916,24 @@ export default {
     removeImg(file, fileList, index) {
       console.log(`需要删除的文件下标${index}`);
       console.log(file);
-      this.activitiesSection[index].picUrl = "";
-      this.activitiesSection[index].filePic = [];
+      this.ruleForm.activitiesSection[index].picUrl = "";
+      this.ruleForm.activitiesSection[index].filePic = [];
+      this.ruleForm.activitiesSection[index].showImgLists = false;
+      this.$refs.ruleForm.validate(valid=>{});
     },
     successImg(res, file, index) {
       if (res.statusCode !== 2000) {
         return new MessageBounced(res.msg, `error`).messageWindow();
       }
       res.statusCode === 2000 &&
-        this.activitiesSection[index].filePic.push({
+        this.ruleForm.activitiesSection[index].filePic.push({
           name: res.body,
           url: res.body
         }) &&
-        ((this.activitiesSection[index].picUrl = res.body),
-        (this.activitiesSection[index].showImgLists = true));
-      console.log(this.activitiesSection);
+        ((this.ruleForm.activitiesSection[index].picUrl = res.body),
+        (this.ruleForm.activitiesSection[index].showImgLists = true));
+      console.log(this.ruleForm.activitiesSection);
+      this.$refs.ruleForm.validate(valid=>{});
     }
   },
   created() {
