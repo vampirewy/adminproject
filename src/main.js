@@ -21,7 +21,7 @@ let cityCode = getCookie(`cityCode`);
 
 new Vue({
   router,
-  store, 
+  store,
   render: h => h(App),
   created() {
     localStorage.setItem(`sessionId`, sessionId);
