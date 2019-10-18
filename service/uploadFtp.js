@@ -16,9 +16,11 @@ function uploadFile() {
     },
     err => {
       if (err) {
+        // eslint-disable-next-line no-console
         console.log(chalk.red(err));
       } else {
         begin.stop();
+        // eslint-disable-next-line no-console
         console.log(
           chalk.green(`文件在${process.env.NODE_ENV}环境上传完毕!\n`)
         );
